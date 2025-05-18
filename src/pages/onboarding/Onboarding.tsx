@@ -1,5 +1,5 @@
 // src/pages/Onboarding/OnboardingPage.tsx
-import React, { useState, useEffect, useCallback, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { useTelegram } from '../../hooks/useTelegram';
 
 export default function OnboardingPage() {
