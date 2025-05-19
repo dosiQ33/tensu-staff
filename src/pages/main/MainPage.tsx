@@ -107,7 +107,7 @@ export default function MainPage() {
                     outerRadius="80%"
                     paddingAngle={4}
                   >
-                    {attendanceData.map((entry, idx) => (
+                    {attendanceData.map((_entry, idx) => (
                       <Cell
                         key={idx}
                         fill={COLORS[idx % COLORS.length]}
