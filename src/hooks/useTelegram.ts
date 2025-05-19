@@ -33,7 +33,6 @@ export function useTelegram() {
     }
 
     tg.ready();
-    // grab the user object from Telegram
     setUser(tg.initDataUnsafe.user);
   }, []);
 

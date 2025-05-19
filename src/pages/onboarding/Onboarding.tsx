@@ -1,4 +1,3 @@
-// src/pages/Onboarding/OnboardingPage.tsx
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { useTelegram } from '../../hooks/useTelegram';
 
@@ -8,7 +7,6 @@ export default function OnboardingPage() {
   const [bio, setBio]           = useState('');
   const [phone, setPhone]       = useState('');
 
-  // seed fields once Telegram user is available
   useEffect(() => {
     if (!user) return;
     setFullName([user.first_name, user.last_name].filter(Boolean).join(' '));
@@ -18,10 +16,8 @@ export default function OnboardingPage() {
     }
   }, [user]);
 
-  // disable until phone is non-empty
   const canProceed = phone.trim().length > 0;
 
-  // memoize submit
   const onSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
@@ -31,7 +27,6 @@ export default function OnboardingPage() {
     [canProceed, fullName, bio, phone, sendData, user]
   );
 
-  // simple loading state
   if (user === null) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
