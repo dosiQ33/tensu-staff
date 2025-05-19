@@ -12,8 +12,8 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<OnboardingPage />} />
-        <Route path="/main" element={<MainPage />} />
+        <Route path="/temp" element={<OnboardingPage />} />
+        <Route path="/" element={<MainPage />} />
         {/* catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

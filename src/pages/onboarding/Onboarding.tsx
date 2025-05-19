@@ -16,8 +16,7 @@ export default function OnboardingPage() {
     }
   }, [user]);
 
-//   const canProceed = phone.trim().length > 0;
-const canProceed = phone.trim().length > 0;
+  const canProceed = phone.trim().length > 0;
 
   const onSubmit = useCallback(
     (e: FormEvent) => {
