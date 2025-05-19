@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTelegram } from '../../hooks/useTelegram';
 import { Card, CardContent } from '../../components/ui/card';
 import { motion } from 'framer-motion';
