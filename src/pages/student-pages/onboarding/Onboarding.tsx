@@ -97,7 +97,7 @@ export default function OnboardingPage() {
                 : "bg-gray-400 cursor-not-allowed"
             }`}
             onClick={() =>
-              bio === "arman198701"
+              bio === "@arman198701"
                 ? navigate("/coach/main")
                 : navigate("/main")
             }
