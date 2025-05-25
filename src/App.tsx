@@ -31,7 +31,7 @@ export default function App() {
         <Route path="/trainings" element={<TrainingsPage />} />
         <Route path="/profile" element={<ProfilePage/>} />
         {/* catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/onboarding" replace />} />
       </Routes>
     </Router>
   );
