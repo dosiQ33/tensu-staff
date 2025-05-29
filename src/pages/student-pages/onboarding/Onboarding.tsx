@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useState, useEffect, useCallback, type FormEvent } from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
 import { useNavigate } from "react-router-dom";
@@ -7,8 +8,35 @@ export default function OnboardingPage() {
   const [fullName, setFullName] = useState("");
   const [bio, setBio] = useState("");
   const [phone, setPhone] = useState("");
+  const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Capture initData (raw) or fallback to initDataUnsafe, then save and display
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (!tg) {
+      console.error("Telegram WebApp SDK not found");
+      return;
+    }
+    tg.ready();
+
+    // Try to get the raw initData, fallback to stringified initDataUnsafe
+    // @ts-ignore
+    const rawInitData: string | undefined = (tg as unknown).initData;
+    let initDataString = "";
+    if (rawInitData) {
+      initDataString = rawInitData;
+    } else if (tg.initDataUnsafe) {
+      initDataString = JSON.stringify(tg.initDataUnsafe);
+    }
+
+    if (initDataString) {
+      setToken(initDataString);
+      localStorage.setItem("telegramInitData", initDataString);
+    }
+  }, []);
+
+  // Populate user info when available
   useEffect(() => {
     if (!user) return;
     setFullName([user.first_name, user.last_name].filter(Boolean).join(" "));
@@ -47,6 +75,11 @@ export default function OnboardingPage() {
           Let’s get your profile set up.
         </p>
 
+        {/* Display token or fallback message */}
+        <p className="text-xs text-gray-500 text-center break-all">
+          {token ? `Token: ${token}` : "Token not available"}
+        </p>
+
         <form onSubmit={onSubmit} className="space-y-4">
           {/* Full Name */}
           <div>
@@ -74,7 +107,7 @@ export default function OnboardingPage() {
             />
           </div>
 
-          {/* Phone */}
+          {/* Phone Number */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Phone Number <span className="text-red-500">*</span>
