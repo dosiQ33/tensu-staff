@@ -1,16 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useState, useEffect, useCallback, type FormEvent } from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
 import { useNavigate } from "react-router-dom";
+import { AsYouType } from "libphonenumber-js";
 import OnboardingBgImg from "../../../assets/onboarding-bg.png";
 
 export default function OnboardingPage() {
   const { user, sendData } = useTelegram();
   const [fullName, setFullName] = useState("");
   const [bio, setBio] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(""); // отформатированная строка
   const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Telegram WebApp instance
+  const [tg, setTg] = useState<unknown>(null);
 
   // Состояние для анимации: false → true через 1 секунду
   const [showCard, setShowCard] = useState(false);
@@ -21,43 +26,80 @@ export default function OnboardingPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Capture initData (raw) or fallback to initDataUnsafe, then save and display
+  // Инициализируем Telegram WebApp и сохраняем в state
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    if (!tg) {
+    if (window.Telegram?.WebApp) {
+      const telegramApp = window.Telegram.WebApp;
+      telegramApp.ready();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (telegramApp as any).expand();
+      setTg(telegramApp);
+
+      // Сохраняем initData
+      // @ts-ignore
+      const rawInitData: string | undefined = (telegramApp as unknown).initData;
+      let initDataString = "";
+      if (rawInitData) {
+        initDataString = rawInitData;
+      } else if (telegramApp.initDataUnsafe) {
+        initDataString = JSON.stringify(telegramApp.initDataUnsafe);
+      }
+
+      if (initDataString) {
+        setToken(initDataString);
+        localStorage.setItem("telegramInitData", initDataString);
+      }
+    } else {
       console.error("Telegram WebApp SDK not found");
-      return;
-    }
-    tg.ready();
-
-    // Try to get the raw initData, fallback to stringified initDataUnsafe
-    // @ts-ignore
-    const rawInitData: string | undefined = (tg as unknown).initData;
-    let initDataString = "";
-    if (rawInitData) {
-      initDataString = rawInitData;
-    } else if (tg.initDataUnsafe) {
-      initDataString = JSON.stringify(tg.initDataUnsafe);
-    }
-
-    if (initDataString) {
-      setToken(initDataString);
-      localStorage.setItem("telegramInitData", initDataString);
     }
   }, []);
 
-  // Populate user info when available
+  // Заполняем fullName, bio, phone (если есть) при появлении user
   useEffect(() => {
     if (!user) return;
+
+    // Имя/фамилия остаются редактируемыми
     setFullName([user.first_name, user.last_name].filter(Boolean).join(" "));
-    setBio(user.username ? `@${user.username}` : "");
+
+    // Если есть username, сохраняем в state
+    if (user.username) {
+      setBio(`@${user.username}`);
+    }
+
+    // Telegram WebApp НЕ передаёт телефон напрямую,
+    // но если вдруг есть, форматируем
     if (user.phone_number) {
-      setPhone(user.phone_number);
+      const digits = user.phone_number.replace(/\D/g, "");
+      const formatted = new AsYouType().input("+" + digits);
+      setPhone(formatted);
     }
   }, [user]);
 
   const canProceed = phone.trim().length > 0;
 
+  // Запрос контактных данных у Telegram
+  const requestPhoneContact = () => {
+    if (!tg) return;
+    setPhone(""); // сбиваем старое, если было
+    // @ts-ignore
+    if (typeof (tg as any).requestContact === "function") {
+      // @ts-ignore
+      (tg as any).requestContact((granted: boolean, contactData: any) => {
+        if (
+          granted &&
+          contactData?.responseUnsafe?.contact?.phone_number
+        ) {
+          const rawNumber = contactData.responseUnsafe.contact.phone_number;
+          const formatted = new AsYouType().input(rawNumber);
+          setPhone(formatted);
+        }
+      });
+    } else {
+      console.warn("Метод requestContact недоступен");
+    }
+  };
+
+  // Обработчик отправки
   const onSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
@@ -155,35 +197,33 @@ export default function OnboardingPage() {
             />
           </div>
 
-          {/* Bio / Username */}
+          {/* Bio / Username (read-only, если есть) */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-indigo-500 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-3-6v6"
-                />
-              </svg>
-              Логин (Bio)
+              {bio && "Bio"}
             </label>
-            <input
-              type="text"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              placeholder="Например, @username"
-              className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
-            />
+            {bio && (
+              <input
+                type="text"
+                disabled
+                value={bio}
+                className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-100 text-gray-500 cursor-not-allowed"
+              />
+            )}
           </div>
 
-          {/* Phone Number */}
+          {/* Кнопка для запроса телефона через Telegram */}
+          <div>
+            <button
+              type="button"
+              onClick={requestPhoneContact}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+            >
+              Получить номер из Telegram
+            </button>
+          </div>
+
+          {/* Phone Number с автоформатированием по AsYouType */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700">
               <svg
@@ -205,9 +245,18 @@ export default function OnboardingPage() {
             <input
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+7 (___) ___-____"
-              required
+              onChange={(e) => {
+                // Убираем всё, кроме '+' и цифр
+                let raw = e.target.value.replace(/[^\d+]/g, "");
+                // Гарантируем, что начинается с '+'
+                if (!raw.startsWith("+")) {
+                  raw = "+" + raw.replace(/\++/g, "");
+                }
+                // Форматируем через AsYouType
+                const formatted = new AsYouType().input(raw);
+                setPhone(formatted);
+              }}
+              placeholder="+7 701 925 0756"
               className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
             />
           </div>
