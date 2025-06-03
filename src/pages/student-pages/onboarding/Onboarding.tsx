@@ -121,33 +121,16 @@ export default function OnboardingPage() {
 
       {/* Main Card: условная анимация */}
       <div
-        className={`
-          relative w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 space-y-6 z-10
-          transition-all duration-500
-          ${showCard ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
-        `}
-      >
+        className={`relative w-[95%] max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6 z-10
+                    transition-all duration-500 ${showCard ? "opacity-95 translate-y-0" : "opacity-0 translate-y-10"}`}
+>
         {/* Sport Icon + Title */}
         <div className="flex flex-col items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-12 w-12 text-indigo-600 mb-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 15V9M18 15V9M18 9h-2M8 9H6m12 6h2m-2 0h-2m-4 0h4m-4 0H8m4 0v-6"
-            />
-          </svg>
           <h1 className="text-3xl font-extrabold text-gray-800 text-center">
             Добро пожаловать!
           </h1>
           <p className="mt-1 text-sm text-gray-600 text-center">
-            Ваш персональный трекер тренировок
+            Пожалуйста разрешите доступ к вашему номеру телефона, чтобы продолжить
           </p>
         </div>
 
@@ -163,21 +146,7 @@ export default function OnboardingPage() {
           {/* Full Name */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-indigo-500 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5.121 17.804A9.015 9.015 0 0112 15c2.21 0 4.21.896 5.879 2.354M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              Имя и Фамилия
+              Имя и Фамилия <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               type="text"
