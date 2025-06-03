@@ -9,7 +9,6 @@ import OnboardingBgImg from "../../../assets/onboarding-bg.png";
 export default function OnboardingPage() {
   const { user, sendData } = useTelegram();
   const [fullName, setFullName] = useState("");
-  const [bio, setBio] = useState("");
   const [phone, setPhone] = useState(""); // отформатированная строка
   const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -61,11 +60,6 @@ export default function OnboardingPage() {
     // Имя/фамилия остаются редактируемыми
     setFullName([user.first_name, user.last_name].filter(Boolean).join(" "));
 
-    // Если есть username, сохраняем в state
-    if (user.username) {
-      setBio(`@${user.username}`);
-    }
-
     // Telegram WebApp НЕ передаёт телефон напрямую,
     // но если вдруг есть, форматируем
     if (user.phone_number) {
@@ -101,9 +95,9 @@ export default function OnboardingPage() {
     (e: FormEvent) => {
       e.preventDefault();
       if (!canProceed || !user) return;
-      sendData({ fullName, bio, phone });
+      sendData({ fullName, phone });
     },
-    [canProceed, fullName, bio, phone, sendData, user]
+    [canProceed, fullName, phone, sendData, user]
   );
 
   if (user === null) {
@@ -194,21 +188,6 @@ export default function OnboardingPage() {
             />
           </div>
 
-          {/* Bio / Username (read-only, если есть) */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700">
-              {bio && "Bio"}
-            </label>
-            {bio && (
-              <input
-                type="text"
-                disabled
-                value={bio}
-                className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-100 text-gray-500 cursor-not-allowed"
-              />
-            )}
-          </div>
-
           {!phone ? (
             <div>
               <button
@@ -227,18 +206,7 @@ export default function OnboardingPage() {
               <input
                 type="tel"
                 disabled={true}
-                value={phone}
-                // onChange={(e) => {
-                //   // Убираем всё, кроме '+' и цифр
-                //   let raw = e.target.value.replace(/[^\d+]/g, "");
-                //   // Гарантируем, что начинается с '+'
-                //   if (!raw.startsWith("+")) {
-                //     raw = "+" + raw.replace(/\++/g, "");
-                //   }
-                //   // Форматируем через AsYouType
-                //   const formatted = new AsYouType().input(raw);
-                //   setPhone(formatted);
-                // }}
+                value={"+" + phone}
                 className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
               />
             </div>
@@ -256,11 +224,7 @@ export default function OnboardingPage() {
                           : "bg-gray-400 cursor-not-allowed"
                       }
                     `}
-              onClick={() =>
-                bio === "@arman198701"
-                  ? navigate("/coach/main")
-                  : navigate("/main")
-              }
+              onClick={() => navigate("/coach/main")}
             >
               Приступить
             </button>
