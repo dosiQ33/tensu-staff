@@ -85,10 +85,7 @@ export default function OnboardingPage() {
     if (typeof (tg as any).requestContact === "function") {
       // @ts-ignore
       (tg as any).requestContact((granted: boolean, contactData: any) => {
-        if (
-          granted &&
-          contactData?.responseUnsafe?.contact?.phone_number
-        ) {
+        if (granted && contactData?.responseUnsafe?.contact?.phone_number) {
           const rawNumber = contactData.responseUnsafe.contact.phone_number;
           const formatted = new AsYouType().input(rawNumber);
           setPhone(formatted);
@@ -212,75 +209,62 @@ export default function OnboardingPage() {
             )}
           </div>
 
-          {/* Кнопка для запроса телефона через Telegram */}
-          <div>
-            <button
-              type="button"
-              onClick={requestPhoneContact}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-            >
-              Получить номер из Telegram
-            </button>
-          </div>
-
-          {/* Phone Number с автоформатированием по AsYouType */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-indigo-500 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+          {!phone ? (
+            <div>
+              <button
+                type="button"
+                onClick={requestPhoneContact}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 5a2 2 0 012-2h2.586A2 2 0 019 3.586l1.707 1.707a2 2 0 01.586 1.414V7a2 2 0 012 2v6a2 2 0 01-2 2h-1.293a2 2 0 01-1.414-.586L8.586 15H7a2 2 0 01-2-2V7a2 2 0 012-2z"
-                />
-              </svg>
-              Номер телефона <span className="ml-1 text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => {
-                // Убираем всё, кроме '+' и цифр
-                let raw = e.target.value.replace(/[^\d+]/g, "");
-                // Гарантируем, что начинается с '+'
-                if (!raw.startsWith("+")) {
-                  raw = "+" + raw.replace(/\++/g, "");
-                }
-                // Форматируем через AsYouType
-                const formatted = new AsYouType().input(raw);
-                setPhone(formatted);
-              }}
-              placeholder="+7 701 925 0756"
-              className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
-            />
-          </div>
+                Получить номер из Telegram
+              </button>
+            </div>
+          ) : (
+            <div>
+              <label className="flex items-center text-sm font-medium text-gray-700">
+                Номер телефона <span className="ml-1 text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                disabled={true}
+                value={phone}
+                // onChange={(e) => {
+                //   // Убираем всё, кроме '+' и цифр
+                //   let raw = e.target.value.replace(/[^\d+]/g, "");
+                //   // Гарантируем, что начинается с '+'
+                //   if (!raw.startsWith("+")) {
+                //     raw = "+" + raw.replace(/\++/g, "");
+                //   }
+                //   // Форматируем через AsYouType
+                //   const formatted = new AsYouType().input(raw);
+                //   setPhone(formatted);
+                // }}
+                className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+              />
+            </div>
+          )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!canProceed}
-            className={`
-              w-full py-3 rounded-lg font-semibold text-white transition 
-              ${
-                canProceed
-                  ? "bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700"
-                  : "bg-gray-400 cursor-not-allowed"
+          {phone && (
+            <button
+              type="submit"
+              disabled={!canProceed}
+              className={`
+                      w-full py-3 rounded-lg font-semibold text-white transition 
+                      ${
+                        canProceed
+                          ? "bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }
+                    `}
+              onClick={() =>
+                bio === "@arman198701"
+                  ? navigate("/coach/main")
+                  : navigate("/main")
               }
-            `}
-            onClick={() =>
-              bio === "@arman198701"
-                ? navigate("/coach/main")
-                : navigate("/main")
-            }
-          >
-            Приступить
-          </button>
+            >
+              Приступить
+            </button>
+          )}
         </form>
       </div>
     </div>
