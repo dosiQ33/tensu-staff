@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, type FormEvent } from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
 import { useNavigate } from "react-router-dom";
+import OnboardingBgImg from "../../../assets/onboarding-bg.png";
 
 export default function OnboardingPage() {
   const { user, sendData } = useTelegram();
@@ -10,6 +11,15 @@ export default function OnboardingPage() {
   const [phone, setPhone] = useState("");
   const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Состояние для анимации: false → true через 1 секунду
+  const [showCard, setShowCard] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowCard(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Capture initData (raw) or fallback to initDataUnsafe, then save and display
   useEffect(() => {
@@ -59,83 +69,168 @@ export default function OnboardingPage() {
 
   if (user === null) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading…</p>
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-blue-600">
+        <p className="text-white text-lg animate-pulse">
+          Загружаем ваши данные…
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-center">
-          Welcome to the training tracker!
-        </h1>
-        <p className="text-sm text-gray-600 text-center">
-          Let’s get your profile set up.
-        </p>
+    <div className="min-h-screen relative flex items-center justify-center">
+      {/* Фоновое изображение */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${OnboardingBgImg})` }}
+        aria-hidden="true"
+      />
 
-        {/* Display token or fallback message */}
-        <p className="text-xs text-gray-500 text-center break-all">
-          {token ? `Token: ${token}` : "Token not available"}
-        </p>
+      {/* Main Card: условная анимация */}
+      <div
+        className={`
+          relative w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 space-y-6 z-10
+          transition-all duration-500
+          ${showCard ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        `}
+      >
+        {/* Sport Icon + Title */}
+        <div className="flex flex-col items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-12 w-12 text-indigo-600 mb-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 15V9M18 15V9M18 9h-2M8 9H6m12 6h2m-2 0h-2m-4 0h4m-4 0H8m4 0v-6"
+            />
+          </svg>
+          <h1 className="text-3xl font-extrabold text-gray-800 text-center">
+            Добро пожаловать!
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 text-center">
+            Ваш персональный трекер тренировок
+          </p>
+        </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        {/* Display token (optional) */}
+        <div>
+          <p className="text-xs text-gray-500 text-center break-all">
+            {token ? `Токен: ${token}` : "Токен недоступен"}
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={onSubmit} className="space-y-5">
           {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Full Name
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-indigo-500 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5.121 17.804A9.015 9.015 0 0112 15c2.21 0 4.21.896 5.879 2.354M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              Имя и Фамилия
             </label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Введите ваше имя"
+              className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
             />
           </div>
 
-          {/* Bio */}
+          {/* Bio / Username */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Username / Bio
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-indigo-500 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-3-6v6"
+                />
+              </svg>
+              Логин (Bio)
             </label>
             <input
               type="text"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Например, @username"
+              className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
             />
           </div>
 
           {/* Phone Number */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Phone Number <span className="text-red-500">*</span>
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-indigo-500 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 5a2 2 0 012-2h2.586A2 2 0 019 3.586l1.707 1.707a2 2 0 01.586 1.414V7a2 2 0 012 2v6a2 2 0 01-2 2h-1.293a2 2 0 01-1.414-.586L8.586 15H7a2 2 0 01-2-2V7a2 2 0 012-2z"
+                />
+              </svg>
+              Номер телефона <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              placeholder="+7 (___) ___-____"
               required
-              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={!canProceed}
-            className={`w-full py-3 rounded-lg text-white font-semibold transition ${
-              canProceed
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
+            className={`
+              w-full py-3 rounded-lg font-semibold text-white transition 
+              ${
+                canProceed
+                  ? "bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700"
+                  : "bg-gray-400 cursor-not-allowed"
+              }
+            `}
             onClick={() =>
               bio === "@arman198701"
                 ? navigate("/coach/main")
                 : navigate("/main")
             }
           >
-            Proceed
+            Приступить
           </button>
         </form>
       </div>
