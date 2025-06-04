@@ -182,7 +182,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          <button
+          {phone && <button
             type="submit"
             disabled={!canProceed}
             className={`
@@ -196,7 +196,7 @@ export default function OnboardingPage() {
             onClick={() => navigate("/coach/main")}
           >
             Приступить
-          </button>
+          </button>}
         </form>
       </div>
     </div>
