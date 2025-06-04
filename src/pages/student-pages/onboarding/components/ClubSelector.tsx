@@ -102,7 +102,7 @@ export default function ClubSelector({ onFinish }: ClubSelectorProps) {
                   </li>
                 ))
               ) : (
-                <li className="px-4 py-2 text-gray-500">Клубов не найдено</li>
+                <li className="px-4 py-2 text-gray-500">Клубы не найдены</li>
               )}
             </ul>
           </div>
