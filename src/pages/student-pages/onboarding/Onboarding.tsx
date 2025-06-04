@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
 import { AsYouType } from "libphonenumber-js";
 import OnboardingBgImg from "../../../assets/onboarding-bg.png";
+import { useNavigate } from "react-router-dom";
 
 export default function OnboardingPage() {
+  const navigate = useNavigate();
   const { user, sendData } = useTelegram();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -106,12 +108,22 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleNext = () =>
+  const handleNext = () => {
     sendData({
       fullName,
       phone,
       avatar,
     });
+
+    localStorage.setItem(
+      "telegramFullName",
+      JSON.stringify(fullName)
+    );
+    
+    navigate("/main");
+    
+  }
+
 
   if (user === null) {
     return (
