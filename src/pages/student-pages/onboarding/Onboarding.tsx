@@ -1,21 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {
-  useState,
-  useEffect,
-  useCallback,
-  type FormEvent,
-} from "react";
+import { useState, useEffect } from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
 import { AsYouType } from "libphonenumber-js";
 import OnboardingBgImg from "../../../assets/onboarding-bg.png";
-import ClubSelector from "./components/ClubSelector";
 
 export default function OnboardingPage() {
   const { user, sendData } = useTelegram();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
+  const step = 1;
 
   // Telegram WebApp instance
   const [tg, setTg] = useState<unknown>(null);
@@ -54,25 +50,42 @@ export default function OnboardingPage() {
     }
   }, []);
 
-  // Когда user появляется, заполняем fullName и phone (если есть)
+  // Когда user появляется, заполняем fullName, phone и avatar (если есть)
   useEffect(() => {
     if (!user) return;
-    setFullName(
-      [user.first_name, user.last_name].filter(Boolean).join(" ")
-    );
+
+    const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
+    setFullName(name);
+
+    const photoUrl = (user as any).photo_url as string | undefined;
+    setAvatar(photoUrl);
+
+    let formattedPhone = "";
     if ((user as any).phone_number) {
       const digits = (user as any).phone_number.replace(/\D/g, "");
-      const formatted = new AsYouType().input("+" + digits);
-      setPhone(formatted);
+      formattedPhone = new AsYouType().input("+" + digits);
+      setPhone(formattedPhone);
+    }
+
+    // —> СОХРАНЯЕМ всё, что получили от Telegram, в localStorage:
+    try {
+      localStorage.setItem("telegramUser", JSON.stringify(user));
+      localStorage.setItem(
+        "telegramFullName",
+        JSON.stringify(name)
+      );
+      localStorage.setItem(
+        "telegramPhone",
+        JSON.stringify(formattedPhone)
+      );
+      localStorage.setItem("telegramAvatar", JSON.stringify(photoUrl));
+    } catch (e) {
+      console.warn("Не удалось сохранить Telegram данные в localStorage:", e);
     }
   }, [user]);
 
-  // Шаг: 1 или 2. Сначала показываем форму, потом — выбор клубов.
-  const [step, setStep] = useState<1 | 2>(1);
-
   // canProceedStep1: fullName + phone заполнены
-  const canProceedStep1 =
-    fullName.trim().length > 0 && phone.trim().length > 0;
+  const canProceedStep1 = fullName.trim().length > 0 && phone.trim().length > 0;
 
   // Запросить телефон через Telegram
   const requestPhoneContact = () => {
@@ -81,35 +94,25 @@ export default function OnboardingPage() {
     // @ts-ignore
     if (typeof (tg as any).requestContact === "function") {
       // @ts-ignore
-      (tg as any).requestContact(
-        (granted: boolean, contactData: any) => {
-          if (
-            granted &&
-            contactData?.responseUnsafe?.contact?.phone_number
-          ) {
-            const rawNumber =
-              contactData.responseUnsafe.contact.phone_number;
-            const formatted = new AsYouType().input(rawNumber);
-            setPhone(formatted);
-          }
+      (tg as any).requestContact((granted: boolean, contactData: any) => {
+        if (granted && contactData?.responseUnsafe?.contact?.phone_number) {
+          const rawNumber = contactData.responseUnsafe.contact.phone_number;
+          const formatted = new AsYouType().input(rawNumber);
+          setPhone(formatted);
         }
-      );
+      });
     } else {
       console.warn("Метод requestContact недоступен");
     }
   };
 
-  // Обработчик «Далее» — переводим на шаг 2
-  const handleNext = useCallback(
-    (e: FormEvent) => {
-      e.preventDefault();
-      if (!canProceedStep1 || !user) return;
-      setStep(2);
-    },
-    [canProceedStep1, user]
-  );
+  const handleNext = () =>
+    sendData({
+      fullName,
+      phone,
+      avatar,
+    });
 
-  // Если пользователь не загружен — показываем прелоадер
   if (user === null) {
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-blue-600">
@@ -119,16 +122,6 @@ export default function OnboardingPage() {
       </div>
     );
   }
-
-  // Когда ClubSelector отдаёт нам массив выбранных клубов — шлём всё сразу
-  const handleClubFinish = (selectedClubs: string[]) => {
-    // Здесь отправляем массив клубов вместе с именем и телефоном:
-    sendData({
-      fullName,
-      phone,
-      clubs: selectedClubs,
-    });
-  };
 
   return (
     <div className="min-h-screen relative flex items-center justify-center">
@@ -231,18 +224,9 @@ export default function OnboardingPage() {
                 )}
               </form>
             </div>
-
-            {/* ── Карточка 2 (шаг 2) с ClubSelector ── */}
-            <div className="flex-shrink-0 w-full">
-              {/* Просто рендерим наш компонент выбора клуба */}
-              <ClubSelector onFinish={handleClubFinish} />
-            </div>
           </div>
-          {/* ── конец flex-контейнера карточек ── */}
         </div>
-        {/* ── конец overflow-hidden ── */}
       </div>
-      {/* ── конец внешнего блока с fade-in ── */}
     </div>
   );
 }

@@ -24,6 +24,7 @@ import {
   User,
   ChevronDown,
   ChevronUp,
+  DeleteIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -800,6 +801,23 @@ const ProfilePage: React.FC = () => {
               </div>
             </div>
 
+            {/* Delete */}
+            <div className="bg-white rounded-2xl border border-gray-200">
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                    <DeleteIcon className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Покинуть клуб</div>
+                    <div className="text-sm text-gray-600">
+                      Finish membership
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Support & Legal */}
             <div className="bg-white rounded-2xl border border-gray-200">
               <button className="w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors">
@@ -917,7 +935,7 @@ const ProfilePage: React.FC = () => {
           </div>
         )}
       </div>
-      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-14 z-10 w-full">
+      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
         <button
           className="flex flex-col items-center text-gray-400"
           onClick={() => navigate("/main")}

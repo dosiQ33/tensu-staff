@@ -1,13 +1,12 @@
 // src/components/MainPage2.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../../../components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { Home, BarChart2, Calendar, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// Training data
 type Training = {
-  icon: string; // swap for your SVG/Icon components if needed
+  icon: string;
   title: string;
   subtitle?: string;
   time: string;
@@ -21,19 +20,63 @@ const trainings: Training[] = [
 
 const MainPage2: React.FC = () => {
   const navigate = useNavigate();
-  const notificationCount = 3; 
+  const notificationCount = 3;
+
+  // 1. Состояния для хранения имени и URL аватара
+  const [storedName, setStoredName] = useState<string>("Madi"); // дефолт
+  const [storedAvatar, setStoredAvatar] = useState<string | null>(null);
+
+  // 2. При монтировании читаем из localStorage
+  useEffect(() => {
+    try {
+      const nameJson = localStorage.getItem("telegramFullName");
+      const avatarJson = localStorage.getItem("telegramAvatar");
+
+      if (nameJson) {
+        setStoredName(JSON.parse(nameJson));
+      }
+      if (avatarJson) {
+        setStoredAvatar(JSON.parse(avatarJson));
+      }
+    } catch (e) {
+      console.warn("Не удалось прочитать из localStorage:", e);
+    }
+  }, []);
+
+  // 3. Функция, возвращающая либо буквы, либо картинку аватара
+  const renderAvatar = () => {
+    if (storedAvatar) {
+      return (
+        <img
+          src={storedAvatar}
+          alt="Avatar"
+          className="w-10 h-10 rounded-full object-cover"
+        />
+      );
+    }
+    // если аватар не пришёл, покажем инициалы
+    const initials = storedName
+      .split(" ")
+      .map((w) => w.charAt(0))
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+    return (
+      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
+        {initials}
+      </div>
+    );
+  };
 
   return (
     <>
-      <div className="max-w-md mx-auto pt-4 pb-30 px-4 bg-gray-50 min-h-screen">
+      <div className="max-w-md mx-auto pt-4 pb-30 px-4 bg-gray-100 min-h-screen">
         {/* Header */}
         <header className="flex items-center justify-between h-14 mb-6">
           <h1 className="text-xl font-semibold text-gray-900">
-            Welcome back, Madi
+            Welcome back, {storedName}
           </h1>
-          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
-            MA
-          </div>
+          {renderAvatar()}
         </header>
 
         {/* Today’s Class Card */}
@@ -60,7 +103,7 @@ const MainPage2: React.FC = () => {
               key={i}
               className="relative bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between"
             >
-              <div className="flex items-center" onClick={()=>navigate("/club-page")}>
+              <div className="flex items-center" onClick={() => navigate("/club-page")}>
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-lg mr-3">
                   {t.icon}
                 </div>
@@ -76,9 +119,7 @@ const MainPage2: React.FC = () => {
                 <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
                   {t.time}
                 </span>
-                <button
-                  onClick={() => console.log("Clicked training", trainings[i])}
-                >
+                <button onClick={() => console.log("Clicked training", trainings[i])}>
                   <ChevronRight className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                 </button>
               </div>
@@ -152,7 +193,8 @@ const MainPage2: React.FC = () => {
           </div>
         </div>
       </div>
-      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-14 z-10 w-full">
+
+      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
         <button
           className="flex flex-col items-center text-blue-600"
           onClick={() => navigate("/main")}
@@ -182,7 +224,6 @@ const MainPage2: React.FC = () => {
           onClick={() => navigate("/profile")}
         >
           <User size={20} />
-          {/* Notification badge */}
           {notificationCount > 0 && (
             <span className="absolute -top-1 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
               {notificationCount}
