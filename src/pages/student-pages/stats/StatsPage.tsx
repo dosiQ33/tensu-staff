@@ -41,7 +41,7 @@ const StatsPage: React.FC = () => {
 
   return (
     <>
-      <div className="px-6 py-8 pb-20">
+      <div className="px-6 py-8 bg-gray-100 pb-[70%]">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
           Your Statistics
         </h2>
@@ -119,7 +119,7 @@ const StatsPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
+      <nav className="h-20 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
         <button
           className="flex flex-col items-center text-gray-400"
           onClick={() => navigate("/main")}

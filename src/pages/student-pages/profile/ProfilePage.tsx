@@ -288,7 +288,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 pb-30">
+      <div className="min-h-screen bg-gray-100 pb-30">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-4 py-4">
@@ -935,7 +935,7 @@ const ProfilePage: React.FC = () => {
           </div>
         )}
       </div>
-      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
+      <nav className="h-20 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
         <button
           className="flex flex-col items-center text-gray-400"
           onClick={() => navigate("/main")}
