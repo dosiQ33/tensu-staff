@@ -68,7 +68,7 @@ export default function OnboardingPage() {
   }, [user]);
 
   // Шаг: 1 или 2. Сначала показываем форму, потом — выбор клубов.
-  const [step, setStep] = useState<1 | 2>(2);
+  const [step, setStep] = useState<1 | 2>(1);
 
   // canProceedStep1: fullName + phone заполнены
   const canProceedStep1 =
