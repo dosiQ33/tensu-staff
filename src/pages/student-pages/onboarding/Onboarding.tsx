@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useState, useEffect, useCallback, type FormEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  type FormEvent,
+} from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
 import { AsYouType } from "libphonenumber-js";
 import OnboardingBgImg from "../../../assets/onboarding-bg.png";
+import ClubSelector from "./components/ClubSelector";
 
 export default function OnboardingPage() {
   const { user, sendData } = useTelegram();
@@ -14,7 +20,7 @@ export default function OnboardingPage() {
   // Telegram WebApp instance
   const [tg, setTg] = useState<unknown>(null);
 
-  // Плавный fade-in + slide-up всей области с карточками
+  // fade-in + slide-up для обёртки карточек
   const [showCard, setShowCard] = useState(false);
   useEffect(() => {
     const timer = setTimeout(() => setShowCard(true), 1000);
@@ -29,7 +35,7 @@ export default function OnboardingPage() {
       (telegramApp as any).expand();
       setTg(telegramApp);
 
-      // Собираем initData (raw или unsafe)
+      // Читаем initData (raw или initDataUnsafe)
       // @ts-ignore
       const rawInitData: string | undefined = (telegramApp as any).initData;
       let initDataString = "";
@@ -48,10 +54,12 @@ export default function OnboardingPage() {
     }
   }, []);
 
-  // Заполняем fullName и phone, если данные пользователя уже есть
+  // Когда user появляется, заполняем fullName и phone (если есть)
   useEffect(() => {
     if (!user) return;
-    setFullName([user.first_name, user.last_name].filter(Boolean).join(" "));
+    setFullName(
+      [user.first_name, user.last_name].filter(Boolean).join(" ")
+    );
     if ((user as any).phone_number) {
       const digits = (user as any).phone_number.replace(/\D/g, "");
       const formatted = new AsYouType().input("+" + digits);
@@ -59,16 +67,12 @@ export default function OnboardingPage() {
     }
   }, [user]);
 
-  // Номер текущего шага: 1 — первая карточка, 2 — вторая
-  const [step, setStep] = useState<1 | 2>(1);
+  // Шаг: 1 или 2. Сначала показываем форму, потом — выбор клубов.
+  const [step, setStep] = useState<1 | 2>(2);
 
-  // Роль для шага 2
-  const [role, setRole] = useState<"coach" | "student" | "">("");
-
-  // Условие для кнопки «Далее» (шаг 1)
-  const canProceedStep1 = fullName.trim().length > 0 && phone.trim().length > 0;
-  // Условие для кнопки «приступить» (шаг 2)
-  const canProceedStep2 = role !== "";
+  // canProceedStep1: fullName + phone заполнены
+  const canProceedStep1 =
+    fullName.trim().length > 0 && phone.trim().length > 0;
 
   // Запросить телефон через Telegram
   const requestPhoneContact = () => {
@@ -77,19 +81,25 @@ export default function OnboardingPage() {
     // @ts-ignore
     if (typeof (tg as any).requestContact === "function") {
       // @ts-ignore
-      (tg as any).requestContact((granted: boolean, contactData: any) => {
-        if (granted && contactData?.responseUnsafe?.contact?.phone_number) {
-          const rawNumber = contactData.responseUnsafe.contact.phone_number;
-          const formatted = new AsYouType().input(rawNumber);
-          setPhone(formatted);
+      (tg as any).requestContact(
+        (granted: boolean, contactData: any) => {
+          if (
+            granted &&
+            contactData?.responseUnsafe?.contact?.phone_number
+          ) {
+            const rawNumber =
+              contactData.responseUnsafe.contact.phone_number;
+            const formatted = new AsYouType().input(rawNumber);
+            setPhone(formatted);
+          }
         }
-      });
+      );
     } else {
       console.warn("Метод requestContact недоступен");
     }
   };
 
-  // Обработчик «Далее» — просто переводим на шаг 2
+  // Обработчик «Далее» — переводим на шаг 2
   const handleNext = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
@@ -99,17 +109,7 @@ export default function OnboardingPage() {
     [canProceedStep1, user]
   );
 
-  // Обработчик «приступить» — отправляем все данные (fullName, phone, role)
-  const handleFinish = useCallback(
-    (e: FormEvent) => {
-      e.preventDefault();
-      if (!canProceedStep2 || !user) return;
-      sendData({ fullName, phone, role });
-    },
-    [canProceedStep2, fullName, phone, role, sendData, user]
-  );
-
-  // Пока user === null, показываем «Загружаем ваши данные…»
+  // Если пользователь не загружен — показываем прелоадер
   if (user === null) {
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-blue-600">
@@ -120,32 +120,42 @@ export default function OnboardingPage() {
     );
   }
 
+  // Когда ClubSelector отдаёт нам массив выбранных клубов — шлём всё сразу
+  const handleClubFinish = (selectedClubs: string[]) => {
+    // Здесь отправляем массив клубов вместе с именем и телефоном:
+    sendData({
+      fullName,
+      phone,
+      clubs: selectedClubs,
+    });
+  };
+
   return (
     <div className="min-h-screen relative flex items-center justify-center">
-      {/* Бэкграунд */}
+      {/* Фоновое изображение */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${OnboardingBgImg})` }}
         aria-hidden="true"
       />
 
-      {/* Внешний контейнер карточек с плавным появлением */}
+      {/* Обёртка для появления (fade + slide) */}
       <div
         className={`
           relative w-[95%] max-w-md z-10 transition-all duration-800
           ${showCard ? "opacity-95 translate-y-0" : "opacity-0 translate-y-10"}
         `}
       >
-        {/* ВНЕШНИЙ «VIEWPORT» для двух карточек (фиксированная ширина, overflow-hidden) */}
+        {/* «Viewport» с overflow-hidden */}
         <div className="overflow-hidden w-full">
-          {/* FLEX-контейнер, где две карточки отрисованы рядом */}
+          {/* flex-контейнер: 2 карточки рядом, по ширине экрана */}
           <div
             className={`
               flex transition-transform duration-500 ease-in-out
               ${step === 1 ? "translate-x-0" : "-translate-x-full"}
             `}
           >
-            {/* ── КАРТОЧКА 1 (шаг 1) ── */}
+            {/* ── Карточка 1 (шаг 1) ── */}
             <div className="flex-shrink-0 w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6">
               <div className="flex flex-col items-center">
                 <h1 className="text-[28px] font-extrabold text-gray-800 text-center leading-snug">
@@ -180,7 +190,7 @@ export default function OnboardingPage() {
                   />
                 </div>
 
-                {/* Кнопка запроса телефона, если его ещё нет */}
+                {/* Кнопка запроса телефона */}
                 {!phone ? (
                   <div>
                     <button
@@ -202,7 +212,7 @@ export default function OnboardingPage() {
                   </div>
                 )}
 
-                {/* Кнопка «Далее» (активна, когда fullName + phone заполнены) */}
+                {/* Кнопка «Далее» */}
                 {phone && (
                   <button
                     type="submit"
@@ -222,73 +232,17 @@ export default function OnboardingPage() {
               </form>
             </div>
 
-            {/* ── КАРТОЧКА 2 (шаг 2) ── */}
-            <div className="flex-shrink-0 w-full m-auto bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6 h-max">
-              <div className="flex flex-col items-center">
-                <h1 className="text-[28px] leading-snug font-extrabold text-gray-800">
-                  Кто вы в нашем приложении?
-                </h1>
-                <p className="mt-1 text-[20px] text-gray-600 leading-snug">
-                  Это поможет нам настроить всё под вас
-                </p>
-              </div>
-
-              {/* Форма выбора роли (шаг 2) */}
-              <form onSubmit={handleFinish} className="space-y-5">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setRole("coach")}
-                      className={`
-                        w-full py-3 rounded-[40px] font-semibold transition border
-                        ${
-                          role === "coach"
-                            ? "border-blue-600 text-blue-600 bg-white"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400"
-                        }
-                      `}
-                    >
-                      Тренер
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setRole("student")}
-                      className={`
-                        w-full py-3 rounded-[40px] font-semibold transition border
-                        ${
-                          role === "student"
-                            ? "border-blue-600 text-blue-600 bg-white"
-                            : "border-gray-300 text-gray-700 hover:border-gray-400"
-                        }
-                      `}
-                    >
-                      Студент
-                    </button>
-                  </div>
-                </div>
-
-                {/* Кнопка «приступить» (активна, когда роль выбрана) */}
-                <button
-                  type="submit"
-                  disabled={!canProceedStep2}
-                  className={`
-                    w-full py-3 rounded-[40px] font-semibold text-white transition
-                    ${
-                      canProceedStep2
-                        ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700"
-                        : "bg-gray-500 cursor-not-allowed"
-                    }
-                  `}
-                >
-                  Приступить
-                </button>
-              </form>
+            {/* ── Карточка 2 (шаг 2) с ClubSelector ── */}
+            <div className="flex-shrink-0 w-full">
+              {/* Просто рендерим наш компонент выбора клуба */}
+              <ClubSelector onFinish={handleClubFinish} />
             </div>
           </div>
+          {/* ── конец flex-контейнера карточек ── */}
         </div>
+        {/* ── конец overflow-hidden ── */}
       </div>
+      {/* ── конец внешнего блока с fade-in ── */}
     </div>
   );
 }
