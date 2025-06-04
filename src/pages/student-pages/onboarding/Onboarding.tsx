@@ -30,7 +30,6 @@ export default function OnboardingPage() {
     if (window.Telegram?.WebApp) {
       const telegramApp = window.Telegram.WebApp;
       telegramApp.ready();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (telegramApp as any).expand();
       setTg(telegramApp);
 
@@ -69,7 +68,7 @@ export default function OnboardingPage() {
     }
   }, [user]);
 
-  const canProceed = phone.trim().length > 0;
+  const canProceed = phone.trim().length > 0 && fullName.trim().length > 0;
 
   // Запрос контактных данных у Telegram
   const requestPhoneContact = () => {
@@ -122,15 +121,20 @@ export default function OnboardingPage() {
       {/* Main Card: условная анимация */}
       <div
         className={`relative w-[95%] max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6 z-10
-                    transition-all duration-500 ${showCard ? "opacity-95 translate-y-0" : "opacity-0 translate-y-10"}`}
->
+                    transition-all duration-800 ${
+                      showCard
+                        ? "opacity-95 translate-y-0"
+                        : "opacity-0 translate-y-10"
+                    }`}
+      >
         {/* Sport Icon + Title */}
         <div className="flex flex-col items-center">
           <h1 className="text-3xl font-extrabold text-gray-800 text-center">
             Добро пожаловать!
           </h1>
           <p className="mt-1 text-sm text-gray-600 text-center">
-            Пожалуйста разрешите доступ к вашему номеру телефона, чтобы продолжить
+            Пожалуйста разрешите доступ к вашему номеру телефона, чтобы
+            продолжить
           </p>
         </div>
 
@@ -152,8 +156,8 @@ export default function OnboardingPage() {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Введите ваше имя"
-              className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+              placeholder="Введите ваше полное имя"
+              className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-400"
             />
           </div>
 
@@ -162,7 +166,7 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={requestPhoneContact}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-[40px] transition-colors duration-200"
               >
                 Получить номер из Telegram
               </button>
@@ -170,34 +174,29 @@ export default function OnboardingPage() {
           ) : (
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700">
-                Номер телефона <span className="ml-1 text-red-500">*</span>
+                Ваш номер <span className="ml-1 text-red-500">*</span>
               </label>
-              <input
-                type="tel"
-                disabled={true}
-                value={"+" + phone}
-                className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
-              />
+              <div className="w-full px-4 py-3 border border-gray-300 rounded-lg font-bold text-gray-800">
+                {"+" + phone}
+              </div>
             </div>
           )}
 
-          {phone && (
-            <button
-              type="submit"
-              disabled={!canProceed}
-              className={`
-                      w-full py-3 rounded-lg font-semibold text-white transition 
-                      ${
-                        canProceed
-                          ? "bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700"
-                          : "bg-gray-400 cursor-not-allowed"
-                      }
-                    `}
-              onClick={() => navigate("/coach/main")}
-            >
-              Приступить
-            </button>
-          )}
+          <button
+            type="submit"
+            disabled={!canProceed}
+            className={`
+                    w-full py-3 rounded-[40px] font-semibold text-white transition 
+                    ${
+                      canProceed
+                        ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700"
+                        : "bg-gray-500 cursor-not-allowed"
+                    }
+                  `}
+            onClick={() => navigate("/coach/main")}
+          >
+            Приступить
+          </button>
         </form>
       </div>
     </div>
