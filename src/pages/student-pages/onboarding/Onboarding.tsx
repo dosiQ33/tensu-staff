@@ -108,20 +108,11 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleNext = () => {
-    sendData({
-      fullName,
-      phone,
-      avatar,
-    });
-
-    localStorage.setItem(
-      "telegramFullName",
-      JSON.stringify(fullName)
-    );
-    
+  const handleNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendData({ fullName, phone, avatar });
+    localStorage.setItem("telegramFullName", JSON.stringify(fullName));
     navigate("/main");
-    
   }
 
 
