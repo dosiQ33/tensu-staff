@@ -112,7 +112,7 @@ export default function OnboardingPage() {
     e.preventDefault();
     sendData({ fullName, phone, avatar });
     localStorage.setItem("telegramFullName", JSON.stringify(fullName));
-    navigate("/main");
+    navigate("/coach/main");
   }
 
 
