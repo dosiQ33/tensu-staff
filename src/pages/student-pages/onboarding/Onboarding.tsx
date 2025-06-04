@@ -223,7 +223,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* ── КАРТОЧКА 2 (шаг 2) ── */}
-            <div className="flex-shrink-0 w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6 h-max">
+            <div className="flex-shrink-0 w-full m-auto bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6 h-max">
               <div className="flex flex-col items-center">
                 <h1 className="text-[28px] leading-snug font-extrabold text-gray-800">
                   Кто вы в нашем приложении?

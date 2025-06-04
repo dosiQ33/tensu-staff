@@ -41,7 +41,7 @@ const MainPage2: React.FC = () => {
           <div className="w-1 bg-lime-300"></div>
           <div className="pl-4 flex-1">
             <p className="text-base text-gray-800 mb-1">
-              Please checkout for today’s class
+              Check-in for other class
             </p>
             <p className="text-sm text-gray-600">20:00–21:00</p>
           </div>
