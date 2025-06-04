@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 
 interface ClubSelectorProps {
   /** Функция, которая получит массив выбранных клубов при сабмите */
