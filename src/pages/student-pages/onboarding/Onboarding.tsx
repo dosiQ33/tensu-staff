@@ -13,7 +13,7 @@ export default function OnboardingPage() {
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
-  const [contactData, setContactData] = useState<any | null>(null);
+  const [contactData, setContactData] = useState<string | null>(null);
   const step = 1;
 
   // Telegram WebApp instance
@@ -98,7 +98,7 @@ export default function OnboardingPage() {
     if (typeof (tg as any).requestContact === "function") {
       // @ts-ignore
       (tg as any).requestContact((granted: boolean, contactData: any) => {
-        setContactData(contactData);
+        setContactData(JSON.stringify(contactData.response));
         if (granted && contactData?.responseUnsafe?.contact?.phone_number) {
           const rawNumber = contactData.responseUnsafe.contact.phone_number;
           const formatted = new AsYouType().input(rawNumber);
