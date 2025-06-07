@@ -13,6 +13,7 @@ export default function OnboardingPage() {
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
+  const [contactData, setContactData] = useState<any | null>(null);
   const step = 1;
 
   // Telegram WebApp instance
@@ -97,6 +98,7 @@ export default function OnboardingPage() {
     if (typeof (tg as any).requestContact === "function") {
       // @ts-ignore
       (tg as any).requestContact((granted: boolean, contactData: any) => {
+        setContactData(contactData);
         if (granted && contactData?.responseUnsafe?.contact?.phone_number) {
           const rawNumber = contactData.responseUnsafe.contact.phone_number;
           const formatted = new AsYouType().input(rawNumber);
@@ -167,6 +169,12 @@ export default function OnboardingPage() {
               <div>
                 <p className="text-xs text-gray-500 text-center break-all">
                   {token ? `Токен: ${token}` : "Токен недоступен"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500 text-center break-all">
+                  {token ? `Contact  data: ${contactData}` : "Токен недоступен"}
                 </p>
               </div>
 
