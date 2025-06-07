@@ -99,7 +99,7 @@ export default function OnboardingPage() {
       // @ts-ignore
       (tg as any).requestContact((granted: boolean, result: any) => {
         console.log("Telegram contact callback:", result);
-        setContactData(result.contact);
+        setContactData(result);
         if (granted && result?.responseUnsafe?.contact?.phone_number) {
           const rawNumber = result.responseUnsafe.contact.phone_number;
           setPhone(new AsYouType().input(rawNumber));
@@ -172,15 +172,19 @@ export default function OnboardingPage() {
                 </p>
               </div>
 
-              <div>
-              {contactData ? (
-                <pre className="text-xs text-gray-500 text-center break-all">
-                  {JSON.stringify(contactData, null, 2)}
-                </pre>
-              ) : (
-                <p className="text-xs text-gray-500 text-center">Данные контакта ещё не получены</p>
-              )}
+              <div className="w-full overflow-x-auto">
+                {contactData?.response ? (
+                  <pre className="text-xs text-gray-500 whitespace-pre-wrap break-words">
+                    {contactData.response}
+                  </pre>
+                ) : (
+                  <p className="text-xs text-gray-500 text-center">
+                    Данные контакта ещё не получены
+                  </p>
+                )}
               </div>
+
+
 
               {/* Форма шага 1 */}
               <form onSubmit={handleNext} className="space-y-5">
