@@ -99,7 +99,7 @@ export default function OnboardingPage() {
       // @ts-ignore
       (tg as any).requestContact((granted: boolean, result: any) => {
         console.log("Telegram contact callback:", result);
-        setContactData(result);
+        setContactData(result.contact);
         if (granted && result?.responseUnsafe?.contact?.phone_number) {
           const rawNumber = result.responseUnsafe.contact.phone_number;
           setPhone(new AsYouType().input(rawNumber));

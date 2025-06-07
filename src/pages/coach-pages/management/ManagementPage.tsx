@@ -975,7 +975,7 @@ const ManagementPage: React.FC = () => {
           </div>
         )}
       </div>
-      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-14 z-10 w-full">
+      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
         <button
           className="flex flex-col items-center text-gray-400"
           onClick={() => navigate("/coach/main")}
