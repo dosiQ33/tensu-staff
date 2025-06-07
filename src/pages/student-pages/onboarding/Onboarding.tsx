@@ -13,7 +13,7 @@ export default function OnboardingPage() {
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
-  const [contactData, setContactData] = useState<string | null>(null);
+  const [contactData, setContactData] = useState<any>(null);
   const step = 1;
 
   // Telegram WebApp instance
@@ -97,18 +97,18 @@ export default function OnboardingPage() {
     // @ts-ignore
     if (typeof (tg as any).requestContact === "function") {
       // @ts-ignore
-      (tg as any).requestContact((granted: boolean, contactData: any) => {
-        setContactData(JSON.stringify(contactData.response));
-        if (granted && contactData?.responseUnsafe?.contact?.phone_number) {
-          const rawNumber = contactData.responseUnsafe.contact.phone_number;
-          const formatted = new AsYouType().input(rawNumber);
-          setPhone(formatted);
+      (tg as any).requestContact((granted: boolean, result: any) => {
+        console.log("Telegram contact callback:", result);
+        setContactData(result);
+        if (granted && result?.responseUnsafe?.contact?.phone_number) {
+          const rawNumber = result.responseUnsafe.contact.phone_number;
+          setPhone(new AsYouType().input(rawNumber));
         }
       });
     } else {
       console.warn("Метод requestContact недоступен");
     }
-  };
+  };  
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,9 +173,13 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <p className="text-xs text-gray-500 text-center break-all">
-                  {token ? `Contact  data: ${contactData}` : "Токен недоступен"}
-                </p>
+              {contactData ? (
+                <pre className="text-xs text-gray-500 text-center break-all">
+                  {JSON.stringify(contactData, null, 2)}
+                </pre>
+              ) : (
+                <p className="text-xs text-gray-500 text-center">Данные контакта ещё не получены</p>
+              )}
               </div>
 
               {/* Форма шага 1 */}
