@@ -11,16 +11,16 @@ import ClubPage from "./pages/student-pages/main/ClubPage";
 import StatsPage from "./pages/student-pages/stats/StatsPage";
 import TrainingsPage from "./pages/student-pages/trainings/TrainingsPage";
 import ProfilePage from "./pages/student-pages/profile/ProfilePage";
-import CoachMainPage from "./pages/coach-pages/main/CoachMainPage";
 import StudentsPage from "./pages/coach-pages/students/StudentsPage";
 import ManagementPage from "./pages/coach-pages/management/ManagementPage";
 import CoachProfile from "./pages/coach-pages/profile/CoachProfile";
+import CoachMainPage2 from "./pages/coach-pages/main/CoachMainPage2";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/coach/main" element={<CoachMainPage />} />
+        <Route path="/coach/main" element={<CoachMainPage2 />} />
         <Route path="/coach/students" element={<StudentsPage />} />
         <Route path="/coach/management" element={<ManagementPage />} />
         <Route path="/coach/profile" element={<CoachProfile />} />

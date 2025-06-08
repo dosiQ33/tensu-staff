@@ -184,23 +184,8 @@ export default function OnboardingPage() {
                 )}
               </div>
 
-
-
               {/* Форма шага 1 */}
               <form onSubmit={handleNext} className="space-y-5">
-                {/* Поле Full Name */}
-                <div>
-                  <label className="flex items-center text-sm font-bold text-gray-700">
-                    Имя и Фамилия <span className="ml-1 text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Введите ваше полное имя"
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-400"
-                  />
-                </div>
 
                 {/* Кнопка запроса телефона */}
                 {!phone ? (

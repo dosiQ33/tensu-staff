@@ -981,28 +981,28 @@ const ManagementPage: React.FC = () => {
           onClick={() => navigate("/coach/main")}
         >
           <Home size={20} />
-          <span className="text-xs">Home</span>
+          <span className="text-xs">Главная</span>
         </button>
         <button
           className="flex flex-col items-center text-gray-400"
           onClick={() => navigate("/coach/students")}
         >
           <Users size={20} />
-          <span className="text-xs">My students</span>
+          <span className="text-xs">Мои студенты</span>
         </button>
         <button
           className="flex flex-col items-center text-blue-600"
           onClick={() => navigate("/coach/management")}
         >
           <BarChart2 size={20} />
-          <span className="text-xs">Management</span>
+          <span className="text-xs">Управление</span>
         </button>
         <button
           className="flex flex-col items-center text-gray-400"
           onClick={() => navigate("/coach/profile")}
         >
           <User size={20} />
-          <span className="text-xs">Profile</span>
+          <span className="text-xs">Профиль</span>
         </button>
       </nav>
     </>
