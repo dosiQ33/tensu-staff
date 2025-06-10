@@ -84,6 +84,9 @@ export default function OnboardingPage() {
           },
           body: JSON.stringify({
             contact_init_data: contactData.response,
+            preferences: {
+              additionalProp1: {}
+            }
           }),
         });
         if (!resp.ok) {
