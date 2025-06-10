@@ -80,7 +80,6 @@ export default function OnboardingPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // авторизация: Bearer + токен из state
             "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -89,6 +88,7 @@ export default function OnboardingPage() {
         });
         if (!resp.ok) {
           console.error("Ошибка отправки contact data:", resp.statusText);
+          navigate("/coach/main");
         } else {
           // можно прочитать ответ, если нужно:
           // const data = await resp.json();
@@ -96,10 +96,7 @@ export default function OnboardingPage() {
       } catch (err) {
         console.error("Fetch error:", err);
       } finally {
-        // отправляем также в Telegram (если нужно)
         sendData({ fullName, phone, avatar });
-        // сразу переходим на главную
-        navigate("/coach/main");
       }
     };
     postAndNavigate();
