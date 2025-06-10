@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 
 export type TelegramUser = {
+  photo_url(photo_url: unknown): unknown;
   id: number;
   is_bot: boolean;
   first_name: string;
@@ -14,6 +15,8 @@ declare global {
   interface Window {
     Telegram?: {
       WebApp: {
+        expand(): unknown;
+        initData: string;
         initDataUnsafe: { user: TelegramUser };
         ready: () => void;
         sendData: (data: string) => void;

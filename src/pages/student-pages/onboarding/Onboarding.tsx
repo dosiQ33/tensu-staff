@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useState, useEffect } from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
 import { AsYouType } from "libphonenumber-js";
@@ -11,112 +10,100 @@ export default function OnboardingPage() {
   const { user, sendData } = useTelegram();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [avatar, setAvatar] = useState<string | undefined>(undefined);
+  const [avatar, setAvatar] = useState<string | unknown | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
   const [contactData, setContactData] = useState<any>(null);
-  const step = 1;
-
-  // Telegram WebApp instance
-  const [tg, setTg] = useState<unknown>(null);
-
-  // fade-in + slide-up для обёртки карточек
+  const [tg, setTg] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
+
+  // плавно показываем карточку
   useEffect(() => {
     const timer = setTimeout(() => setShowCard(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Инициализация Telegram WebApp и получение initData
+  // инициализация Telegram WebApp
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       const telegramApp = window.Telegram.WebApp;
       telegramApp.ready();
-      (telegramApp as any).expand();
+      telegramApp.expand();
       setTg(telegramApp);
 
-      // Читаем initData (raw или initDataUnsafe)
-      // @ts-ignore
-      const rawInitData: string | undefined = (telegramApp as any).initData;
-      let initDataString = "";
-      if (rawInitData) {
-        initDataString = rawInitData;
-      } else if ((telegramApp as any).initDataUnsafe) {
-        // @ts-ignore
-        initDataString = JSON.stringify((telegramApp as any).initDataUnsafe);
-      }
-      if (initDataString) {
-        setToken(initDataString);
-        localStorage.setItem("telegramInitData", initDataString);
-      }
+      const rawInitData = telegramApp.initData || JSON.stringify(telegramApp.initDataUnsafe || {});
+      setToken(rawInitData);
+      localStorage.setItem("telegramInitData", rawInitData);
     } else {
       console.error("Telegram WebApp SDK not found");
     }
   }, []);
 
-  // Когда user появляется, заполняем fullName, phone и avatar (если есть)
+  // Когда появляется user, заполняем поля
   useEffect(() => {
     if (!user) return;
-
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
     setFullName(name);
+    setAvatar(user.photo_url);
 
-    const photoUrl = (user as any).photo_url as string | undefined;
-    setAvatar(photoUrl);
-
-    let formattedPhone = "";
-    if ((user as any).phone_number) {
-      const digits = (user as any).phone_number.replace(/\D/g, "");
-      formattedPhone = new AsYouType().input("+" + digits);
-      setPhone(formattedPhone);
+    if (user.phone_number) {
+      const digits = user.phone_number.replace(/\D/g, "");
+      setPhone(new AsYouType().input("+" + digits));
     }
 
-    // —> СОХРАНЯЕМ всё, что получили от Telegram, в localStorage:
-    try {
-      localStorage.setItem("telegramUser", JSON.stringify(user));
-      localStorage.setItem(
-        "telegramFullName",
-        JSON.stringify(name)
-      );
-      localStorage.setItem(
-        "telegramPhone",
-        JSON.stringify(formattedPhone)
-      );
-      localStorage.setItem("telegramAvatar", JSON.stringify(photoUrl));
-    } catch (e) {
-      console.warn("Не удалось сохранить Telegram данные в localStorage:", e);
-    }
+    localStorage.setItem("telegramUser", JSON.stringify(user));
+    localStorage.setItem("telegramFullName", JSON.stringify(name));
+    localStorage.setItem("telegramPhone", JSON.stringify(phone));
+    localStorage.setItem("telegramAvatar", JSON.stringify(avatar ?? ""));
   }, [user]);
 
-  // canProceedStep1: fullName + phone заполнены
-  const canProceedStep1 = fullName.trim().length > 0 && phone.trim().length > 0;
-
-  // Запросить телефон через Telegram
+  // Запросить телефон
   const requestPhoneContact = () => {
-    if (!tg) return;
+    if (!tg?.requestContact) return;
+    // сбросим старый телефон
     setPhone("");
-    // @ts-ignore
-    if (typeof (tg as any).requestContact === "function") {
-      // @ts-ignore
-      (tg as any).requestContact((granted: boolean, result: any) => {
-        console.log("Telegram contact callback:", result);
-        setContactData(result);
-        if (granted && result?.responseUnsafe?.contact?.phone_number) {
-          const rawNumber = result.responseUnsafe.contact.phone_number;
-          setPhone(new AsYouType().input(rawNumber));
+    tg.requestContact((granted: boolean, result: any) => {
+      console.log("Telegram contact callback:", granted, result);
+      setContactData(result);
+      if (granted && result?.responseUnsafe?.contact?.phone_number) {
+        const rawNumber = result.responseUnsafe.contact.phone_number;
+        setPhone(new AsYouType().input(rawNumber));
+      }
+    });
+  };
+
+  // Как только contactData установился — шлём на бэкенд и переходим
+  useEffect(() => {
+    if (!contactData?.response) return;
+    const postAndNavigate = async () => {
+      try {
+        const resp = await fetch("http://195.49.215.106:8000/api/v1/stuff/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // авторизация: Bearer + токен из state
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            contact_init_data: contactData.response,
+          }),
+        });
+        if (!resp.ok) {
+          console.error("Ошибка отправки contact data:", resp.statusText);
+        } else {
+          // можно прочитать ответ, если нужно:
+          // const data = await resp.json();
         }
-      });
-    } else {
-      console.warn("Метод requestContact недоступен");
-    }
-  };  
-
-  const handleNext = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendData({ fullName, phone, avatar });
-    localStorage.setItem("telegramFullName", JSON.stringify(fullName));
-    navigate("/coach/main");
-  }
-
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        // отправляем также в Telegram (если нужно)
+        sendData({ fullName, phone, avatar });
+        // сразу переходим на главную
+        navigate("/coach/main");
+      }
+    };
+    postAndNavigate();
+  }, [contactData, token, fullName, phone, avatar, navigate, sendData]);
 
   if (user === null) {
     return (
@@ -130,103 +117,42 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center">
-      {/* Фоновое изображение */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${OnboardingBgImg})` }}
         aria-hidden="true"
       />
-
-      {/* Обёртка для появления (fade + slide) */}
       <div
         className={`
           relative w-[95%] max-w-md z-10 transition-all duration-800
           ${showCard ? "opacity-95 translate-y-0" : "opacity-0 translate-y-10"}
         `}
       >
-        {/* «Viewport» с overflow-hidden */}
         <div className="overflow-hidden w-full">
-          {/* flex-контейнер: 2 карточки рядом, по ширине экрана */}
-          <div
-            className={`
-              flex transition-transform duration-500 ease-in-out
-              ${step === 1 ? "translate-x-0" : "-translate-x-full"}
-            `}
-          >
-            {/* ── Карточка 1 (шаг 1) ── */}
+          <div className="flex transition-transform duration-500 ease-in-out">
             <div className="flex-shrink-0 w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6">
               <div className="flex flex-col items-center">
                 <h1 className="text-[28px] font-extrabold text-gray-800 text-center leading-snug">
                   Добро пожаловать!
                 </h1>
-                <p className="mt-1 text-[20px] text-gray-600 text-center leading-snug">
-                  Пожалуйста разрешите доступ к вашему номеру телефона, чтобы
-                  продолжить
+                <p className="mt-1 text-[20px] text-gray-600 text-center">
+                  Пожалуйста, разрешите доступ к вашему номеру телефона
                 </p>
               </div>
 
-              {/* Токен (если есть) */}
-              <div>
-                <p className="text-xs text-gray-500 text-center break-all">
-                  {token ? `Токен: ${token}` : "Токен недоступен"}
-                </p>
-              </div>
+              <p className="text-xs text-gray-500 text-center break-all">
+                {token ? `Токен: ${token}` : "Токен недоступен"}
+              </p>
 
-              <div className="w-full overflow-x-auto">
-                {contactData?.response ? (
-                  <pre className="text-xs text-gray-500 whitespace-pre-wrap break-words">
-                    {contactData.response}
-                  </pre>
-                ) : (
-                  <p className="text-xs text-gray-500 text-center">
-                    Данные контакта ещё не получены
-                  </p>
-                )}
-              </div>
-
-              {/* Форма шага 1 */}
-              <form onSubmit={handleNext} className="space-y-5">
-
-                {/* Кнопка запроса телефона */}
-                {!phone ? (
-                  <div>
-                    <button
-                      type="button"
-                      onClick={requestPhoneContact}
-                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-[40px] transition-colors duration-200"
-                    >
-                      Получить номер из Telegram
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    <label className="flex items-center text-sm font-bold text-gray-700">
-                      Ваш номер <span className="ml-1 text-red-500">*</span>
-                    </label>
-                    <div className="w-full px-4 py-3 border border-gray-300 rounded-lg font-bold text-gray-800">
-                      {"+" + phone}
-                    </div>
-                  </div>
-                )}
-
-                {/* Кнопка «Далее» */}
-                {phone && (
-                  <button
-                    type="submit"
-                    disabled={!canProceedStep1}
-                    className={`
-                      w-full py-3 rounded-[40px] font-semibold text-white transition
-                      ${
-                        canProceedStep1
-                          ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700"
-                          : "bg-gray-500 cursor-not-allowed"
-                      }
-                    `}
-                  >
-                    Далее
-                  </button>
-                )}
-              </form>
+              {!phone && (
+                <button
+                  type="button"
+                  onClick={requestPhoneContact}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-[40px]"
+                >
+                  Получить номер из Telegram
+                </button>
+              )}
             </div>
           </div>
         </div>
