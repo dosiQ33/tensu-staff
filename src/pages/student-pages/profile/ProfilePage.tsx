@@ -86,7 +86,7 @@ const ProfilePage: React.FC = () => {
       type: "group",
       status: "active",
       expiryDate: "2025-05-30",
-      price: 120,
+      price: 25000,
       daysLeft: 6,
     },
     {
@@ -116,7 +116,7 @@ const ProfilePage: React.FC = () => {
     {
       id: "1",
       date: "2025-05-15",
-      amount: 120,
+      amount: 250000,
       status: "success",
       method: "Credit Card",
       clubName: "Elite Martial Arts",
@@ -143,7 +143,7 @@ const ProfilePage: React.FC = () => {
     {
       id: "4",
       date: "2025-04-15",
-      amount: 120,
+      amount: 25000,
       status: "success",
       method: "Credit Card",
       clubName: "Elite Martial Arts",
@@ -170,7 +170,7 @@ const ProfilePage: React.FC = () => {
     {
       id: "7",
       date: "2025-03-15",
-      amount: 120,
+      amount: 25000,
       status: "success",
       method: "Credit Card",
       clubName: "Elite Martial Arts",
@@ -252,7 +252,7 @@ const ProfilePage: React.FC = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "KZT",
     }).format(amount);
   };
 
@@ -292,7 +292,7 @@ const ProfilePage: React.FC = () => {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-4 py-4">
-            <h1 className="text-xl font-semibold text-gray-900">My Profile</h1>
+            <h1 className="text-xl font-semibold text-gray-900">My profile</h1>
           </div>
         </div>
 
@@ -470,7 +470,7 @@ const ProfilePage: React.FC = () => {
                             className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-xl font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
                           >
                             <CreditCard size={18} />
-                            Pay {formatCurrency(membership.price)}
+                            Pay with Kaspi {formatCurrency(membership.price)}
                           </button>
                         )}
 
