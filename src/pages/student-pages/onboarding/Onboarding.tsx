@@ -17,8 +17,6 @@ export default function OnboardingPage() {
   const [tg, setTg] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
 
-  const [error, setError] = useState<string | null>(null);
-
   // плавно показываем карточку
   useEffect(() => {
     const timer = setTimeout(() => setShowCard(true), 1000);
