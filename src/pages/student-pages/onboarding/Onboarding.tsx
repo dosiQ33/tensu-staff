@@ -77,7 +77,7 @@ export default function OnboardingPage() {
     if (!contactData?.response) return;
     const postAndNavigate = async () => {
       try {
-        const resp = await fetch("/api/v1/stuff", {
+        const resp = await fetch("https://training-tracker-mini-app.vercel.app/api/v1/stuff/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
