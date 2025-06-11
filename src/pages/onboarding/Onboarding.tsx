@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { useTelegram } from "../../../hooks/useTelegram";
+import { useTelegram } from "@/hooks/useTelegram";
 import { AsYouType } from "libphonenumber-js";
-import OnboardingBgImg from "../../../assets/onboarding-bg.png";
+import OnboardingBgImg from "@/assets/onboarding-bg.png";
 import { useNavigate } from "react-router-dom";
+import { stuffApi } from "@/functions/axios/axiosFunctions";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -13,25 +13,42 @@ export default function OnboardingPage() {
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState<string | unknown | undefined>(undefined);
   const [token, setToken] = useState<string | null>(null);
+  const [telegramId, setTelegramId] = useState<number | null>(null);
   const [contactData, setContactData] = useState<any>(null);
   const [tg, setTg] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
 
-  // плавно показываем карточку
   useEffect(() => {
     const timer = setTimeout(() => setShowCard(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // инициализация Telegram WebApp
+  const checkStuffExists = async (telegramId: string | null, telegramToken: string | null) => {
+    try {
+      const response = await stuffApi.getByTelegram(
+        telegramId, telegramToken
+      );
+      if (response.status === 200 && response.data) {
+        navigate("coach/main");
+      }
+    } catch (err) {
+      console.error("Ошибка отправки contact data:", err);
+    }
+  };
+
   useEffect(() => {
+
+    checkStuffExists(localStorage.getItem("telegramId"), localStorage.getItem("telegramToken"));
+
     if (window.Telegram?.WebApp) {
       const telegramApp = window.Telegram.WebApp;
       telegramApp.ready();
       telegramApp.expand();
       setTg(telegramApp);
 
-      const rawInitData = telegramApp.initData || JSON.stringify(telegramApp.initDataUnsafe || {});
+      const rawInitData =
+        telegramApp.initData ||
+        JSON.stringify(telegramApp.initDataUnsafe || {});
       setToken(rawInitData);
       localStorage.setItem("telegramInitData", rawInitData);
     } else {
@@ -39,7 +56,6 @@ export default function OnboardingPage() {
     }
   }, []);
 
-  // Когда появляется user, заполняем поля
   useEffect(() => {
     if (!user) return;
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
@@ -55,12 +71,13 @@ export default function OnboardingPage() {
     localStorage.setItem("telegramFullName", JSON.stringify(name));
     localStorage.setItem("telegramPhone", JSON.stringify(phone));
     localStorage.setItem("telegramAvatar", JSON.stringify(avatar ?? ""));
-  }, [user]);
+    localStorage.setItem("telegramId", JSON.stringify(telegramId ?? ""));
+    localStorage.setItem("telegramToken", JSON.stringify(token ?? ""));
+  }, [avatar, phone, telegramId, user, token]);
 
   // Запросить телефон
   const requestPhoneContact = () => {
     if (!tg?.requestContact) return;
-    // сбросим старый телефон
     setPhone("");
     tg.requestContact((granted: boolean, result: any) => {
       console.log("Telegram contact callback:", granted, result);
@@ -74,40 +91,31 @@ export default function OnboardingPage() {
 
   const handleNav = () => {
     navigate("/coach/main");
-  }
+  };
 
-  // Как только contactData установился — шлём на бэкенд и переходим
   useEffect(() => {
     if (!contactData?.response) return;
+
     const postAndNavigate = async () => {
       try {
-        const resp = await fetch("https://195.49.215.106/api/v1/stuff/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({
+        const response = await stuffApi.create(
+          {
             contact_init_data: contactData.response,
-            preferences: {
-              additionalProp1: {}
-            }
-          }),
-        });
-        if (!resp.ok) {
-          console.error("Ошибка отправки contact data:", resp.statusText);
-        } else {
-          // можно прочитать ответ, если нужно:
-          // const data = await resp.json();
-        }
+            preferences: {}
+          },
+          token!
+        );
+        setTelegramId(response.data.telegram_id);
       } catch (err) {
-        console.error("Fetch error:", err);
+        checkStuffExists(contactData.responseUnsafe?.contact?.user_id, token);
+        console.error("Ошибка отправки contact data:", err);
       } finally {
         sendData({ fullName, phone, avatar });
       }
     };
+
     postAndNavigate();
-  }, [contactData, token, fullName, phone, avatar, navigate, sendData]);
+  }, [contactData, token, fullName, phone, avatar, telegramId, sendData, navigate]);
 
   if (user === null) {
     return (
@@ -131,7 +139,7 @@ export default function OnboardingPage() {
           relative w-[95%] max-w-md z-10 transition-all duration-800
           ${showCard ? "opacity-95 translate-y-0" : "opacity-0 translate-y-10"}
         `}
-      > 
+      >
         <div className="overflow-hidden w-full">
           <div className="flex transition-transform duration-500 ease-in-out">
             <div className="flex-shrink-0 w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6">
@@ -170,12 +178,15 @@ export default function OnboardingPage() {
                 </button>
               )}
 
-               {phone &&<button
+              {phone && (
+                <button
                   type="button"
                   onClick={handleNav}
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-[40px]"
                 >
-go                </button> } 
+                  go{" "}
+                </button>
+              )}
             </div>
           </div>
         </div>

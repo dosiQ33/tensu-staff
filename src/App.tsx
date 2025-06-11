@@ -5,7 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import OnboardingPage from "./pages/student-pages/onboarding/Onboarding";
+import OnboardingPage from "./pages/onboarding/Onboarding";
 import MainPage2 from "./pages/student-pages/main/MainPage2";
 import ClubPage from "./pages/student-pages/main/ClubPage";
 import StatsPage from "./pages/student-pages/stats/StatsPage";
