@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useTelegram } from "../../../hooks/useTelegram";
@@ -15,6 +16,8 @@ export default function OnboardingPage() {
   const [contactData, setContactData] = useState<any>(null);
   const [tg, setTg] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
 
   // плавно показываем карточку
   useEffect(() => {
@@ -127,7 +130,7 @@ export default function OnboardingPage() {
           relative w-[95%] max-w-md z-10 transition-all duration-800
           ${showCard ? "opacity-95 translate-y-0" : "opacity-0 translate-y-10"}
         `}
-      >
+      > 
         <div className="overflow-hidden w-full">
           <div className="flex transition-transform duration-500 ease-in-out">
             <div className="flex-shrink-0 w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6">
@@ -143,6 +146,18 @@ export default function OnboardingPage() {
               <p className="text-xs text-gray-500 text-center break-all">
                 {token ? `Токен: ${token}` : "Токен недоступен"}
               </p>
+
+              <div className="w-full overflow-x-auto">
+                {contactData?.response ? (
+                  <pre className="text-xs text-gray-500 whitespace-pre-wrap break-words">
+                    {contactData.response}
+                  </pre>
+                ) : (
+                  <p className="text-xs text-gray-500 text-center">
+                    Данные контакта ещё не получены
+                  </p>
+                )}
+              </div>
 
               {!phone && (
                 <button
