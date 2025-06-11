@@ -77,7 +77,7 @@ export default function OnboardingPage() {
     if (!contactData?.response) return;
     const postAndNavigate = async () => {
       try {
-        const resp = await fetch("https://training-tracker-mini-app.vercel.app/api/v1/stuff", {
+        const resp = await fetch("https://195.49.215.106:8000/api/v1/stuff/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -88,12 +88,11 @@ export default function OnboardingPage() {
             preferences: {
               additionalProp1: {}
             }
-          }),   
-
+          }),
         });
         if (!resp.ok) {
           console.error("Ошибка отправки contact data:", resp.statusText);
-          // navigate("/coach/main");
+          navigate("/coach/main");
         } else {
           // можно прочитать ответ, если нужно:
           // const data = await resp.json();
