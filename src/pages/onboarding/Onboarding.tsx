@@ -107,6 +107,7 @@ export default function OnboardingPage() {
         );
         setTelegramId(response.data.telegram_id);
       } catch (err) {
+        console.log("TELEGRAM ID: ", contactData.responseUnsafe?.contact?.user_id)
         checkStuffExists(contactData.responseUnsafe?.contact?.user_id, token);
         console.error("Ошибка отправки contact data:", err);
       } finally {
