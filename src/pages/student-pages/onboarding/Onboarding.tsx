@@ -96,7 +96,6 @@ export default function OnboardingPage() {
         });
         if (!resp.ok) {
           console.error("Ошибка отправки contact data:", resp.statusText);
-          navigate("/coach/main");
         } else {
           // можно прочитать ответ, если нужно:
           // const data = await resp.json();
