@@ -72,6 +72,10 @@ export default function OnboardingPage() {
     });
   };
 
+  const handleNav = () => {
+    navigate("/coach/main");
+  }
+
   // Как только contactData установился — шлём на бэкенд и переходим
   useEffect(() => {
     if (!contactData?.response) return;
@@ -166,6 +170,13 @@ export default function OnboardingPage() {
                   Получить номер из Telegram
                 </button>
               )}
+
+               {phone &&<button
+                  type="button"
+                  onClick={handleNav}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-[40px]"
+                >
+go                </button> } 
             </div>
           </div>
         </div>
