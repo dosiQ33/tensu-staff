@@ -77,7 +77,7 @@ export default function OnboardingPage() {
     if (!contactData?.response) return;
     const postAndNavigate = async () => {
       try {
-        const resp = await fetch("https://195.49.215.106:8000/api/v1/stuff/", {
+        const resp = await fetch("https://195.49.215.106/api/v1/stuff/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
