@@ -77,7 +77,7 @@ export default function OnboardingPage() {
     if (!contactData?.response) return;
     const postAndNavigate = async () => {
       try {
-        const resp = await fetch("http://195.49.215.106:8000/api/v1/stuff/", {
+        const resp = await fetch("/api/v1/stuff/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -88,7 +88,8 @@ export default function OnboardingPage() {
             preferences: {
               additionalProp1: {}
             }
-          }),
+          }),   
+
         });
         if (!resp.ok) {
           console.error("Ошибка отправки contact data:", resp.statusText);
