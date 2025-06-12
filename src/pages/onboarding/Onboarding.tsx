@@ -29,7 +29,7 @@ export default function OnboardingPage() {
         telegramId, telegramToken
       );
       if (response.status === 200 && response.data) {
-        navigate("coach/main");
+        navigate("coach/profile");
       }
     } catch (err) {
       console.error("Ошибка отправки contact data:", err);
@@ -90,7 +90,7 @@ export default function OnboardingPage() {
   };
 
   const handleNav = () => {
-    navigate("/coach/main");
+    navigate("/coach/profile");
   };
 
   useEffect(() => {
