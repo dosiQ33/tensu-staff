@@ -62,9 +62,10 @@ const CoachProfile: React.FC = () => {
 
   // Sample user data
   const userData = {
-    name: "Arman Alimkhanov",
-    phone: "+1 (555) 123-4567",
-    avatar: "👨‍💼",
+    name: localStorage.getItem("telegramFullName") || "",
+    phone: localStorage.getItem("telegramPhone") || "",
+    avatar: localStorage.getItem("telegramAvatar"),
+    fakeAvatar: "👤",
   };
 
   // Sample clubs data
@@ -325,7 +326,12 @@ const CoachProfile: React.FC = () => {
         <div className="px-4 py-4">
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-4">
             <div className="flex items-center gap-4">
-              <div className="text-4xl">{userData.avatar}</div>
+              {userData.avatar ? (
+                <img className="width-[20px]" src={userData.avatar} />
+              ) : (
+                <div className="text-4xl">{userData.fakeAvatar}</div>
+              )}
+
               <div className="flex-1">
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">
                   {userData.name}
