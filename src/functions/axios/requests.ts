@@ -1,8 +1,8 @@
-export interface StuffPreferences {
+export interface StaffPreferences {
   [key: string]: Record<string, unknown>;
 }
 
-export interface CreateStuffRequest {
+export interface CreateStaffRequest {
   contact_init_data: string;
-  preferences: StuffPreferences;
+  preferences: StaffPreferences;
 }

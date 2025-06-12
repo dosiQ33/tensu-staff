@@ -4,7 +4,7 @@ import { useTelegram } from "@/hooks/useTelegram";
 import { AsYouType } from "libphonenumber-js";
 import OnboardingBgImg from "@/assets/onboarding-bg.png";
 import { useNavigate } from "react-router-dom";
-import { stuffApi } from "@/functions/axios/axiosFunctions";
+import { staffApi } from "@/functions/axios/axiosFunctions";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function OnboardingPage() {
 
   const checkStuffExists = async (telegramId: string | null, telegramToken: string | null) => {
     try {
-      const response = await stuffApi.getByTelegram(
+      const response = await staffApi.getByTelegram(
         telegramId, telegramToken
       );
       if (response.status === 200 && response.data) {
@@ -98,7 +98,7 @@ export default function OnboardingPage() {
 
     const postAndNavigate = async () => {
       try {
-        const response = await stuffApi.create(
+        const response = await staffApi.create(
           {
             contact_init_data: contactData.response,
             preferences: {}

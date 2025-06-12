@@ -1,23 +1,23 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
-import type { CreateStuffRequest } from './requests';
-import type { CreateStuffResponse } from './responses';
+import type { CreateStaffRequest } from './requests';
+import type { CreateStaffResponse } from './responses';
 
-export const stuffApi = {
+export const staffApi = {
     getList: (token: string) =>
-        axiosRequest<CreateStuffResponse[]>(ENDPOINTS.STUFF.BASE, 'GET', token),
+        axiosRequest<CreateStaffResponse[]>(ENDPOINTS.STUFF.BASE, 'GET', token),
 
     getById: (userId: string, token: string) =>
-        axiosRequest<CreateStuffResponse>(ENDPOINTS.STUFF.BY_ID(userId), 'GET', token),
+        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BY_ID(userId), 'GET', token),
 
     getByTelegram: (tgId: string | null, token: string | null) =>
-        axiosRequest<CreateStuffResponse>(ENDPOINTS.STUFF.BY_TELEGRAM(tgId), 'GET', token),
+        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BY_TELEGRAM(tgId), 'GET', token),
 
-    create: (data: CreateStuffRequest, token: string) =>
-        axiosRequest<CreateStuffResponse>(ENDPOINTS.STUFF.BASE, 'POST', token, data),
+    create: (data: CreateStaffRequest, token: string) =>
+        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BASE, 'POST', token, data),
 
-    update: (data: CreateStuffRequest, token: string) =>
-        axiosRequest<CreateStuffResponse>(ENDPOINTS.STUFF.BASE, 'PUT', token, data),
+    update: (data: CreateStaffRequest, token: string) =>
+        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BASE, 'PUT', token, data),
 
     updatePrefs: (prefs: unknown, token: string) =>
         axiosRequest<unknown>(ENDPOINTS.STUFF.PREFERENCES, 'PUT', token, prefs),

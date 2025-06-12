@@ -339,7 +339,7 @@ const CoachProfile: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 text-gray-600">
                     <Phone size={16} />
-                    <span className="text-sm">{userData.phone}</span>
+                    <span className="text-sm">+{userData.phone}</span>
                     <button
                       onClick={() => copyToClipboard(userData.phone)}
                       className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
