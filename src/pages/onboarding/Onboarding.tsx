@@ -146,7 +146,7 @@ export default function OnboardingPage() {
             <div className="flex-shrink-0 w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6">
               <div className="flex flex-col items-center">
                 <h1 className="text-[28px] font-extrabold text-gray-800 text-center leading-snug">
-                  Добро пожаловать!
+                  Добро пожаловать, {fullName}!
                 </h1>
                 <p className="mt-1 text-[20px] text-gray-600 text-center">
                   Пожалуйста, разрешите доступ к вашему номеру телефона
