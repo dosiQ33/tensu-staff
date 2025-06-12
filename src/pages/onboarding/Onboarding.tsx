@@ -11,7 +11,7 @@ export default function OnboardingPage() {
   const { user, sendData } = useTelegram();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [avatar, setAvatar] = useState<string | unknown | undefined>(undefined);
+  const [avatar, setAvatar] = useState("");
   const [token, setToken] = useState<string | null>(null);
   const [telegramId, setTelegramId] = useState<number | null>(null);
   const [contactData, setContactData] = useState<any>(null);
@@ -60,7 +60,7 @@ export default function OnboardingPage() {
     if (!user) return;
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
     setFullName(name);
-    setAvatar(user.photo_url);
+    setAvatar(user.photo_url.toString());
 
     if (user.phone_number) {
       const digits = user.phone_number.replace(/\D/g, "");
@@ -68,9 +68,9 @@ export default function OnboardingPage() {
     }
 
     localStorage.setItem("telegramUser", JSON.stringify(user));
-    localStorage.setItem("telegramFullName", JSON.stringify(name));
-    localStorage.setItem("telegramPhone", JSON.stringify(phone));
-    localStorage.setItem("telegramAvatar", JSON.stringify(avatar ?? ""));
+    localStorage.setItem("telegramFullName", name);
+    localStorage.setItem("telegramPhone", phone);
+    localStorage.setItem("telegramAvatar", avatar);
     localStorage.setItem("telegramId", JSON.stringify(telegramId ?? ""));
     localStorage.setItem("telegramToken", JSON.stringify(token ?? ""));
   }, [avatar, phone, telegramId, user, token]);
