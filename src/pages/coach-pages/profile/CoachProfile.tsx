@@ -327,7 +327,7 @@ const CoachProfile: React.FC = () => {
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-4">
             <div className="flex items-center gap-4">
               {userData.avatar ? (
-                <img className="width-[20px]" src={userData.avatar} />
+                <img className="w-8 h-8 rounded-full" src={userData.avatar} />
               ) : (
                 <div className="text-4xl">{userData.fakeAvatar}</div>
               )}
