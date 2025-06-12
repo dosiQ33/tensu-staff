@@ -23,10 +23,10 @@ export default function OnboardingPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const checkStuffExists = async (telegramId: string | null, telegramToken: string | null) => {
+  const checkStuffExists = async (telegramToken: string | null) => {
     try {
-      const response = await staffApi.getByTelegram(
-        telegramId, telegramToken
+      const response = await staffApi.getMe(
+        telegramToken
       );
       if (response.status === 200 && response.data) {
         navigate("coach/profile");
@@ -37,8 +37,6 @@ export default function OnboardingPage() {
   };
 
   useEffect(() => {
-
-    checkStuffExists(localStorage.getItem("telegramId"), localStorage.getItem("telegramToken"));
 
     if (window.Telegram?.WebApp) {
       const telegramApp = window.Telegram.WebApp;
@@ -51,6 +49,7 @@ export default function OnboardingPage() {
         JSON.stringify(telegramApp.initDataUnsafe || {});
       setToken(rawInitData);
       localStorage.setItem("telegramInitData", rawInitData);
+      checkStuffExists(rawInitData);
     } else {
       console.error("Telegram WebApp SDK not found");
     }
@@ -108,7 +107,7 @@ export default function OnboardingPage() {
         setTelegramId(response.data.telegram_id);
       } catch (err) {
         console.log("TELEGRAM ID: ", contactData.responseUnsafe?.contact?.user_id)
-        checkStuffExists(`${contactData.responseUnsafe?.contact?.user_id}`, token);
+        checkStuffExists(token);
         console.error("Ошибка отправки contact data:", err);
       } finally {
         sendData({ fullName, phone, avatar });

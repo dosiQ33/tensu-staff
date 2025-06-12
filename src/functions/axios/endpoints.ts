@@ -1,11 +1,11 @@
 export const ENDPOINTS = {
   STUFF: {
-    BASE: '/staff/',
+    BASE:        '/staff/',
     BY_ID:       (userId: string) => `/staff/${userId}`,
-    BY_TELEGRAM: (telegramId: string | null) => `/staff/by-telegram-id/${telegramId}`,
+    ME:          '/staff/me/',
     PREFERENCES: '/staff/preferences',
     PREFERENCE:  (telegramId: string, key: string) =>
-                   `/staff/${telegramId}/preferences/${key}`,
+                  `/staff/${telegramId}/preferences/${key}`,
   },
 
   CLUBS: {

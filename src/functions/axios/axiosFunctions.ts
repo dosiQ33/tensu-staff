@@ -10,8 +10,8 @@ export const staffApi = {
     getById: (userId: string, token: string) =>
         axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BY_ID(userId), 'GET', token),
 
-    getByTelegram: (tgId: string | null, token: string | null) =>
-        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BY_TELEGRAM(tgId), 'GET', token),
+    getMe: (token: string | null) =>
+        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.ME, 'GET', token),
 
     create: (data: CreateStaffRequest, token: string) =>
         axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BASE, 'POST', token, data),
