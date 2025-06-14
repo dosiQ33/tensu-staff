@@ -40,3 +40,5 @@ export interface CreateClubResponse {
   created_at: string;
   updated_at: string;
 }
+
+export type GetMyClubsResponse = CreateClubResponse[];

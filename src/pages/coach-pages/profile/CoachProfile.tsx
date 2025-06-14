@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { clubsApi } from "@/functions/axios/axiosFunctions";
 import { CreateClubModal } from "./components/CreateClubModal";
+import type { CreateClubResponse } from "@/functions/axios/responses";
 
 interface Club {
   id: string;
@@ -61,6 +62,35 @@ const CoachProfile: React.FC = () => {
     null
   );
   const navigate = useNavigate();
+
+  const mapClub = (c: CreateClubResponse): Club => ({
+    id: c.id.toString(),
+    name: c.name,
+    logo: c.logo_url,               // или дефолтный эмодзи
+    userRole: "owner",              // можно вычислить по c.owner_id
+    sections: 0,
+    students: 0,
+    monthlyRevenue: 0,
+    studentGrowth: 0,
+    plan: "Basic",
+    nextPayment: "",                // нет в API
+    paymentStatus: "pending",       // по умолчанию
+
+    analytics: {
+      totalStudents: 0,
+      newStudents: 0,
+      lostStudents: 0,
+      weeklyRevenue: 0,
+      averageTicket: 0,
+      totalWorkouts: 0,
+      peakHours: "",
+      revenueHistory: [],
+      studentHistory: [],
+      sectionDistribution: [],
+    },
+
+    paymentHistory: [],
+  });
 
   // Sample user data
   const userData = {
@@ -143,6 +173,12 @@ const CoachProfile: React.FC = () => {
     console.log("Processing payment for club:", clubId);
     // In real app, this would open payment flow
   };
+
+useEffect(() => {
+  clubsApi.getMy(localStorage.getItem("telegramToken")!)
+    .then(res => setClubs(res.data.map(mapClub)))
+    .catch(console.error);
+}, []);
 
   return (
     <>

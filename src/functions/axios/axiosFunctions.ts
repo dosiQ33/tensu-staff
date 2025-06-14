@@ -1,7 +1,7 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
 import type { CreateClubRequest, CreateStaffRequest } from './requests';
-import type { CreateClubResponse, CreateStaffResponse } from './responses';
+import type { CreateClubResponse, CreateStaffResponse, GetMyClubsResponse } from './responses';
 
 export const staffApi = {
     getList: (token: string) =>
@@ -28,7 +28,7 @@ export const staffApi = {
 
 export const clubsApi = {
     getList: (token: string) => axiosRequest(ENDPOINTS.CLUBS.BASE, 'GET', token),
-    getMy: (token: string) => axiosRequest(ENDPOINTS.CLUBS.MY, 'GET', token),
+    getMy: (token: string) => axiosRequest<GetMyClubsResponse>(ENDPOINTS.CLUBS.MY, 'GET', token),
     getById: (id: string, token: string) =>
         axiosRequest(ENDPOINTS.CLUBS.BY_ID(id), 'GET', token),
     create: (data: CreateClubRequest, token: string) =>
