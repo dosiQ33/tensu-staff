@@ -1,7 +1,7 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
-import type { CreateStaffRequest } from './requests';
-import type { CreateStaffResponse } from './responses';
+import type { CreateClubRequest, CreateStaffRequest } from './requests';
+import type { CreateClubResponse, CreateStaffResponse } from './responses';
 
 export const staffApi = {
     getList: (token: string) =>
@@ -31,8 +31,8 @@ export const clubsApi = {
     getMy: (token: string) => axiosRequest(ENDPOINTS.CLUBS.MY, 'GET', token),
     getById: (id: string, token: string) =>
         axiosRequest(ENDPOINTS.CLUBS.BY_ID(id), 'GET', token),
-    create: (data: unknown, token: string) =>
-        axiosRequest(ENDPOINTS.CLUBS.BASE, 'POST', token, data),
+    create: (data: CreateClubRequest, token: string) =>
+        axiosRequest<CreateClubResponse>(ENDPOINTS.CLUBS.BASE, 'POST', token, data),
     update: (id: string, data: unknown, token: string) =>
         axiosRequest(ENDPOINTS.CLUBS.UPDATE(id), 'PUT', token, data),
     delete: (id: string, token: string) =>

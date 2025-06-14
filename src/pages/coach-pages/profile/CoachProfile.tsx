@@ -20,6 +20,8 @@ import {
   BarChart2,
   Home,
 } from "lucide-react";
+import { clubsApi } from "@/functions/axios/axiosFunctions";
+import type { CreateClubRequest } from "@/functions/axios/requests";
 
 interface Club {
   id: string;
@@ -68,181 +70,66 @@ const CoachProfile: React.FC = () => {
     fakeAvatar: "👤",
   };
 
-  // Sample clubs data
-  const clubs: Club[] = [
-    {
-      id: "1",
-      name: "BARS Checkmat",
-      logo: "🥋",
-      userRole: "owner",
-      sections: 5,
-      students: 180,
-      monthlyRevenue: 15400,
-      studentGrowth: 12,
-      plan: "Premium",
-      nextPayment: "2025-06-15",
-      paymentStatus: "paid",
-      analytics: {
-        totalStudents: 180,
-        newStudents: 25,
-        lostStudents: 8,
-        weeklyRevenue: 3850,
-        averageTicket: 85,
-        totalWorkouts: 120,
-        peakHours: "6-8 PM",
-        revenueHistory: [
-          { month: "Jan", amount: 13200 },
-          { month: "Feb", amount: 14100 },
-          { month: "Mar", amount: 14800 },
-          { month: "Apr", amount: 15100 },
-          { month: "May", amount: 15400 },
-        ],
-        studentHistory: [
-          { month: "Jan", count: 155 },
-          { month: "Feb", count: 162 },
-          { month: "Mar", count: 168 },
-          { month: "Apr", count: 175 },
-          { month: "May", count: 180 },
-        ],
-        sectionDistribution: [
-          { name: "BJJ", count: 75, color: "bg-blue-500" },
-          //   { name: 'Boxing', count: 45, color: 'bg-red-500' },
-          //   { name: 'Fitness', count: 35, color: 'bg-green-500' },
-          //   { name: 'Kids', count: 25, color: 'bg-yellow-500' }
-        ],
-      },
-      paymentHistory: [
-        {
-          date: "2025-05-15",
-          amount: 99,
-          method: "Credit Card",
-          status: "Paid",
-        },
-        {
-          date: "2025-04-15",
-          amount: 99,
-          method: "Credit Card",
-          status: "Paid",
-        },
-        {
-          date: "2025-03-15",
-          amount: 99,
-          method: "Credit Card",
-          status: "Paid",
-        },
-      ],
-    },
-    {
-      id: "2",
-      name: "Downtown Boxing Gym",
-      logo: "🥊",
-      userRole: "admin",
-      sections: 3,
-      students: 95,
-      monthlyRevenue: 7800,
-      studentGrowth: -3,
-      plan: "Standard",
-      nextPayment: "2025-06-20",
-      paymentStatus: "pending",
-      analytics: {
-        totalStudents: 95,
-        newStudents: 12,
-        lostStudents: 15,
-        weeklyRevenue: 1950,
-        averageTicket: 82,
-        totalWorkouts: 85,
-        peakHours: "7-9 PM",
-        revenueHistory: [
-          { month: "Jan", amount: 8200 },
-          { month: "Feb", amount: 8100 },
-          { month: "Mar", amount: 7900 },
-          { month: "Apr", amount: 7850 },
-          { month: "May", amount: 7800 },
-        ],
-        studentHistory: [
-          { month: "Jan", count: 102 },
-          { month: "Feb", count: 98 },
-          { month: "Mar", count: 96 },
-          { month: "Apr", count: 97 },
-          { month: "May", count: 95 },
-        ],
-        sectionDistribution: [
-          { name: "Boxing", count: 65, color: "bg-red-500" },
-          { name: "Fitness", count: 20, color: "bg-green-500" },
-          { name: "Personal", count: 10, color: "bg-purple-500" },
-        ],
-      },
-      paymentHistory: [
-        {
-          date: "2025-05-20",
-          amount: 49,
-          method: "Credit Card",
-          status: "Pending",
-        },
-        {
-          date: "2025-04-20",
-          amount: 49,
-          method: "Credit Card",
-          status: "Paid",
-        },
-      ],
-    },
-    {
-      id: "3",
-      name: "Youth Sports Center",
-      logo: "⚽",
-      userRole: "coach",
-      sections: 2,
-      students: 45,
-      monthlyRevenue: 3200,
-      studentGrowth: 8,
-      plan: "Basic",
-      nextPayment: "2025-06-10",
-      paymentStatus: "expired",
-      analytics: {
-        totalStudents: 45,
-        newStudents: 8,
-        lostStudents: 2,
-        weeklyRevenue: 800,
-        averageTicket: 71,
-        totalWorkouts: 35,
-        peakHours: "4-6 PM",
-        revenueHistory: [
-          { month: "Jan", amount: 2800 },
-          { month: "Feb", amount: 2900 },
-          { month: "Mar", amount: 3000 },
-          { month: "Apr", amount: 3100 },
-          { month: "May", amount: 3200 },
-        ],
-        studentHistory: [
-          { month: "Jan", count: 38 },
-          { month: "Feb", count: 40 },
-          { month: "Mar", count: 42 },
-          { month: "Apr", count: 44 },
-          { month: "May", count: 45 },
-        ],
-        sectionDistribution: [
-          { name: "Football", count: 28, color: "bg-green-500" },
-          { name: "Basketball", count: 17, color: "bg-orange-500" },
-        ],
-      },
-      paymentHistory: [
-        {
-          date: "2025-04-10",
-          amount: 29,
-          method: "Credit Card",
-          status: "Paid",
-        },
-        {
-          date: "2025-03-10",
-          amount: 29,
-          method: "Credit Card",
-          status: "Paid",
-        },
-      ],
-    },
-  ];
+  const [clubs, setClubs] = useState<Club[]>([]);
+  const [showCreate, setShowCreate] = useState(false);
 
+  const [newClub, setNewClub] = useState<CreateClubRequest>({
+    name: "",
+    description: "",
+    city: "",
+    address: "",
+    logo_url: "",
+    cover_url: "",
+    phone: "",
+    telegram_url: "",
+    instagram_url: "",
+    timezone: "Asia/Almaty",
+    currency: "KZT",
+    extra: {},
+  });
+
+  const handleCreateClub = async () => {
+    try {
+      const { data: created } = await clubsApi.create(
+        newClub,
+        localStorage.getItem("telegramToken")!
+      );
+
+      const uiClub: Club = {
+        id: created.id.toString(),
+        name: created.name,
+        logo: created.logo_url, // or some default emoji
+        userRole: "owner", // you know the creator is owner
+        sections: 0,
+        students: 0,
+        monthlyRevenue: 0,
+        studentGrowth: 0,
+        plan: "Basic", // or pull from created.extra
+        nextPayment: "", // fill later
+        paymentStatus: "pending",
+
+        analytics: {
+          totalStudents: 0,
+          newStudents: 0,
+          lostStudents: 0,
+          weeklyRevenue: 0,
+          averageTicket: 0,
+          totalWorkouts: 0,
+          peakHours: "",
+          revenueHistory: [],
+          studentHistory: [],
+          sectionDistribution: [],
+        },
+
+        paymentHistory: [],
+      };
+
+      setClubs((prev) => [...prev, uiClub]);
+      setShowCreate(false);
+    } catch (e) {
+      console.error("Ошибка создания клуба", e);
+    }
+  };
   const getRoleIcon = (role: string) => {
     switch (role) {
       case "owner":
@@ -351,6 +238,51 @@ const CoachProfile: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setShowCreate(true)}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              + Create Club
+            </button>
+          </div>
+
+          {showCreate && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg w-[90%] max-w-md space-y-4">
+                <h2 className="text-lg font-semibold">Create New Club</h2>
+
+                {/** Пример одного поля: */}
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={newClub.name}
+                  onChange={(e) =>
+                    setNewClub({ ...newClub, name: e.target.value })
+                  }
+                  className="w-full border p-2 rounded"
+                />
+
+                {/* остальные поля по тому же принципу: description, city, address и т.д. */}
+
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    onClick={() => setShowCreate(false)}
+                    className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleCreateClub}
+                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Clubs Section */}
           <div className="space-y-4">
