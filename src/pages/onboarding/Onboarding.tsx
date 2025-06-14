@@ -35,6 +35,12 @@ export default function OnboardingPage() {
         try {
           const resp = await staffApi.getMe(token);
           if ((resp.status === 200 || resp.status === 201) && resp.data) {
+            localStorage.setItem("telegramUser", JSON.stringify(resp.data.username));
+            localStorage.setItem("telegramFullName", resp.data.first_name + " " + resp.data.last_name);
+            localStorage.setItem("telegramPhone", resp.data.phone_number);
+            localStorage.setItem("telegramAvatar", resp.data.photo_url);
+            localStorage.setItem("telegramId", resp.data.telegram_id.toString());
+            localStorage.setItem("telegramToken", token || "");
             navigate("/coach/profile");
           }
         } catch (e) {
