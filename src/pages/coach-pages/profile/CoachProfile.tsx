@@ -21,7 +21,7 @@ import {
   Home,
 } from "lucide-react";
 import { clubsApi } from "@/functions/axios/axiosFunctions";
-import type { CreateClubRequest } from "@/functions/axios/requests";
+import { CreateClubModal } from "./components/CreateClubModal";
 
 interface Club {
   id: string;
@@ -73,63 +73,8 @@ const CoachProfile: React.FC = () => {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [showCreate, setShowCreate] = useState(false);
 
-  const [newClub, setNewClub] = useState<CreateClubRequest>({
-    name: "",
-    description: "",
-    city: "",
-    address: "",
-    logo_url: "",
-    cover_url: "",
-    phone: "",
-    telegram_url: "",
-    instagram_url: "",
-    timezone: "Asia/Almaty",
-    currency: "KZT",
-    extra: {},
-  });
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
-  const handleCreateClub = async () => {
-    try {
-      const { data: created } = await clubsApi.create(
-        newClub,
-        localStorage.getItem("telegramToken")!
-      );
-
-      const uiClub: Club = {
-        id: created.id.toString(),
-        name: created.name,
-        logo: created.logo_url, // or some default emoji
-        userRole: "owner", // you know the creator is owner
-        sections: 0,
-        students: 0,
-        monthlyRevenue: 0,
-        studentGrowth: 0,
-        plan: "Basic", // or pull from created.extra
-        nextPayment: "", // fill later
-        paymentStatus: "pending",
-
-        analytics: {
-          totalStudents: 0,
-          newStudents: 0,
-          lostStudents: 0,
-          weeklyRevenue: 0,
-          averageTicket: 0,
-          totalWorkouts: 0,
-          peakHours: "",
-          revenueHistory: [],
-          studentHistory: [],
-          sectionDistribution: [],
-        },
-
-        paymentHistory: [],
-      };
-
-      setClubs((prev) => [...prev, uiClub]);
-      setShowCreate(false);
-    } catch (e) {
-      console.error("Ошибка создания клуба", e);
-    }
-  };
   const getRoleIcon = (role: string) => {
     switch (role) {
       case "owner":
@@ -242,47 +187,58 @@ const CoachProfile: React.FC = () => {
           <div className="flex justify-end mb-4">
             <button
               onClick={() => setShowCreate(true)}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
             >
               + Create Club
             </button>
           </div>
 
-          {showCreate && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg w-[90%] max-w-md space-y-4">
-                <h2 className="text-lg font-semibold">Create New Club</h2>
-
-                {/** Пример одного поля: */}
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={newClub.name}
-                  onChange={(e) =>
-                    setNewClub({ ...newClub, name: e.target.value })
-                  }
-                  className="w-full border p-2 rounded"
-                />
-
-                {/* остальные поля по тому же принципу: description, city, address и т.д. */}
-
-                <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    onClick={() => setShowCreate(false)}
-                    className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleCreateClub}
-                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Create
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <CreateClubModal
+            show={showCreate}
+            loading={isCreating}
+            onClose={() => setShowCreate(false)}
+            onSubmit={async (data) => {
+              setIsCreating(true);
+              try {
+                const { data: created } = await clubsApi.create(
+                  data,
+                  localStorage.getItem("telegramToken")!
+                );
+                const uiClub: Club = {
+                  id: created.id.toString(),
+                  name: created.name,
+                  logo: created.logo_url,
+                  userRole: "owner",
+                  sections: 0,
+                  students: 0,
+                  monthlyRevenue: 0,
+                  studentGrowth: 0,
+                  plan: "Basic",
+                  nextPayment: "",
+                  paymentStatus: "pending",
+                  analytics: {
+                    totalStudents: 0,
+                    newStudents: 0,
+                    lostStudents: 0,
+                    weeklyRevenue: 0,
+                    averageTicket: 0,
+                    totalWorkouts: 0,
+                    peakHours: "",
+                    revenueHistory: [],
+                    studentHistory: [],
+                    sectionDistribution: [],
+                  },
+                  paymentHistory: [],
+                };
+                setClubs((prev) => [...prev, uiClub]);
+                setShowCreate(false);
+              } catch (e) {
+                console.error("Ошибка создания клуба", e);
+              } finally {
+                setIsCreating(false);
+              }
+            }}
+          />
 
           {/* Clubs Section */}
           <div className="space-y-4">
