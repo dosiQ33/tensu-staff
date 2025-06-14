@@ -20,10 +20,8 @@ export const getRoleIcon = (role: Staff['role']) => {
 
 export const getRoleLabel = (role: Staff['role']) => {
   switch (role) {
-    case 'head_coach': return 'Head Coach';
     case 'admin': return 'Administrator';
     case 'coach': return 'Coach';
-    case 'assistant': return 'Assistant';
     default: return role;
   }
 };

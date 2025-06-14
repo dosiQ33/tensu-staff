@@ -38,6 +38,7 @@ export interface NewStaff {
 }
 
 export interface NewSection {
+  clubId?: string;
   name: string;
   description: string;
   telegramLink: string;

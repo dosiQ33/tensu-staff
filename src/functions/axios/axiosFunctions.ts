@@ -40,3 +40,7 @@ export const clubsApi = {
     checkPerm: (id: string, token: string) =>
         axiosRequest<boolean>(ENDPOINTS.CLUBS.CHECK_PERMISSION(id), 'GET', token),
 };
+
+export const sectionsApi = {
+    getMy: (token: string) => axiosRequest(ENDPOINTS.SECTIONS.MY, 'GET', token),
+};
