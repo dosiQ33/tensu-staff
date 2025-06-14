@@ -71,7 +71,7 @@ export default function OnboardingPage() {
     localStorage.setItem("telegramPhone", phone);
     localStorage.setItem("telegramAvatar", avatar);
     localStorage.setItem("telegramId", JSON.stringify(telegramId ?? ""));
-    localStorage.setItem("telegramToken", JSON.stringify(token ?? ""));
+    localStorage.setItem("telegramToken", token ?? "");
   }, [avatar, phone, telegramId, user, token]);
 
   // Запросить телефон
