@@ -132,3 +132,28 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, action }) =
     </div>
   );
 };
+
+export const BottomNav: React.FC = () => {
+  const navigate = useNavigate();
+  const items = [
+    { icon: <Home size={20} />, label: 'Главная', path: '/coach/main' },
+    { icon: <Users size={20} />, label: 'Мои студенты', path: '/coach/students' },
+    { icon: <BarChart2 size={20} />, label: 'Управление', path: '/coach/management', active: true },
+    { icon: <User size={20} />, label: 'Профиль', path: '/coach/profile' }
+  ];
+
+  return (
+    <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
+      {items.map(item => (
+        <button
+          key={item.label}
+          className={`flex flex-col items-center ${item.active ? 'text-blue-600' : 'text-gray-400'}`}
+          onClick={() => navigate(item.path)}
+        >
+          {item.icon}
+          <span className="text-xs">{item.label}</span>
+        </button>
+      ))}
+    </nav>
+  );
+};
