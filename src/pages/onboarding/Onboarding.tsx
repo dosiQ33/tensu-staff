@@ -28,7 +28,8 @@ export default function OnboardingPage() {
       const response = await staffApi.getMe(
         telegramToken
       );
-      if (response.status === 200 && response.data) {
+      if ((response.status === 200 || response.status === 201) && response.data) {
+        console.log("GET ME IS WORKING!!!");
         navigate("coach/profile");
       }
     } catch (err) {
