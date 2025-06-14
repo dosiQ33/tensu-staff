@@ -404,7 +404,7 @@ useEffect(() => {
 
         {/* Club Analytics Modal */}
         {selectedClub && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end">
+          <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-end">
             <div className="bg-white w-full max-h-[90vh] rounded-t-2xl overflow-hidden">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
                 <div className="flex items-center justify-between">
@@ -609,7 +609,7 @@ useEffect(() => {
 
         {/* Payment History Modal */}
         {showPaymentHistory && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end">
+          <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-end">
             <div className="bg-white w-full max-h-[70vh] rounded-t-2xl overflow-hidden">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
                 <div className="flex items-center justify-between">
