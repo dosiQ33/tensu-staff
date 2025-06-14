@@ -1,44 +1,51 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { useTelegram } from "@/hooks/useTelegram";
+import { useNavigate } from "react-router-dom";
 import { AsYouType } from "libphonenumber-js";
 import OnboardingBgImg from "@/assets/onboarding-bg.png";
-import { useNavigate } from "react-router-dom";
+import { useTelegram } from "@/hooks/useTelegram";
 import { staffApi } from "@/functions/axios/axiosFunctions";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const { user, sendData } = useTelegram();
+
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState("");
   const [token, setToken] = useState<string | null>(null);
-  const [telegramId, setTelegramId] = useState<number | null>(null);
   const [contactData, setContactData] = useState<any>(null);
   const [tg, setTg] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
 
+  // флаг, чтобы checkStuffExists вызвался только один раз
+  const [hasChecked, setHasChecked] = useState(false);
+
+  // плавное появление карточки
   useEffect(() => {
     const timer = setTimeout(() => setShowCard(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  const checkStuffExists = async (telegramToken: string | null) => {
-    try {
-      const response = await staffApi.getMe(
-        telegramToken
-      );
-      if ((response.status === 200 || response.status === 201) && response.data) {
-        console.log("GET ME IS WORKING!!!");
-        navigate("coach/profile");
-      }
-    } catch (err) {
-      console.error("Ошибка отправки contact data:", err);
-    }
-  };
-
+  // один раз после того, как получили token, проверяем, есть ли профиль
   useEffect(() => {
+    if (token && !hasChecked) {
+      setHasChecked(true);
+      (async () => {
+        try {
+          const resp = await staffApi.getMe(token);
+          if ((resp.status === 200 || resp.status === 201) && resp.data) {
+            navigate("/coach/profile");
+          }
+        } catch (e) {
+            console.error("Ошибка getMe:", e);
+        }
+      })();
+    }
+  }, [token, hasChecked, navigate]);
 
+  // инициализация Telegram WebApp — только ставим токен, не дергаем API
+  useEffect(() => {
     if (window.Telegram?.WebApp) {
       const telegramApp = window.Telegram.WebApp;
       telegramApp.ready();
@@ -50,12 +57,12 @@ export default function OnboardingPage() {
         JSON.stringify(telegramApp.initDataUnsafe || {});
       setToken(rawInitData);
       localStorage.setItem("telegramInitData", rawInitData);
-      checkStuffExists(rawInitData);
     } else {
       console.error("Telegram WebApp SDK not found");
     }
   }, []);
 
+  // как только приходит user из Telegram — сохраняем данные
   useEffect(() => {
     if (!user) return;
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
@@ -71,52 +78,41 @@ export default function OnboardingPage() {
     localStorage.setItem("telegramFullName", name);
     localStorage.setItem("telegramPhone", phone);
     localStorage.setItem("telegramAvatar", avatar);
-    localStorage.setItem("telegramId", JSON.stringify(telegramId ?? ""));
-    localStorage.setItem("telegramToken", token ?? "");
-  }, [avatar, phone, telegramId, user, token]);
+    localStorage.setItem("telegramToken", token || "");
+  }, [user, phone, avatar, token]);
 
-  // Запросить телефон
+  // запросить контакт
   const requestPhoneContact = () => {
     if (!tg?.requestContact) return;
     setPhone("");
     tg.requestContact((granted: boolean, result: any) => {
-      console.log("Telegram contact callback:", granted, result);
       setContactData(result);
       if (granted && result?.responseUnsafe?.contact?.phone_number) {
-        const rawNumber = result.responseUnsafe.contact.phone_number;
-        setPhone(new AsYouType().input(rawNumber));
+        const raw = result.responseUnsafe.contact.phone_number;
+        setPhone(new AsYouType().input(raw));
       }
     });
   };
 
-  const handleNav = () => {
-    navigate("/coach/profile");
-  };
-
+  // отправка контактных данных и переход в профиль
   useEffect(() => {
     if (!contactData?.response) return;
 
-    const postAndNavigate = async () => {
+    (async () => {
       try {
-        const response = await staffApi.create(
-          {
-            contact_init_data: contactData.response,
-            preferences: {}
-          },
+        await staffApi.create(
+          { contact_init_data: contactData.response, preferences: {} },
           token!
         );
-        setTelegramId(response.data.telegram_id);
+        // после успешного создания — сразу в профиль
+        navigate("/coach/profile");
       } catch (err) {
-        console.log("TELEGRAM ID: ", contactData.responseUnsafe?.contact?.user_id)
-        checkStuffExists(token);
-        console.error("Ошибка отправки contact data:", err);
+        console.error("Ошибка создания staff:", err);
       } finally {
         sendData({ fullName, phone, avatar });
       }
-    };
-
-    postAndNavigate();
-  }, [contactData, token, fullName, phone, avatar, telegramId, sendData, navigate]);
+    })();
+  }, [contactData, token, fullName, phone, avatar, navigate, sendData]);
 
   if (user === null) {
     return (
@@ -169,23 +165,19 @@ export default function OnboardingPage() {
                 )}
               </div>
 
-              {!phone && (
+              {!phone ? (
                 <button
-                  type="button"
                   onClick={requestPhoneContact}
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-[40px]"
                 >
                   Получить номер из Telegram
                 </button>
-              )}
-
-              {phone && (
+              ) : (
                 <button
-                  type="button"
-                  onClick={handleNav}
+                  onClick={() => navigate("/coach/profile")}
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-teal-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-[40px]"
                 >
-                  go{" "}
+                  Продолжить
                 </button>
               )}
             </div>
