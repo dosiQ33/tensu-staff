@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User,
-  Phone,
-  Copy,
   Crown,
   Shield,
   Users,
@@ -163,12 +161,6 @@ const CoachProfile: React.FC = () => {
     });
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // In real app, show a toast notification
-    console.log("Copied to clipboard:", text);
-  };
-
   const handlePayment = (clubId: string) => {
     console.log("Processing payment for club:", clubId);
     // In real app, this would open payment flow
@@ -206,14 +198,7 @@ useEffect(() => {
                 </h2>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Phone size={16} />
                     <span className="text-sm">+{userData.phone}</span>
-                    <button
-                      onClick={() => copyToClipboard(userData.phone)}
-                      className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                    >
-                      <Copy size={14} />
-                    </button>
                   </div>
                 </div>
               </div>
