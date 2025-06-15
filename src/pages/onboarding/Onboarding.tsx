@@ -41,7 +41,7 @@ export default function OnboardingPage() {
             localStorage.setItem("telegramAvatar", resp.data.photo_url);
             localStorage.setItem("telegramId", resp.data.telegram_id.toString());
             localStorage.setItem("telegramToken", token || "");
-            navigate("/coach/profile");
+            // navigate("/coach/profile");
           }
         } catch (e) {
             console.error("Ошибка getMe:", e);
@@ -111,7 +111,7 @@ export default function OnboardingPage() {
           token!
         );
         // после успешного создания — сразу в профиль
-        navigate("/coach/profile");
+        // navigate("/coach/profile");
       } catch (err) {
         console.error("Ошибка создания staff:", err);
       } finally {
