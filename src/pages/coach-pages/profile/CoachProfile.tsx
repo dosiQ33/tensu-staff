@@ -64,15 +64,15 @@ const CoachProfile: React.FC = () => {
   const mapClub = (c: CreateClubResponse): Club => ({
     id: c.id.toString(),
     name: c.name,
-    logo: c.logo_url,               // или дефолтный эмодзи
-    userRole: "owner",              // можно вычислить по c.owner_id
+    logo: c.logo_url, // или дефолтный эмодзи
+    userRole: "owner", // можно вычислить по c.owner_id
     sections: 0,
     students: 0,
     monthlyRevenue: 0,
     studentGrowth: 0,
     plan: "Basic",
-    nextPayment: "",                // нет в API
-    paymentStatus: "pending",       // по умолчанию
+    nextPayment: "", // нет в API
+    paymentStatus: "pending", // по умолчанию
 
     analytics: {
       totalStudents: 0,
@@ -166,13 +166,14 @@ const CoachProfile: React.FC = () => {
     // In real app, this would open payment flow
   };
 
-useEffect(() => {
-  clubsApi.getMy(localStorage.getItem("telegramToken")!)
-    .then(res => {
-      setClubs(res.data.map(mapClub))
-    })
-    .catch(console.error);
-}, []);
+  useEffect(() => {
+    clubsApi
+      .getMy(localStorage.getItem("telegramToken")!)
+      .then((res) => {
+        setClubs(res.data.map(mapClub));
+      })
+      .catch(console.error);
+  }, []);
 
   return (
     <>
@@ -480,7 +481,9 @@ useEffect(() => {
                     <div className="text-xl font-bold text-orange-800">
                       {selectedClub.analytics.peakHours}
                     </div>
-                    <div className="text-xs text-orange-600">Загруженные дни</div>
+                    <div className="text-xs text-orange-600">
+                      Загруженные дни
+                    </div>
                   </div>
                 </div>
 
@@ -660,37 +663,36 @@ useEffect(() => {
           </div>
         )}
       </div>
-      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
+      <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 z-10">
         <div className="flex justify-around items-center py-3">
-
-        <button
-          className="flex flex-col items-center text-gray-400"
-          onClick={() => navigate("/coach/main")}
-        >
-          <Home size={20} />
-          <span className="text-xs">Главная</span>
-        </button>
-        <button
-          className="flex flex-col items-center text-gray-400"
-          onClick={() => navigate("/coach/students")}
-        >
-          <Users size={20} />
-          <span className="text-xs">Мои студенты</span>
-        </button>
-        <button
-          className="flex flex-col items-center text-gray-400"
-          onClick={() => navigate("/coach/management")}
-        >
-          <BarChart2 size={20} />
-          <span className="text-xs">Управление</span>
-        </button>
-        <button
-          className="flex flex-col items-center text-blue-600"
-          onClick={() => navigate("/coach/profie")}
-        >
-          <User size={20} />
-          <span className="text-xs">Профиль</span>
-        </button>
+          <button
+            className="flex flex-col items-center text-gray-400"
+            onClick={() => navigate("/coach/main")}
+          >
+            <Home size={20} />
+            <span className="text-xs">Главная</span>
+          </button>
+          <button
+            className="flex flex-col items-center text-gray-400"
+            onClick={() => navigate("/coach/students")}
+          >
+            <Users size={20} />
+            <span className="text-xs">Мои студенты</span>
+          </button>
+          <button
+            className="flex flex-col items-center text-gray-400"
+            onClick={() => navigate("/coach/management")}
+          >
+            <BarChart2 size={20} />
+            <span className="text-xs">Управление</span>
+          </button>
+          <button
+            className="flex flex-col items-center text-blue-600"
+            onClick={() => navigate("/coach/profie")}
+          >
+            <User size={20} />
+            <span className="text-xs">Профиль</span>
+          </button>
         </div>
       </nav>
     </>

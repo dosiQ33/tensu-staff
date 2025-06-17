@@ -579,7 +579,7 @@ const StudentsPage: React.FC = () => {
                 <div className="pb-20">
                   <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center gap-2">
                     <CreditCard size={18} />
-                      История Оплат
+                    История Оплат
                   </h3>
                   <div className="space-y-2">
                     {selectedStudent.paymentHistory.map((payment, index) => (
@@ -607,35 +607,37 @@ const StudentsPage: React.FC = () => {
           </div>
         )}
       </div>
-      <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
-        <button
-          className="flex flex-col items-center text-gray-400"
-          onClick={() => navigate("/coach/main")}
-        >
-          <Home size={20} />
-          <span className="text-xs">Главная</span>
-        </button>
-        <button
-          className="flex flex-col items-center text-gray-400"
-          onClick={() => navigate("/coach/students")}
-        >
-          <Users size={20} />
-          <span className="text-xs">Мои студенты</span>
-        </button>
-        <button
-          className="flex flex-col items-center text-gray-400"
-          onClick={() => navigate("/coach/management")}
-        >
-          <BarChart2 size={20} />
-          <span className="text-xs">Управление</span>
-        </button>
-        <button
-          className="flex flex-col items-center text-blue-600"
-          onClick={() => navigate("/coach/profie")}
-        >
-          <User size={20} />
-          <span className="text-xs">Профиль</span>
-        </button>
+      <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 z-10">
+        <div className="flex justify-around items-center py-3">
+          <button
+            className="flex flex-col items-center text-gray-400"
+            onClick={() => navigate("/coach/main")}
+          >
+            <Home size={20} />
+            <span className="text-xs">Главная</span>
+          </button>
+          <button
+            className="flex flex-col items-center text-blue-600"
+            onClick={() => navigate("/coach/students")}
+          >
+            <Users size={20} />
+            <span className="text-xs">Мои студенты</span>
+          </button>
+          <button
+            className="flex flex-col items-center text-gray-400"
+            onClick={() => navigate("/coach/management")}
+          >
+            <BarChart2 size={20} />
+            <span className="text-xs">Управление</span>
+          </button>
+          <button
+            className="flex flex-col items-center text-gray-400"
+            onClick={() => navigate("/coach/profie")}
+          >
+            <User size={20} />
+            <span className="text-xs">Профиль</span>
+          </button>
+        </div>
       </nav>
     </>
   );
