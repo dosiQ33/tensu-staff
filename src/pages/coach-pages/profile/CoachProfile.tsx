@@ -180,7 +180,7 @@ useEffect(() => {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-4 py-4">
-            <h1 className="text-xl font-semibold text-gray-900">Profile</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Профиль</h1>
           </div>
         </div>
 
@@ -212,7 +212,7 @@ useEffect(() => {
               onClick={() => setShowCreate(true)}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
             >
-              + Create Club
+              + Создать клуб
             </button>
           </div>
 
@@ -266,7 +266,7 @@ useEffect(() => {
           {/* Clubs Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">
-              My Clubs ({clubs.length})
+              Мои Клубы ({clubs.length})
             </h3>
 
             {clubs.map((club) => (
@@ -297,7 +297,7 @@ useEffect(() => {
                       className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1"
                     >
                       <Eye size={14} />
-                      Details
+                      Детали
                     </button>
                   </div>
                 </div>
@@ -329,7 +329,7 @@ useEffect(() => {
                           }
                         >
                           {club.studentGrowth > 0 ? "+" : ""}
-                          {club.studentGrowth} this month
+                          {club.studentGrowth} этот месяц
                         </span>
                       </div>
                     </div>
@@ -344,12 +344,12 @@ useEffect(() => {
                       <div className="text-xl font-bold text-green-800">
                         {formatCurrency(club.monthlyRevenue)}
                       </div>
-                      <div className="text-sm text-green-600">Monthly</div>
+                      <div className="text-sm text-green-600">Помесячно</div>
                     </div>
                   </div>
 
                   <div className="text-sm text-gray-600 mb-3">
-                    {club.sections} sections • Peak hours:{" "}
+                    {club.sections} секции • Пик часов:{" "}
                     {club.analytics.peakHours}
                   </div>
 
@@ -359,7 +359,7 @@ useEffect(() => {
                       <div className="flex items-center gap-2">
                         <CreditCard className="text-gray-600" size={16} />
                         <span className="text-sm font-medium text-gray-700">
-                          {club.plan} Plan
+                          {club.plan} План
                         </span>
                       </div>
                       <span
@@ -374,14 +374,14 @@ useEffect(() => {
 
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-600">
-                        Next payment: {formatDate(club.nextPayment)}
+                        Следующая оплата: {formatDate(club.nextPayment)}
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => setShowPaymentHistory(club.id)}
                           className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors"
                         >
-                          History
+                          История
                         </button>
                         <button
                           onClick={() => handlePayment(club.id)}
@@ -411,7 +411,7 @@ useEffect(() => {
               <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    {selectedClub.name} Analytics
+                    {selectedClub.name} Аналитика
                   </h2>
                   <button
                     onClick={() => setSelectedClub(null)}
@@ -429,15 +429,15 @@ useEffect(() => {
                     <div className="flex items-center gap-2 mb-1">
                       <Users className="text-blue-600" size={16} />
                       <span className="text-sm font-medium text-blue-700">
-                        Total Students
+                        Общее количество студентов
                       </span>
                     </div>
                     <div className="text-2xl font-bold text-blue-800">
                       {selectedClub.analytics.totalStudents}
                     </div>
                     <div className="text-xs text-blue-600">
-                      +{selectedClub.analytics.newStudents} new, -
-                      {selectedClub.analytics.lostStudents} lost
+                      +{selectedClub.analytics.newStudents} новые, -
+                      {selectedClub.analytics.lostStudents} ушли
                     </div>
                   </div>
 
@@ -445,14 +445,14 @@ useEffect(() => {
                     <div className="flex items-center gap-2 mb-1">
                       <DollarSign className="text-green-600" size={16} />
                       <span className="text-sm font-medium text-green-700">
-                        Weekly Revenue
+                        Недельный Доход
                       </span>
                     </div>
                     <div className="text-2xl font-bold text-green-800">
                       {formatCurrency(selectedClub.analytics.weeklyRevenue)}
                     </div>
                     <div className="text-xs text-green-600">
-                      Avg ticket:{" "}
+                      Средний чек:{" "}
                       {formatCurrency(selectedClub.analytics.averageTicket)}
                     </div>
                   </div>
@@ -461,26 +461,26 @@ useEffect(() => {
                     <div className="flex items-center gap-2 mb-1">
                       <Activity className="text-purple-600" size={16} />
                       <span className="text-sm font-medium text-purple-700">
-                        Workouts
+                        Тренировки
                       </span>
                     </div>
                     <div className="text-2xl font-bold text-purple-800">
                       {selectedClub.analytics.totalWorkouts}
                     </div>
-                    <div className="text-xs text-purple-600">This month</div>
+                    <div className="text-xs text-purple-600">Этот месяц</div>
                   </div>
 
                   <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
                     <div className="flex items-center gap-2 mb-1">
                       <Clock className="text-orange-600" size={16} />
                       <span className="text-sm font-medium text-orange-700">
-                        Peak Hours
+                        Пиковые Часы
                       </span>
                     </div>
                     <div className="text-xl font-bold text-orange-800">
                       {selectedClub.analytics.peakHours}
                     </div>
-                    <div className="text-xs text-orange-600">Busiest time</div>
+                    <div className="text-xs text-orange-600">Загруженные дни</div>
                   </div>
                 </div>
 
@@ -489,7 +489,7 @@ useEffect(() => {
                   <div className="flex items-center gap-2 mb-4">
                     <BarChart3 className="text-gray-600" size={18} />
                     <h3 className="font-semibold text-gray-900">
-                      Revenue Trend
+                      Доход по месяцам
                     </h3>
                   </div>
                   <div className="flex items-end justify-between h-32 gap-2">
@@ -528,7 +528,7 @@ useEffect(() => {
                   <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className="text-gray-600" size={18} />
                     <h3 className="font-semibold text-gray-900">
-                      Student Growth
+                      Прирост Студентов
                     </h3>
                   </div>
                   <div className="flex items-end justify-between h-24 gap-2">
@@ -567,7 +567,7 @@ useEffect(() => {
                   <div className="flex items-center gap-2 mb-4">
                     <PieChart className="text-gray-600" size={18} />
                     <h3 className="font-semibold text-gray-900">
-                      Section Distribution
+                      Распределение по Секциям
                     </h3>
                   </div>
                   <div className="space-y-3">
@@ -616,7 +616,7 @@ useEffect(() => {
               <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Payment History
+                    История Платежей
                   </h2>
                   <button
                     onClick={() => setShowPaymentHistory(null)}
