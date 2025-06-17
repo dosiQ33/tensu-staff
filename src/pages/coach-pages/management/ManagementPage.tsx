@@ -55,8 +55,8 @@ const ManagementPage: React.FC = () => {
       surname: "Smith",
       telegramUsername: "@mike_smith",
       role: "head_coach",
-      sports: ["Karate", "Self Defense"],
-      groups: ["Advanced Karate", "Competition", "Adults"],
+      sports: ["Карате", "ММА"],
+      groups: ["Продвинутые", "Соревнования", "Взрослые"],
       phone: "+1234567890",
       status: "active",
     },
@@ -76,8 +76,8 @@ const ManagementPage: React.FC = () => {
       name: "Carlos",
       surname: "Lopez",
       role: "coach",
-      sports: ["Boxing"],
-      groups: ["Beginner Boxing", "Intermediate Boxing"],
+      sports: ["Бокс"],
+      groups: ["Начинающие", "Средние"],
       phone: "+1234567892",
       status: "vacation",
     },
@@ -99,7 +99,7 @@ const ManagementPage: React.FC = () => {
       telegramUsername: "@david_assist",
       role: "assistant",
       sports: ["Karate"],
-      groups: ["Beginner Karate", "Kids"],
+      groups: ["Начинающие Карате", "Дети"],
       status: "blocked",
     },
   ];
@@ -132,7 +132,7 @@ const ManagementPage: React.FC = () => {
   //     color: "bg-green-500",
   //   },
   // ];
-  const allRoles = ["coach", "admin", "head_coach", "assistant"];
+  const allRoles = ["тренер", "админ"];
   const allGroups = [...new Set(staff.flatMap((s) => s.groups))];
   const allSports = [...new Set(staff.flatMap((s) => s.sports))];
 
@@ -186,7 +186,7 @@ const ManagementPage: React.FC = () => {
           <>
             <div className="text-sm text-gray-600 mb-3">
               {filteredStaff.length} сотрудников
-              {filteredStaff.length !== 1 && "s"}
+              {/* {filteredStaff.length !== 1 && "s"} */}
             </div>
             <div className="space-y-2">
               {filteredStaff.map((member) => (
@@ -209,7 +209,7 @@ const ManagementPage: React.FC = () => {
           <>
             <div className="text-sm text-gray-600 mb-3">
               {sections.length} спортивных секций
-              {sections.length !== 1 && "s"}
+              {/* {sections.length !== 1 && "s"} */}
             </div>
             <div className="space-y-4">
               {sections.map((sec) => (

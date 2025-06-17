@@ -18,11 +18,11 @@ const SectionCard: React.FC<SectionCardProps> = ({ section, onEdit }) => (
           <div className="flex items-center gap-2">
             <ExternalLink size={14} className="text-blue-600" />
             <a href={section.telegramLink} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:text-blue-800">
-              Telegram Group
+              Телеграм Группа
             </a>
           </div>
           <div>
-            <span className="text-sm font-medium text-gray-700">Coaches: </span>
+            <span className="text-sm font-medium text-gray-700">Тренера: </span>
             <span className="text-sm text-gray-600">{section.coaches.join(', ')}</span>
           </div>
         </div>

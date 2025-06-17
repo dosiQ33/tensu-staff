@@ -19,7 +19,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onChange }) =>
       }`}
     >
       <div className="flex items-center justify-center gap-2">
-        <Users size={16} /> Staff
+        <Users size={16} /> Сотрудники
       </div>
     </button>
     <button
@@ -31,7 +31,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onChange }) =>
       }`}
     >
       <div className="flex items-center justify-center gap-2">
-        <Settings size={16} /> Sections
+        <Settings size={16} /> Секции
       </div>
     </button>
   </div>
