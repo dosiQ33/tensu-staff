@@ -9,7 +9,7 @@ interface TabNavigationProps {
 }
 
 const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onChange }) => (
-  <div className="flex mb-4">
+  <div className="flex justify-around items-center py-3">
     <button
       onClick={() => onChange('staff')}
       className={`flex-1 py-2 px-4 text-sm font-medium rounded-l-lg transition-colors ${

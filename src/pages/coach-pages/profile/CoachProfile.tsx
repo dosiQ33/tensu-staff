@@ -661,6 +661,8 @@ useEffect(() => {
         )}
       </div>
       <nav className="h-16 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
+        <div className="flex justify-around items-center py-3">
+
         <button
           className="flex flex-col items-center text-gray-400"
           onClick={() => navigate("/coach/main")}
@@ -689,6 +691,7 @@ useEffect(() => {
           <User size={20} />
           <span className="text-xs">Профиль</span>
         </button>
+        </div>
       </nav>
     </>
   );

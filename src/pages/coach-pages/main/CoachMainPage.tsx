@@ -144,7 +144,7 @@ const CoachMainPage: React.FC = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="px-4 py-3">
-          <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Главная</h1>
         </div>
       </div>
 
@@ -613,7 +613,7 @@ const CoachMainPage: React.FC = () => {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 z-10">
-        <div className="flex justify-around items-center py-2">
+        <div className="flex justify-around items-center py-3">
           <button
             onClick={() => navigate("/coach/main")}
             className="flex flex-col items-center p-2 text-blue-600"
