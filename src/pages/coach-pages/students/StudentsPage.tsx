@@ -235,7 +235,7 @@ const StudentsPage: React.FC = () => {
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-4 py-3">
             <div className="flex items-center justify-between mb-3">
-              <h1 className="text-xl font-semibold text-gray-900">Students</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Студенты</h1>
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -284,7 +284,7 @@ const StudentsPage: React.FC = () => {
                 {/* Coaches Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Coaches
+                    Тренеры
                   </label>
                   <div className="flex flex-wrap gap-1">
                     {allCoaches.map((coach) => (
@@ -342,7 +342,7 @@ const StudentsPage: React.FC = () => {
                 {/* Types Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Training Types
+                    Тип Тренировки
                   </label>
                   <div className="flex flex-wrap gap-1">
                     {allTypes.map((type) => (
@@ -375,7 +375,7 @@ const StudentsPage: React.FC = () => {
         {/* Students List */}
         <div className="px-4 py-2">
           <div className="text-sm text-gray-600 mb-3">
-            {filteredStudents.length} student
+            {filteredStudents.length} студент
             {filteredStudents.length !== 1 ? "s" : ""}
           </div>
 
@@ -411,7 +411,7 @@ const StudentsPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span>Groups: {student.groups.join(", ")}</span>
+                      <span>Группы: {student.groups.join(", ")}</span>
                     </div>
                   </div>
 
@@ -476,7 +476,7 @@ const StudentsPage: React.FC = () => {
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600">Status:</span>
+                      <span className="text-gray-600">Статус:</span>
                       <span
                         className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
                           selectedStudent.status
@@ -486,13 +486,13 @@ const StudentsPage: React.FC = () => {
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Type:</span>
+                      <span className="text-gray-600">Типы:</span>
                       <span className="ml-2 font-medium">
                         {selectedStudent.type}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Valid until:</span>
+                      <span className="text-gray-600">Валидно до:</span>
                       <span
                         className={`ml-2 ${
                           isExpiringSoon(selectedStudent.membershipUntil)
@@ -512,7 +512,7 @@ const StudentsPage: React.FC = () => {
                     onClick={() => handleRenewMembership(selectedStudent.id)}
                     className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors"
                   >
-                    Renew Membership
+                    Обновить членство
                   </button>
 
                   {selectedStudent.status === "active" ? (
@@ -523,7 +523,7 @@ const StudentsPage: React.FC = () => {
                       className="flex items-center gap-2 bg-blue-100 text-blue-700 py-2 px-4 rounded-lg font-medium hover:bg-blue-200 transition-colors"
                     >
                       <Pause size={16} />
-                      Freeze
+                      Заморозить
                     </button>
                   ) : selectedStudent.status === "frozen" ? (
                     <button
@@ -533,7 +533,7 @@ const StudentsPage: React.FC = () => {
                       className="flex items-center gap-2 bg-green-100 text-green-700 py-2 px-4 rounded-lg font-medium hover:bg-green-200 transition-colors"
                     >
                       <Play size={16} />
-                      Unfreeze
+                      Разморозить
                     </button>
                   ) : (
                     <button
@@ -543,7 +543,7 @@ const StudentsPage: React.FC = () => {
                       className="flex items-center gap-2 bg-green-100 text-green-700 py-2 px-4 rounded-lg font-medium hover:bg-green-200 transition-colors"
                     >
                       <RotateCcw size={16} />
-                      Reactivate
+                      Возобновить
                     </button>
                   )}
                 </div>
@@ -552,7 +552,7 @@ const StudentsPage: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center gap-2">
                     <Calendar size={18} />
-                    Visit History
+                    История Посещений
                   </h3>
                   <div className="space-y-2">
                     {selectedStudent.visitHistory.map((visit, index) => (
@@ -579,7 +579,7 @@ const StudentsPage: React.FC = () => {
                 <div className="pb-20">
                   <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center gap-2">
                     <CreditCard size={18} />
-                    Payment History
+                      История Оплат
                   </h3>
                   <div className="space-y-2">
                     {selectedStudent.paymentHistory.map((payment, index) => (

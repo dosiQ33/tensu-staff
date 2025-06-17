@@ -167,7 +167,7 @@ const ManagementPage: React.FC = () => {
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="px-4 py-3">
           <h1 className="text-xl font-semibold text-gray-900 mb-4">
-            Management Panel
+            Панель Управления
           </h1>
           <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
           {activeTab === "staff" && (
@@ -185,7 +185,7 @@ const ManagementPage: React.FC = () => {
         {activeTab === "staff" ? (
           <>
             <div className="text-sm text-gray-600 mb-3">
-              {filteredStaff.length} staff member
+              {filteredStaff.length} сотрудников
               {filteredStaff.length !== 1 && "s"}
             </div>
             <div className="space-y-2">
@@ -201,14 +201,14 @@ const ManagementPage: React.FC = () => {
                 onClick={() => setShowAddStaff(true)}
                 className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
               >
-                <Plus size={20} /> Add Coach/Administrator
+                <Plus size={20} /> Добавить Тренера/Администратора
               </button>
             </div>
           </>
         ) : (
           <>
             <div className="text-sm text-gray-600 mb-3">
-              {sections.length} sports section
+              {sections.length} спортивных секций
               {sections.length !== 1 && "s"}
             </div>
             <div className="space-y-4">
@@ -223,7 +223,7 @@ const ManagementPage: React.FC = () => {
                 onClick={() => setShowAddSection(true)}
                 className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
               >
-                <Plus size={20} /> Add New Section
+                <Plus size={20} /> Добавить Новую Секцию
               </button>
             </div>
           </>
