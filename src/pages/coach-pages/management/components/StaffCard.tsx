@@ -30,16 +30,16 @@ const StaffCard: React.FC<StaffCardProps> = ({ member, expanded, onToggle }) => 
             <span className="font-medium">Sports:</span> {member.sports.join(', ')}
           </div>
         )}
-        {member.groups.length > 0 && (
+        {member.clubs.length > 0 && (
           <div className="text-sm text-gray-600">
             <button
               onClick={() => onToggle(member.id)}
               className="font-medium text-blue-600 hover:text-blue-800"
             >
-              Groups ({member.groups.length}) {expanded ? '▼' : '▶'}
+              Clubs ({member.clubs.length}) {expanded ? '▼' : '▶'}
             </button>
             {expanded && (
-              <div className="mt-1 text-xs">{member.groups.join(', ')}</div>
+              <div className="mt-1 text-xs">{member.clubs.join(', ')}</div>
             )}
           </div>
         )}
