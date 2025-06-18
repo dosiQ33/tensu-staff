@@ -21,6 +21,8 @@ export default function OnboardingPage() {
   // флаг, чтобы checkStuffExists вызвался только один раз
   const [hasChecked, setHasChecked] = useState(false);
 
+  const [showInvitationAlert, setShowInvitationAlert] = useState(false);
+
   // плавное появление карточки
   useEffect(() => {
     const timer = setTimeout(() => setShowCard(true), 1000);
@@ -106,10 +108,17 @@ export default function OnboardingPage() {
 
     (async () => {
       try {
-        await staffApi.create(
+        const response = await staffApi.create(
           { contact_init_data: contactData.response, preferences: {} },
           token!
         );
+
+        if (response.status !== 200 && response.status !== 201) {
+            // navigate("/coach/profile");
+        }
+        if (response.status === 404) {
+          setShowInvitationAlert(true);
+        }
         // после успешного создания — сразу в профиль
         // navigate("/coach/profile");
       } catch (err) {
@@ -143,6 +152,13 @@ export default function OnboardingPage() {
           ${showCard ? "opacity-95 translate-y-0" : "opacity-0 translate-y-10"}
         `}
       >
+        {showInvitationAlert && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-lg">
+            <p className="text-sm">
+              Вы не являетесь тренером или администратором клуба. Пожалуйста, свяжитесь с вашим клубом для получения доступа.
+            </p>
+          </div>
+        )}
         <div className="overflow-hidden w-full">
           <div className="flex transition-transform duration-500 ease-in-out">
             <div className="flex-shrink-0 w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 space-y-6">
