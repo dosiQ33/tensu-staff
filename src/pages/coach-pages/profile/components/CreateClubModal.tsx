@@ -25,8 +25,8 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
     phone: '',
     telegram_url: '',
     instagram_url: '',
-    timezone: 'Asia/Almaty',
-    currency: 'KZT',
+    // timezone: 'Asia/Almaty',
+    // currency: 'KZT',
     extra: {},
   });
 
@@ -43,8 +43,8 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
         phone: '',
         telegram_url: '',
         instagram_url: '',
-        timezone: 'Asia/Almaty',
-        currency: 'KZT',
+        // timezone: 'Asia/Almaty',
+        // currency: 'KZT',
         extra: {},
       });
     }
@@ -179,35 +179,8 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
-              <select
-                name="timezone"
-                value={form.timezone}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-              >
-                <option>Asia/Almaty</option>
-                <option>Europe/London</option>
-                <option>America/New_York</option>
-                {/* при необходимости добавить другие */}
-              </select>
-            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-            <select
-              name="currency"
-              value={form.currency}
-              onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-            >
-              <option>KZT</option>
-              <option>USD</option>
-              <option>EUR</option>
-            </select>
-          </div>
         </div>
 
         {/* Actions */}

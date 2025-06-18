@@ -17,7 +17,7 @@ export interface CreateClubRequest {
   phone: string;
   telegram_url: string;
   instagram_url: string;
-  timezone: string;  
-  currency: string;   
+  // timezone: string;  
+  // currency: string;   
   extra: Record<string, unknown>;
 }
