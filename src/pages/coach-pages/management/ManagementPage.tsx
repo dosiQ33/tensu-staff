@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useMemo, useEffect } from "react";
 import TabNavigation from "./components/TabNavigation";
 import StaffFilter from "./components/StaffFilter";
@@ -57,11 +56,11 @@ const ManagementPage: React.FC = () => {
   // raw API data
   const [sectionsRaw, setSectionsRaw] = useState<CreateSectionResponse[]>([]);
   const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
-  const [invitationsRaw, setInvitationsRaw] = useState<Invitation[]>([]);
+  // const [invitationsRaw, setInvitationsRaw] = useState<Invitation[]>([]);
 
   // UI models
   const [sections, setSections] = useState<CreateSectionResponse[]>([]);
-  const [clubs, setClubs] = useState<CreateClubResponse[]>([]);
+  // const [clubs, setClubs] = useState<CreateClubResponse[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
 
   const allRoles = ["coach", "admin"];
@@ -82,11 +81,11 @@ const ManagementPage: React.FC = () => {
         // raw
         setSectionsRaw(secRes.data);
         setClubsRaw(clubRes.data);
-        setInvitationsRaw(invRes.data.invitations);
+        // setInvitationsRaw(invRes.data.invitations);
 
         // sections & clubs pass-through
         setSections(secRes.data);
-        setClubs(clubRes.data);
+        // setClubs(clubRes.data);
 
         // map invitations → Staff
         const staffList: Staff[] = invRes.data.invitations.map((inv) => {
@@ -128,7 +127,7 @@ const ManagementPage: React.FC = () => {
       );
       const invitation = data as Invitation;
       // append newly created invitation to both raw & UI state
-      setInvitationsRaw((prev) => [...prev, invitation]);
+      // setInvitationsRaw((prev) => [...prev, invitation]);
       setStaff((prev) => [
         ...prev,
         {
