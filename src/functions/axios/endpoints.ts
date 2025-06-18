@@ -36,11 +36,11 @@ export const ENDPOINTS = {
   },
 
   INVITATIONS: {
-    CREATE: (clubId: string) => `/api/v1/invitations/club/${clubId}`,
-    CLUB: (clubId: string) => `/api/v1/invitations/club/${clubId}`,
-    MY: '/api/v1/invitations/my',
-    BY_ID: (invitationId: string) => `/api/v1/invitations/${invitationId}`,
-    DELETE: (invitationId: string) => `/api/v1/invitations/${invitationId}`,
-    STATS_MY: '/api/v1/invitations/stats/my',
+    CREATE: (clubId: string) => `/invitations/club/${clubId}`,
+    CLUB: (clubId: string) => `/invitations/club/${clubId}`,
+    MY: '/invitations/my',
+    BY_ID: (invitationId: string) => `/invitations/${invitationId}`,
+    DELETE: (invitationId: string) => `/invitations/${invitationId}`,
+    STATS_MY: '/invitations/stats/my',
   },
 } as const;
