@@ -114,14 +114,14 @@ export default function OnboardingPage() {
         );
 
         if (response.status !== 200 && response.status !== 201) {
-            // navigate("/coach/profile");
-        }
-        if (response.status === 404) {
-          setShowInvitationAlert(true);
+          // navigate("/coach/profile");
         }
         // после успешного создания — сразу в профиль
-        // navigate("/coach/profile");
-      } catch (err) {
+
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          setShowInvitationAlert(true);
+        }
         console.error("Ошибка создания staff:", err);
       } finally {
         sendData({ fullName, phone, avatar });
