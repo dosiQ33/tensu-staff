@@ -1,12 +1,13 @@
 import React from 'react';
 import { X, Plus } from 'lucide-react';
 import type { NewSection, Staff } from '@/types/types';
+import type { CreateClubResponse } from '@/functions/axios/responses';
 
 interface AddSectionModalProps {
   show: boolean;
   editing: boolean;
-  allCoaches: Staff[];
-  allClubs: { id: string; name: string }[];  // clubs fetched from API
+  allStaff: Staff[];
+  allClubs: CreateClubResponse[];  // clubs fetched from API
   newSection: NewSection;
   onChange: (field: keyof NewSection, value: unknown) => void;
   onToggleCoach: (coach: string) => void;
@@ -18,7 +19,7 @@ interface AddSectionModalProps {
 const AddSectionModal: React.FC<AddSectionModalProps> = ({
   show,
   editing,
-  allCoaches,
+  allStaff,
   allClubs,
   newSection,
   onChange,
@@ -87,7 +88,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Assigned Coaches</label>
             <div className="flex flex-wrap gap-2">
-              {allCoaches.filter(c => c.role !== 'admin').map(coach => {
+              {allStaff.filter(c => c.role !== 'admin').map(coach => {
                 const fullName = `${coach.name} ${coach.surname}`;
                 const selected = newSection.coaches.includes(fullName);
                 return (

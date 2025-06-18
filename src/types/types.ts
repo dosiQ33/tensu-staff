@@ -3,9 +3,9 @@ export interface Staff {
   name: string;
   surname: string;
   telegramUsername?: string;
-  role: 'coach' | 'admin' | 'head_coach' | 'assistant';
+  role: 'coach' | 'admin';
   sports: string[];
-  groups: string[];
+  clubs: string[];
   phone?: string;
   status: 'active' | 'blocked' | 'vacation';
 }
@@ -23,18 +23,14 @@ export interface SportsSection {
 export interface Filters {
   search: string;
   roles: string[];
-  groups: string[];
-  sports: string[];
+  clubs: string[];
+  sections: string[];
 }
 
 export interface NewStaff {
-  name: string;
-  surname: string;
-  telegramUsername: string;
   role: string;
-  sports: string[];
-  groups: string[];
   phone: string;
+  clubId: string;   
 }
 
 export interface NewSection {

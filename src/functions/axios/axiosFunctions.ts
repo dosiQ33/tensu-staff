@@ -1,7 +1,7 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
-import type { CreateClubRequest, CreateStaffRequest } from './requests';
-import type { CreateClubResponse, CreateStaffResponse, GetMyClubsResponse } from './responses';
+import type { CreateClubRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest } from './requests';
+import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetMySectionsResponse } from './responses';
 
 export const staffApi = {
     getList: (token: string) =>
@@ -42,5 +42,27 @@ export const clubsApi = {
 };
 
 export const sectionsApi = {
-    getMy: (token: string) => axiosRequest(ENDPOINTS.SECTIONS.MY, 'GET', token),
+    getMy: (token: string) =>
+        axiosRequest<GetMySectionsResponse>(ENDPOINTS.SECTIONS.MY, 'GET', token),
+    create: (data: CreateSectionRequest, token: string) =>
+        axiosRequest<CreateSectionResponse>(ENDPOINTS.SECTIONS.BASE, 'POST', token, data),
 };
+
+export const invitationsApi = {
+    create: (clubId: string, data: CreateStuffInvitationRequest, token: string) =>
+        axiosRequest(ENDPOINTS.INVITATIONS.CREATE(clubId), 'POST', token, data),
+
+    getMy: (token: string) =>
+        axiosRequest<GetMyInvitationsResponse>(
+            ENDPOINTS.INVITATIONS.MY,
+            'GET',
+            token
+        ),
+
+    getById: (id: string, token: string) =>
+        axiosRequest(ENDPOINTS.INVITATIONS.BY_ID(id), 'GET', token),
+    delete: (id: string, token: string) =>
+        axiosRequest<void>(ENDPOINTS.INVITATIONS.DELETE(id), 'DELETE', token),
+    statsMy: (token: string) =>
+        axiosRequest(ENDPOINTS.INVITATIONS.STATS_MY, 'GET', token),
+}
