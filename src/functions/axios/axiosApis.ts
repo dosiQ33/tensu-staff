@@ -1,6 +1,6 @@
 import axios, { type AxiosRequestConfig, type Method, type AxiosResponse } from "axios";
 
-export const apiUrl = "https://195.49.215.106/api/v1"; 
+export const apiUrl = "https://api.tensu.kz/api/v1"; 
 
 export const headersFunction = (accessToken: string | null, contentType?: string) => {
   return {
