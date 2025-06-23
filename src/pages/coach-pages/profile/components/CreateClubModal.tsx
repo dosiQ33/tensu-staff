@@ -25,9 +25,6 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
     phone: '',
     telegram_url: '',
     instagram_url: '',
-    // timezone: 'Asia/Almaty',
-    // currency: 'KZT',
-    extra: {},
   });
 
   // сброс формы при открытии
@@ -43,9 +40,6 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
         phone: '',
         telegram_url: '',
         instagram_url: '',
-        // timezone: 'Asia/Almaty',
-        // currency: 'KZT',
-        extra: {},
       });
     }
   }, [show]);

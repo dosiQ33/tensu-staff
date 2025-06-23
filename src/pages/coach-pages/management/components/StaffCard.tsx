@@ -56,6 +56,7 @@ const StaffCard: React.FC<StaffCardProps> = ({ member, expanded, onToggle }) => 
           {member.phone && (
             <button className="p-1 text-gray-400 hover:text-blue-600">
               <Phone size={16} />
+              {member.phone}
             </button>
           )}
           {member.telegramUsername && (

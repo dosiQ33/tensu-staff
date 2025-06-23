@@ -7,7 +7,7 @@ export interface Staff {
   sports: string[];
   clubs: string[];
   phone?: string;
-  status: 'active' | 'blocked' | 'vacation';
+  status: 'active' | 'pending' | 'vacation' | 'blocked';
 }
 
 export interface SportsSection {
@@ -36,7 +36,6 @@ export interface NewStaff {
 export interface NewSection {
   capacity: number;
   price: number;
-  duration_min: number;
   coachId: number | null;
   tags: string[];
   schedule: [];

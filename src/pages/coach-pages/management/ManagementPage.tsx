@@ -50,7 +50,6 @@ const ManagementPage: React.FC = () => {
     price: 0,
     level: "beginner",
     capacity: 0,
-    duration_min: 0,
     coachId: null,
     tags: [],
     schedule: [],
@@ -89,7 +88,7 @@ const ManagementPage: React.FC = () => {
               sports: [],
               clubs: club ? [club.name] : [],
               phone: inv.phone_number,
-              status: "active",
+              status: "pending",
             };
           })
         );
@@ -121,7 +120,6 @@ const ManagementPage: React.FC = () => {
         level: newSection.level,
         capacity: newSection.capacity,
         price: newSection.price,
-        duration_min: newSection.duration_min,
         coach_id: newSection.coachId ?? undefined,
         tags: newSection.tags,
         schedule: buildSchedule(newSection.schedule || []),
@@ -138,7 +136,6 @@ const ManagementPage: React.FC = () => {
         price: 0,
         level: "beginner",
         capacity: 0,
-        duration_min: 0,
         coachId: null,
         tags: [],
         schedule: [],
@@ -175,7 +172,7 @@ const ManagementPage: React.FC = () => {
             .filter((c) => c.id === typedInvitation.club_id)
             .map((c) => c.name),
           phone: typedInvitation.phone_number,
-          status: "active",
+          status: "pending",
         },
       ]);
       setShowAddStaff(false);

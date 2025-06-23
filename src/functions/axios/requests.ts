@@ -17,7 +17,6 @@ export interface CreateClubRequest {
   phone: string;
   telegram_url: string;
   instagram_url: string; 
-  extra: Record<string, unknown>;
 }
 
 export interface CreateStuffInvitationRequest {
@@ -31,7 +30,6 @@ export interface CreateSectionRequest {
   level:        'beginner' | 'intermediate' | 'advanced';
   capacity:     number;
   price:        number;
-  duration_min: number;
   coach_id?:    number | null;
   tags:         string[];
   schedule:     Record<string, { start: string; end: string }[]>;

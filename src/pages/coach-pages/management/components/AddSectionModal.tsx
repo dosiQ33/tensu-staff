@@ -141,19 +141,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 className="w-full border rounded-lg p-2"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Длительность (мин)
-              </label>
-              <input
-                type="number"
-                value={newSection.duration_min}
-                onChange={(e) =>
-                  onChange("duration_min", Number(e.target.value))
-                }
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium mb-1">
                 Тренер (ID)
