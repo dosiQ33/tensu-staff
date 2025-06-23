@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Users,
   Snowflake,
@@ -10,12 +9,10 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  BarChart2,
-  Home,
-  User,
   Clock,
   MapPin,
 } from "lucide-react";
+import { BottomNav } from "@/components/Layout";
 
 // Base training record
 type Training = {
@@ -40,7 +37,6 @@ interface StatRow {
 }
 
 const CoachMainPage: React.FC = () => {
-  const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // Statistics state
@@ -610,40 +606,7 @@ const CoachMainPage: React.FC = () => {
       >
         <Plus size={24} />
       </button>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 z-10">
-        <div className="flex justify-around items-center py-3">
-          <button
-            onClick={() => navigate("/coach/main")}
-            className="flex flex-col items-center p-2 text-blue-600"
-          >
-            <Home size={20} />
-            <span className="text-xs mt-1">Главная</span>
-          </button>
-          <button
-            onClick={() => navigate("/coach/students")}
-            className="flex flex-col items-center p-2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <Users size={20} />
-            <span className="text-xs mt-1">Мои студенты</span>
-          </button>
-          <button
-            onClick={() => navigate("/coach/management")}
-            className="flex flex-col items-center p-2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <BarChart2 size={20} />
-            <span className="text-xs mt-1">Управление</span>
-          </button>
-          <button
-            onClick={() => navigate("/coach/profile")}
-            className="flex flex-col items-center p-2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <User size={20} />
-            <span className="text-xs mt-1">Профиль</span>
-          </button>
-        </div>
-      </nav>
+      <BottomNav page="main"/>
     </div>
   );
 };

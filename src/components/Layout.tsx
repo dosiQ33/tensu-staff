@@ -116,6 +116,9 @@ interface SectionHeaderProps {
   };
 }
 
+interface BottomNavProps {
+  page?: string;
+}
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, action }) => {
   return (
     <div className="flex items-center justify-between mb-4">
@@ -133,13 +136,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, action }) =
   );
 };
 
-export const BottomNav: React.FC = () => {
+export const BottomNav: React.FC<BottomNavProps> = ({ page }) => {
   const navigate = useNavigate();
   const items = [
-    { icon: <Home size={20} />, label: 'Главная', path: '/coach/main' },
-    { icon: <Users size={20} />, label: 'Мои студенты', path: '/coach/students' },
-    { icon: <BarChart2 size={20} />, label: 'Управление', path: '/coach/management', active: true },
-    { icon: <User size={20} />, label: 'Профиль', path: '/coach/profile' }
+    { icon: <Home size={20} />, label: 'Главная', path: '/coach/main', active: page === 'main' },
+    { icon: <Users size={20} />, label: 'Мои студенты', path: '/coach/students', active: page === 'students' },
+    { icon: <BarChart2 size={20} />, label: 'Управление', path: '/coach/management', active: page === 'management' },
+    { icon: <User size={20} />, label: 'Профиль', path: '/coach/profile', active: page === 'profile' }
   ];
 
   return (
@@ -148,6 +151,7 @@ export const BottomNav: React.FC = () => {
         <button
           key={item.label}
           className={`flex flex-col items-center ${item.active ? 'text-blue-600' : 'text-gray-400'}`}
+          disabled={item.active}
           onClick={() => navigate(item.path)}
         >
           {item.icon}

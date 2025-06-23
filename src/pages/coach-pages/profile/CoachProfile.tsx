@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   User,
   Crown,
@@ -14,13 +13,12 @@ import {
   Activity,
   Clock,
   BarChart3,
-  PieChart,
-  BarChart2,
-  Home,
+  PieChart
 } from "lucide-react";
 import { clubsApi } from "@/functions/axios/axiosFunctions";
 import { CreateClubModal } from "./components/CreateClubModal";
 import type { CreateClubResponse } from "@/functions/axios/responses";
+import { BottomNav } from "@/components/Layout";
 
 interface Club {
   id: string;
@@ -59,8 +57,6 @@ const CoachProfile: React.FC = () => {
   const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
     null
   );
-  const navigate = useNavigate();
-
   const mapClub = (c: CreateClubResponse): Club => ({
     id: c.id.toString(),
     name: c.name,
@@ -663,38 +659,7 @@ const CoachProfile: React.FC = () => {
           </div>
         )}
       </div>
-      <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 z-10">
-        <div className="flex justify-around items-center py-3">
-          <button
-            className="flex flex-col items-center text-gray-400"
-            onClick={() => navigate("/coach/main")}
-          >
-            <Home size={20} />
-            <span className="text-xs">Главная</span>
-          </button>
-          <button
-            className="flex flex-col items-center text-gray-400"
-            onClick={() => navigate("/coach/students")}
-          >
-            <Users size={20} />
-            <span className="text-xs">Мои студенты</span>
-          </button>
-          <button
-            className="flex flex-col items-center text-gray-400"
-            onClick={() => navigate("/coach/management")}
-          >
-            <BarChart2 size={20} />
-            <span className="text-xs">Управление</span>
-          </button>
-          <button
-            className="flex flex-col items-center text-blue-600"
-            onClick={() => navigate("/coach/profie")}
-          >
-            <User size={20} />
-            <span className="text-xs">Профиль</span>
-          </button>
-        </div>
-      </nav>
+      <BottomNav page="profile"/>
     </>
   );
 };

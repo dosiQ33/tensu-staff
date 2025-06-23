@@ -279,7 +279,7 @@ const ManagementPage: React.FC = () => {
         onSave={() => {}}
         onClose={() => setShowAddSection(false)}
       />
-      <BottomNav />
+      <BottomNav page="management"/>
     </div>
   );
 };

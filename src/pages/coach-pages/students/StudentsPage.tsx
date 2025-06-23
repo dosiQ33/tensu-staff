@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Search,
   Phone,
@@ -12,11 +11,9 @@ import {
   CreditCard,
   Pause,
   Play,
-  RotateCcw,
-  BarChart2,
-  Home,
-  User,
+  RotateCcw
 } from "lucide-react";
+import { BottomNav } from "@/components/Layout";
 
 interface Student {
   id: string;
@@ -42,7 +39,6 @@ interface Filters {
 }
 
 const StudentsPage: React.FC = () => {
-  const navigate = useNavigate();
   // Sample data
   const allStudents: Student[] = [
     {
@@ -607,38 +603,7 @@ const StudentsPage: React.FC = () => {
           </div>
         )}
       </div>
-      <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 z-10">
-        <div className="flex justify-around items-center py-3">
-          <button
-            className="flex flex-col items-center text-gray-400"
-            onClick={() => navigate("/coach/main")}
-          >
-            <Home size={20} />
-            <span className="text-xs">Главная</span>
-          </button>
-          <button
-            className="flex flex-col items-center text-blue-600"
-            onClick={() => navigate("/coach/students")}
-          >
-            <Users size={20} />
-            <span className="text-xs">Мои студенты</span>
-          </button>
-          <button
-            className="flex flex-col items-center text-gray-400"
-            onClick={() => navigate("/coach/management")}
-          >
-            <BarChart2 size={20} />
-            <span className="text-xs">Управление</span>
-          </button>
-          <button
-            className="flex flex-col items-center text-gray-400"
-            onClick={() => navigate("/coach/profie")}
-          >
-            <User size={20} />
-            <span className="text-xs">Профиль</span>
-          </button>
-        </div>
-      </nav>
+      <BottomNav page="students"/>
     </>
   );
 };
