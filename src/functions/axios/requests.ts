@@ -32,8 +32,8 @@ export interface CreateSectionRequest {
   capacity:     number;
   price:        number;
   duration_min: number;
-  coach_id:     number;
+  coach_id?:    number | null;
   tags:         string[];
-  schedule:     Record<string, unknown>;
+  schedule:     Record<string, { start: string; end: string }[]>;
   active:       boolean;
 }

@@ -72,7 +72,7 @@ export interface CreateSectionResponse {
   name:         string;
   level:        'beginner' | 'intermediate' | 'advanced';
   capacity:     number;
-  price:        string;
+  price:        number;
   duration_min: number;
   coach_id:     number;
   tags:         string[];

@@ -34,9 +34,19 @@ export interface NewStaff {
 }
 
 export interface NewSection {
-  clubId?: string;
+  capacity: number;
+  price: number;
+  duration_min: number;
+  coachId: number | null;
+  tags: string[];
+  schedule: [];
+  clubId?: number;
   name: string;
-  description: string;
-  telegramLink: string;
-  coaches: string[];
+  level: 'beginner' | 'intermediate' | 'advanced';
+}
+
+export interface ScheduleEntry {
+  day: string;
+  start: string;
+  end: string;
 }
