@@ -34,9 +34,9 @@ export interface NewStaff {
 }
 
 export interface NewSection {
-  capacity: number;
-  price: number;
-  coachId: number | null;
+  capacity?: number;
+  price?: number;
+  coachId?: number;
   tags: string[];
   schedule: [];
   clubId?: number;

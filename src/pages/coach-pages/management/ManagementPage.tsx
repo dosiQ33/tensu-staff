@@ -47,10 +47,10 @@ const ManagementPage: React.FC = () => {
   const [newSection, setNewSection] = useState<NewSection>({
     clubId: undefined,
     name: "",
-    price: 0,
+    price: undefined,
     level: "beginner",
-    capacity: 0,
-    coachId: null,
+    capacity: undefined,
+    coachId: undefined,
     tags: [],
     schedule: [],
   });
@@ -133,10 +133,10 @@ const ManagementPage: React.FC = () => {
       setNewSection({
         clubId: undefined,
         name: "",
-        price: 0,
+        price: data.price,
         level: "beginner",
-        capacity: 0,
-        coachId: null,
+        capacity: data.capacity,
+        coachId: data.coach_id,
         tags: [],
         schedule: [],
       });
@@ -279,7 +279,7 @@ const ManagementPage: React.FC = () => {
         onSave={() => {}}
         onClose={() => setShowAddSection(false)}
       />
-      <BottomNav page="management"/>
+      <BottomNav page="management" />
     </div>
   );
 };

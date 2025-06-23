@@ -25,13 +25,13 @@ export interface CreateStuffInvitationRequest {
 }
 
 export interface CreateSectionRequest {
-  club_id:      number;
+  club_id?:      number;
   name:         string;
   level:        'beginner' | 'intermediate' | 'advanced';
-  capacity:     number;
-  price:        number;
+  capacity?:     number;
+  price?:        number;
   coach_id?:    number | null;
-  tags:         string[];
-  schedule:     Record<string, { start: string; end: string }[]>;
+  tags?:         string[];
+  schedule?:     Record<string, { start: string; end: string }[]>;
   active:       boolean;
 }

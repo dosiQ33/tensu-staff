@@ -127,18 +127,19 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               </label>
               <input
                 type="number"
-                value={newSection.capacity}
+                value={newSection.capacity || ""}
+                min={1}
                 onChange={(e) => onChange("capacity", Number(e.target.value))}
-                className="w-full border rounded-lg p-2"
+                className="w-full border rounded-lg p-2 appearance-none"
               />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Цена</label>
               <input
                 type="number"
-                value={newSection.price}
+                value={newSection.price || ""}
                 onChange={(e) => onChange("price", Number(e.target.value))}
-                className="w-full border rounded-lg p-2"
+                className="w-full border rounded-lg p-2 appearance-none"
               />
             </div>
             <div className="col-span-2">
