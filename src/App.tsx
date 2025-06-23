@@ -1,4 +1,4 @@
-// src/App.tsx
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -17,6 +17,19 @@ import CoachProfile from "./pages/coach-pages/profile/CoachProfile";
 import CoachMainPage from "./pages/coach-pages/main/CoachMainPage";
 
 export default function App() {
+  React.useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      // сигнализируем Telegram, что приложение готово
+      tg.ready();
+
+      // если версия клиента ≥ 7.7 — отключаем вертикальные свайпы
+      if (tg.isVersionAtLeast('7.7')) {
+        tg.disableVerticalSwipes();
+      }
+    }
+  }, []);
+
   return (
     <Router>
       <Routes>
