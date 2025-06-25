@@ -63,7 +63,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white w-[92%] max-w-md rounded-2xl shadow-2xl overflow-hidden">
+      <div className="bg-white w-full h-full max-w-md shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-800">Создать Клуб</h2>

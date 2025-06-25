@@ -61,7 +61,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-[92%] max-w-lg overflow-hidden">
+      <div className="bg-white w-full h-full max-w-lg overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
           <h2 className="text-xl font-semibold text-gray-800">
