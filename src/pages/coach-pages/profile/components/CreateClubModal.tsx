@@ -65,7 +65,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
       <div className="bg-white w-full h-full max-w-md shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center justify-between px-6 pt-6 pb-2">
           <h2 className="text-lg font-semibold text-gray-800">Создать Клуб</h2>
           <button
             onClick={onClose}
@@ -76,7 +76,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+        <div className="px-6 py-5 space-y-5 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
           {[
             {
               label: "Название",
@@ -189,11 +189,11 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end px-6 py-4 bg-gray-50">
+        <div className="flex justify-end px-6 py-4 bg-gray-100 h-full">
           <button
             onClick={handleSubmit}
             disabled={loading || !form.name}
-            className="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition disabled:opacity-50"
+            className="inline-flex items-center px-5 py-2 h-max bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition disabled:opacity-50"
           >
             {loading && (
               <svg
