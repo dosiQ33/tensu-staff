@@ -869,7 +869,7 @@ const ProfilePage: React.FC = () => {
 
         {/* Freeze Modal */}
         {showFreezeModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end">
             <div className="bg-white w-full max-h-[70vh] rounded-t-3xl overflow-hidden">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
                 <div className="flex items-center justify-between">

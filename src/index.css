@@ -1,7 +1,8 @@
 /* index.css */
 @import "tailwindcss";
 
-html, body {
+html,
+body {
   overflow: hidden;
   height: 100vh;
   margin: 0;
@@ -12,4 +13,27 @@ html, body {
   height: 100vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+.PhoneInputInput {
+  outline: none;
+}
+
+.PhoneInputCountrySelect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.PhoneInputCountryIcon {
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.PhoneInputCountryIcon--border {
+  background-color: none;
+  box-shadow: none;
 }
