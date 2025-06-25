@@ -60,7 +60,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
       <div className="bg-white rounded-2xl shadow-xl w-[95%] max-w-lg overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
@@ -216,19 +216,24 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       </option>
                     ))}
                   </select>
-                  <input
-                    type="time"
-                    value={entry.start}
-                    onChange={(e) => updateEntry(idx, "start", e.target.value)}
-                    className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                  />
-                  <span className="text-gray-500">—</span>
-                  <input
-                    type="time"
-                    value={entry.end}
-                    onChange={(e) => updateEntry(idx, "end", e.target.value)}
-                    className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                  />
+                  <div className="flex items-center gap-2 mt-3">
+                    <input
+                      type="time"
+                      value={entry.start}
+                      onChange={(e) =>
+                        updateEntry(idx, "start", e.target.value)
+                      }
+                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                    />
+                    <span className="text-gray-500">—</span>
+                    <input
+                      type="time"
+                      value={entry.end}
+                      onChange={(e) => updateEntry(idx, "end", e.target.value)}
+                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                    />
+                  </div>
+
                   <button
                     onClick={() => removeEntry(idx)}
                     className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
@@ -241,11 +246,11 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="pt-4">
+          <div className="pt-2">
             <button
               onClick={editing ? onSave : onAdd}
               disabled={!newSection.clubId || !newSection.name}
-              className="w-full inline-flex justify-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
+              className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
               <Plus size={20} />
               <span className="ml-2">{editing ? "Сохранить" : "Добавить"}</span>
