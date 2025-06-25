@@ -55,12 +55,12 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
   const handleSubmit = () => onSubmit(form);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
       <div className="bg-white w-[90%] max-w-md rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b">
+        <div className="flex items-center justify-between px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-800">Создать Клуб</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 focus:outline-none">
             <X size={20} />
           </button>
         </div>
@@ -96,7 +96,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   value={form.phone}
                   onChange={handlePhoneChange}
                   placeholder={placeholder}
-                  className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+                  className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm focus:ring-2 focus:outline-none transition"
                 />
               ) : (
                 <input
