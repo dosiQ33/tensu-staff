@@ -602,7 +602,7 @@ const CoachMainPage: React.FC = () => {
       {/* Floating Add Button */}
       <button
         onClick={() => setShowAddTraining(true)}
-        className="fixed bottom-24 right-4 bg-blue-500 p-4 rounded-full shadow-lg text-white hover:bg-blue-600 transition-colors"
+        className="fixed bottom-28 right-4 bg-blue-500 p-4 rounded-full shadow-lg text-white hover:bg-blue-600 transition-colors"
       >
         <Plus size={24} />
       </button>
