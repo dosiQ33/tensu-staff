@@ -203,12 +203,12 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               {schedule.map((entry, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-wrap items-center gap-2 bg-gray-50 p-3 rounded-md"
+                  className="flex flex-col gap-2 bg-gray-50 p-3 rounded-md"
                 >
                   <select
                     value={entry.day}
                     onChange={(e) => updateEntry(idx, "day", e.target.value)}
-                    className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                    className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[38%]"
                   >
                     {weekdays.map((d) => (
                       <option key={d} value={d}>
@@ -223,23 +223,22 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       onChange={(e) =>
                         updateEntry(idx, "start", e.target.value)
                       }
-                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[45%]"
+                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[38%]"
                     />
                     <span className="text-gray-500">—</span>
                     <input
                       type="time"
                       value={entry.end}
                       onChange={(e) => updateEntry(idx, "end", e.target.value)}
-                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[45%]"
+                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[38%]"
                     />
+                    <button
+                      onClick={() => removeEntry(idx)}
+                      className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
+                    >
+                      <X size={16} />
+                    </button>
                   </div>
-
-                  <button
-                    onClick={() => removeEntry(idx)}
-                    className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
-                  >
-                    <X size={16} />
-                  </button>
                 </div>
               ))}
             </div>
