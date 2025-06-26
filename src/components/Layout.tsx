@@ -146,7 +146,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ page }) => {
   ];
 
   return (
-    <nav className="h-20 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
+    <nav className="h-25 bg-white shadow-t flex justify-around items-center fixed bottom-0 z-10 w-full">
       {items.map(item => (
         <button
           key={item.label}
