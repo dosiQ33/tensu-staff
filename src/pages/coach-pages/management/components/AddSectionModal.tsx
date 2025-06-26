@@ -223,14 +223,14 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       onChange={(e) =>
                         updateEntry(idx, "start", e.target.value)
                       }
-                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[45%]"
                     />
                     <span className="text-gray-500">—</span>
                     <input
                       type="time"
                       value={entry.end}
                       onChange={(e) => updateEntry(idx, "end", e.target.value)}
-                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[45%]"
                     />
                   </div>
 
