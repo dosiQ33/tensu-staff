@@ -174,6 +174,7 @@ const CoachProfile: React.FC = () => {
     try {
       const token = localStorage.getItem("telegramToken")!;
       await staffApi.updateMe({ first_name, last_name }, token);
+      console.log("First name updated successfully:", first_name, last_name);
       // после успешного ответа
       setName(nameInput);
       localStorage.setItem("telegramFullName", nameInput);
