@@ -1,6 +1,6 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
-import type { CreateClubRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest } from './requests';
+import type { CreateClubRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest, UpdateStaffRequest } from './requests';
 import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetMySectionsResponse } from './responses';
 
 export const staffApi = {
@@ -13,11 +13,11 @@ export const staffApi = {
     getMe: (token: string | null) =>
         axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.ME, 'GET', token),
 
+    updateMe: (data: UpdateStaffRequest, token: string) =>
+        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.ME, 'PUT', token, data),
+
     create: (data: CreateStaffRequest, token: string) =>
         axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BASE, 'POST', token, data),
-
-    update: (data: CreateStaffRequest, token: string) =>
-        axiosRequest<CreateStaffResponse>(ENDPOINTS.STUFF.BASE, 'PUT', token, data),
 
     updatePrefs: (prefs: unknown, token: string) =>
         axiosRequest<unknown>(ENDPOINTS.STUFF.PREFERENCES, 'PUT', token, prefs),

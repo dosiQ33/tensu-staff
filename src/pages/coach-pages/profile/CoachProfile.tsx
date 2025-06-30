@@ -13,9 +13,11 @@ import {
   Activity,
   Clock,
   BarChart3,
-  PieChart
+  PieChart,
+  Check,
+  Edit2,
 } from "lucide-react";
-import { clubsApi } from "@/functions/axios/axiosFunctions";
+import { clubsApi, staffApi } from "@/functions/axios/axiosFunctions";
 import { CreateClubModal } from "./components/CreateClubModal";
 import type { CreateClubResponse } from "@/functions/axios/responses";
 import { BottomNav } from "@/components/Layout";
@@ -57,6 +59,7 @@ const CoachProfile: React.FC = () => {
   const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
     null
   );
+
   const mapClub = (c: CreateClubResponse): Club => ({
     id: c.id.toString(),
     name: c.name,
@@ -86,16 +89,15 @@ const CoachProfile: React.FC = () => {
     paymentHistory: [],
   });
 
-  // Sample user data
-  const userData = {
-    name: localStorage.getItem("telegramFullName") || "",
-    phone: localStorage.getItem("telegramPhone") || "",
-    avatar: localStorage.getItem("telegramAvatar"),
-    fakeAvatar: "👤",
-  };
-
   const [clubs, setClubs] = useState<Club[]>([]);
   const [showCreate, setShowCreate] = useState(false);
+  const initialName = localStorage.getItem("telegramFullName") || "";
+  const [name, setName] = useState(initialName);
+  const [phone] = useState(localStorage.getItem("telegramPhone") || "");
+  const [avatar] = useState(localStorage.getItem("telegramAvatar") || "");
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(initialName);
+  const [isSavingName, setIsSavingName] = useState(false);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -162,6 +164,28 @@ const CoachProfile: React.FC = () => {
     // In real app, this would open payment flow
   };
 
+  const handleSaveName = async () => {
+    if (!nameInput.trim()) return;
+    setIsSavingName(true);
+    const parts = nameInput.trim().split(" ");
+    const first_name = parts[0];
+    const last_name = parts.slice(1).join(" ") || undefined;
+
+    try {
+      const token = localStorage.getItem("telegramToken")!;
+      await staffApi.updateMe({ first_name, last_name }, token);
+      // после успешного ответа
+      setName(nameInput);
+      localStorage.setItem("telegramFullName", nameInput);
+      setEditingName(false);
+    } catch (err) {
+      console.error("Не удалось сохранить имя:", err);
+      // можно показать toast или ошибку пользователю
+    } finally {
+      setIsSavingName(false);
+    }
+  };
+
   useEffect(() => {
     clubsApi
       .getMy(localStorage.getItem("telegramToken")!)
@@ -185,20 +209,56 @@ const CoachProfile: React.FC = () => {
         <div className="px-4 py-4">
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-4">
             <div className="flex items-center gap-4">
-              {userData.avatar ? (
-                <img className="w-10 h-10 rounded-full" src={userData.avatar} />
+              {avatar ? (
+                <img className="w-10 h-10 rounded-full" src={avatar} />
               ) : (
-                <div className="text-4xl">{userData.fakeAvatar}</div>
+                <div className="text-4xl">👤</div>
               )}
 
               <div className="flex-1">
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                  {userData.name}
-                </h2>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <span className="text-sm">+{userData.phone}</span>
+                {editingName ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                      disabled={isSavingName}
+                      className="border-b border-gray-300 focus:border-blue-500 focus:outline-none text-lg font-semibold text-gray-900 mb-1 transition-colors"
+                    />
+                    <button
+                      onClick={handleSaveName}
+                      disabled={isSavingName}
+                      className="p-1 hover:bg-green-100 rounded-full"
+                    >
+                      <Check size={16} className="text-green-600" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setNameInput(name);
+                        setEditingName(false);
+                      }}
+                      disabled={isSavingName}
+                      className="p-1 hover:bg-red-100 rounded-full"
+                    >
+                      <X size={16} className="text-red-600" />
+                    </button>
                   </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                      {name}
+                    </h2>
+                    <button
+                      onClick={() => setEditingName(true)}
+                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors rounded-full"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-600">+{phone}</span>
                 </div>
               </div>
             </div>
@@ -659,7 +719,7 @@ const CoachProfile: React.FC = () => {
           </div>
         )}
       </div>
-      <BottomNav page="profile"/>
+      <BottomNav page="profile" />
     </>
   );
 };

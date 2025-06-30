@@ -7,6 +7,12 @@ export interface CreateStaffRequest {
   preferences: StaffPreferences;
 }
 
+export interface UpdateStaffRequest {
+  first_name: string;
+  last_name?: string;
+  username?: string;
+}
+
 export interface CreateClubRequest {
   name: string;
   description: string;
