@@ -11,6 +11,7 @@ export const ENDPOINTS = {
   CLUBS: {
     BASE: '/clubs/',
     MY: '/clubs/my',
+    LIMITS_CHECK: '/clubs/limits/check',
     BY_ID: (clubId: string) => `/clubs/${clubId}`,
     UPDATE: (clubId: string) => `/clubs/${clubId}`,
     CHECK_PERMISSION: (clubId: string) => `/clubs/${clubId}/check-permission`,

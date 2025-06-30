@@ -19,7 +19,10 @@ import {
 } from "lucide-react";
 import { clubsApi, staffApi } from "@/functions/axios/axiosFunctions";
 import { CreateClubModal } from "./components/CreateClubModal";
-import type { CreateClubResponse } from "@/functions/axios/responses";
+import type {
+  CreateClubResponse,
+  GetClubsLimitCheckResponse,
+} from "@/functions/axios/responses";
 import { BottomNav } from "@/components/Layout";
 
 interface Club {
@@ -91,6 +94,11 @@ const CoachProfile: React.FC = () => {
 
   const [clubs, setClubs] = useState<Club[]>([]);
   const [showCreate, setShowCreate] = useState(false);
+  const [showLimitPopup, setShowLimitPopup] = useState(false);
+  const [limitInfo, setLimitInfo] = useState<GetClubsLimitCheckResponse | null>(
+    null
+  );
+
   const initialName = localStorage.getItem("telegramFullName") || "";
   const [name, setName] = useState(initialName);
   const [phone] = useState(localStorage.getItem("telegramPhone") || "");
@@ -187,6 +195,21 @@ const CoachProfile: React.FC = () => {
     }
   };
 
+  const handleCreateClick = async () => {
+    try {
+      const token = localStorage.getItem("telegramToken")!;
+      const res = await clubsApi.getLimitsCheck(token);
+      setLimitInfo(res.data);
+      if (res.data.can_create) {
+        setShowCreate(true);
+      } else {
+        setShowLimitPopup(true);
+      }
+    } catch (e) {
+      console.error("Ошибка проверки лимита клубов", e);
+    }
+  };
+
   useEffect(() => {
     clubsApi
       .getMy(localStorage.getItem("telegramToken")!)
@@ -208,6 +231,28 @@ const CoachProfile: React.FC = () => {
 
         {/* Personal Info */}
         <div className="px-4 py-4">
+          {/* попап о превышении лимита */}
+          {showLimitPopup && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+              <div className="bg-white rounded-xl p-6 max-w-sm mx-4 shadow-lg text-center">
+                <h3 className="text-lg font-semibold mb-2 text-red-600">
+                  Лимит клубов достигнут
+                </h3>
+                <p className="text-sm text-gray-700 mb-4">
+                  Вы уже создали {limitInfo?.current_clubs} из{" "}
+                  {limitInfo?.max_clubs}.<br />
+                  {limitInfo?.reason ||
+                    "Обратитесь в поддержку для расширения лимита."}
+                </p>
+                <button
+                  onClick={() => setShowLimitPopup(false)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                >
+                  Закрыть
+                </button>
+              </div>
+            </div>
+          )}
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-4">
             <div className="flex items-center gap-4">
               {avatar ? (
@@ -267,7 +312,7 @@ const CoachProfile: React.FC = () => {
 
           <div className="flex justify-end mb-4">
             <button
-              onClick={() => setShowCreate(true)}
+              onClick={handleCreateClick}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
             >
               + Создать клуб

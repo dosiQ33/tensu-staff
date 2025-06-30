@@ -1,7 +1,7 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
 import type { CreateClubRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest, UpdateStaffRequest } from './requests';
-import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetMySectionsResponse } from './responses';
+import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetClubsLimitCheckResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetMySectionsResponse } from './responses';
 
 export const staffApi = {
     getList: (token: string) =>
@@ -27,6 +27,8 @@ export const staffApi = {
 };
 
 export const clubsApi = {
+    getLimitsCheck: (token: string) => 
+        axiosRequest<GetClubsLimitCheckResponse>(ENDPOINTS.CLUBS.LIMITS_CHECK, 'GET', token),
     getList: (token: string) => axiosRequest(ENDPOINTS.CLUBS.BASE, 'GET', token),
     getMy: (token: string) => axiosRequest<GetMyClubsResponse>(ENDPOINTS.CLUBS.MY, 'GET', token),
     getById: (id: string, token: string) =>

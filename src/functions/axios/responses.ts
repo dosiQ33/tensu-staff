@@ -103,3 +103,11 @@ export interface GetMyInvitationsResponse {
   size: number;
   pages: number;
 }
+
+export interface GetClubsLimitCheckResponse {
+  can_create: boolean,
+  current_clubs: number,
+  max_clubs: number,
+  remaining: number,
+  reason: string
+}
