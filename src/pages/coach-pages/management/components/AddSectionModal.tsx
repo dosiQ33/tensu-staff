@@ -174,7 +174,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
             </div>
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-800 mb-2">
-                Тренер
+                Тренер  <span className="text-red-500">*</span>
               </label>
               <div className="rounded-xl shadow-sm flex items-center border border-gray-300 bg-white w-full relative">
                 <select
