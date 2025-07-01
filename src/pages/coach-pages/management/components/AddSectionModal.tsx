@@ -174,7 +174,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   onChange={(e) => onChange("coachId", Number(e.target.value))}
                   className="py-2.5 px-4 block w-full border-gray-300 focus:outline-none appearance-none"
                 >
-                  <option value={Number(userId)}>{userFullName}</option>
+                  <option value={Number(userId)}>{userFullName} (выбрать себя)</option>
                   {allStaff
                     .filter((s) => s.role === "coach")
                     .map((s) => (
