@@ -768,51 +768,50 @@ const CoachProfile: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-md relative mt-2 overflow-visible">
-        {[
-          {
-            label: "Сменить язык",
-            icon: Globe,
-            onClick: () => {
-              /*…*/
+        <div className="bg-white rounded-2xl shadow-md relative mt-2 overflow-visible">
+          {[
+            {
+              label: "Сменить язык",
+              icon: Globe,
+              onClick: () => {
+                /*…*/
+              },
             },
-          },
-          {
-            label: "Политика конфиденциальности",
-            icon: FileText,
-            onClick: () => {
-              /*…*/
+            {
+              label: "Политика конфиденциальности",
+              icon: FileText,
+              onClick: () => {
+                /*…*/
+              },
             },
-          },
-          {
-            label: "Напишите нам",
-            icon: Mail,
-            onClick: () => {
-              /*…*/
+            {
+              label: "Напишите нам",
+              icon: Mail,
+              onClick: () => {
+                /*…*/
+              },
             },
-          },
-        ].map(({ label, icon: Icon, onClick }, i, arr) => (
-          <button
-            key={label}
-            onClick={onClick}
-            className={`
+          ].map(({ label, icon: Icon, onClick }, i, arr) => (
+            <button
+              key={label}
+              onClick={onClick}
+              className={`
             w-full flex items-center justify-between p-4 
             hover:bg-gray-50 transition-colors border-gray-300 border-b-1 last:border-b-0
             ${i === 0 ? "rounded-t-2xl" : ""}
             ${i === arr.length - 1 ? "rounded-b-2xl" : ""}
           `}
-          >
-            <div className="flex items-center gap-3">
-              <Icon className="text-blue-500" size={20} />
-              <span className="text-base font-medium text-gray-800">
-                {label}
-              </span>
-            </div>
-            <ChevronRight className="text-gray-400" size={20} />
-          </button>
-        ))}
+            >
+              <div className="flex items-center gap-3">
+                <Icon className="text-blue-500" size={20} />
+                <span className="text-base font-medium text-gray-800">
+                  {label}
+                </span>
+              </div>
+              <ChevronRight className="text-gray-400" size={20} />
+            </button>
+          ))}
+        </div>
       </div>
 
       <BottomNav page="profile" />
