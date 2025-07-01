@@ -98,17 +98,21 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none transition hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-transparent"
                 >
                   {allClubs.length !== 1 ? (
-                    <option value="" className="w-[40%]">
-                      Выберите клуб
-                    </option>
-                  ) : <option value={allClubs[0].id} className="w-[40%]">
+                    <>
+                      <option value="" className="w-[40%]">
+                        Выберите клуб
+                      </option>
+                      {allClubs.map((club) => (
+                        <option key={club.id} value={club.id}>
+                          {club.name}
+                        </option>
+                      ))}
+                    </>
+                  ) : (
+                    <option value={allClubs[0].id} className="w-[40%]">
                       {allClubs[0].name}
-                    </option>}
-                    {allClubs.map((club) => (
-                    <option key={club.id} value={club.id}>
-                      {club.name}
                     </option>
-                    ))}
+                  )}
                 </select>
 
                 <ChevronDown className="mr-2" />
