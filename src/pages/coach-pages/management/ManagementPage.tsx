@@ -29,6 +29,8 @@ import SectionCard from "./components/SectionCard";
 
 const ManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
+  const userFullName = localStorage.getItem("telegramFullName") || "";
+  const userId = localStorage.getItem("userId") || "";
   const [filters, setFilters] = useState<Filters>({
     search: "",
     roles: [],
@@ -48,7 +50,7 @@ const ManagementPage: React.FC = () => {
     clubId: undefined,
     name: "",
     price: undefined,
-    level: "beginner",
+    level: "",
     capacity: undefined,
     coachId: undefined,
     tags: [],
@@ -134,7 +136,7 @@ const ManagementPage: React.FC = () => {
         clubId: undefined,
         name: "",
         price: data.price,
-        level: "beginner",
+        level: data.level,
         capacity: data.capacity,
         coachId: data.coach_id,
         tags: [],
@@ -272,6 +274,8 @@ const ManagementPage: React.FC = () => {
         allClubs={clubsRaw}
         allStaff={staff}
         newSection={newSection}
+        userFullName={userFullName}
+        userId={userId}
         onChange={(f, v) =>
           setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
         }

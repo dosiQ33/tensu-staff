@@ -41,7 +41,7 @@ export interface NewSection {
   schedule: [];
   clubId?: number;
   name: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
+  level: string;
 }
 
 export interface ScheduleEntry {

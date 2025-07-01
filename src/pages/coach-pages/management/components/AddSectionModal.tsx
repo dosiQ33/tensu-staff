@@ -9,6 +9,8 @@ interface AddSectionModalProps {
   editing: boolean;
   allClubs: CreateClubResponse[];
   allStaff: Staff[];
+  userFullName: string;
+  userId: string;
   newSection: NewSection & { schedule?: ScheduleEntry[] };
   onChange: (field: keyof NewSection | "schedule", value: unknown) => void;
   onAdd: () => void;
@@ -31,6 +33,8 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   editing,
   allClubs,
   allStaff,
+  userFullName,
+  userId,
   newSection,
   onChange,
   onAdd,
@@ -85,7 +89,11 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               </label>
               <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm ">
                 <select
-                  value={newSection.clubId || ""}
+                  value={
+                    newSection.clubId || allClubs.length === 1
+                      ? allClubs[0].id
+                      : ""
+                  }
                   onChange={(e) => onChange("clubId", e.target.value)}
                   className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none transition hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-transparent"
                 >
@@ -125,17 +133,12 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 Уровень
               </label>
               <div className="rounded-xl shadow-sm flex items-center border border-gray-300 bg-white w-full relative">
-                <select
+                <input
+                  type="text"
                   value={newSection.level}
                   onChange={(e) => onChange("level", e.target.value)}
-                  className="py-2.5 px-4 block w-full border-gray-300 focus:outline-none appearance-none"
-                >
-                  <option value="beginner">Начальный</option>
-                  <option value="intermediate">Средний</option>
-                  <option value="advanced">Продвинутый</option>
-                  <option value="pro">Профи</option>
-                </select>
-                <ChevronDown className="mr-2" />
+                  className="block w-full border-none rounded-xl py-2.5 px-4"
+                />
               </div>
             </div>
             <div>
@@ -171,7 +174,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   onChange={(e) => onChange("coachId", Number(e.target.value))}
                   className="py-2.5 px-4 block w-full border-gray-300 focus:outline-none appearance-none"
                 >
-                  <option value="">Без тренера</option>
+                  <option value={Number(userId)}>{userFullName}</option>
                   {allStaff
                     .filter((s) => s.role === "coach")
                     .map((s) => (
@@ -179,6 +182,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         {s.name} {s.surname}
                       </option>
                     ))}
+                  
                 </select>
                 <ChevronDown className="mr-2" />
               </div>
@@ -251,7 +255,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               disabled={!newSection.clubId || !newSection.name}
               className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
-              <Plus size={20} />
               <span className="ml-2">{editing ? "Сохранить" : "Добавить"}</span>
             </button>
           </div>

@@ -43,6 +43,7 @@ export default function OnboardingPage() {
             localStorage.setItem("telegramAvatar", resp.data.photo_url);
             localStorage.setItem("telegramId", resp.data.telegram_id.toString());
             localStorage.setItem("telegramToken", token || "");
+            localStorage.setItem("userId", resp.data.id.toString());
             // navigate("/coach/profile");
           }
         } catch (e) {

@@ -33,7 +33,7 @@ export interface CreateStuffInvitationRequest {
 export interface CreateSectionRequest {
   club_id?:      number;
   name:         string;
-  level:        'beginner' | 'intermediate' | 'advanced';
+  level:       string;
   capacity?:     number;
   price?:        number;
   coach_id?:    number | null;

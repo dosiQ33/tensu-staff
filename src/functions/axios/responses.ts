@@ -12,6 +12,7 @@ export interface CreateStaffResponse {
   preferences: StaffPreferences;
   created_at: string;
   updated_at: string;
+  id: number;
 }
 
 export interface ClubOwner {
