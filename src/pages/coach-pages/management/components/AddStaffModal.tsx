@@ -75,28 +75,28 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
             <div
               className="relative"
               style={
-                {
-                  "--PhoneInputCountryFlag-borderColor": "transparent",
-                  "--PhoneInputCountryFlag-borderWidth": "0px",
-                } as React.CSSProperties
+              {
+                "--PhoneInputCountryFlag-borderColor": "transparent",
+                "--PhoneInputCountryFlag-borderWidth": "0px",
+              } as React.CSSProperties
               }
             >
               <PhoneInput
-                international
-                defaultCountry="KZ"
-                value={newStaff.phone}
-                onChange={(value) => onChange("phone", value || "")}
-                placeholder="+7 701 123 4567"
-                className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm ring-0 focus:ring-0 focus:border-none focus:outline-none transition"
-                flagComponent={({ country }) =>
-                  country ? (
-                    <ReactCountryFlag
-                      countryCode={country}
-                      svg={false}
-                      style={{ fontSize: "25px", lineHeight: "30px" }}
-                    />
-                  ) : null
-                }
+              international
+              defaultCountry="KZ"
+              value={newStaff.phone?.replace(/^\+/, "") || ""}
+              onChange={(value) => onChange("phone", (value || "").replace(/^\+/, ""))}
+              placeholder="+7 701 123 4567"
+              className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm ring-0 focus:ring-0 focus:border-none focus:outline-none transition"
+              flagComponent={({ country }) =>
+                country ? (
+                <ReactCountryFlag
+                  countryCode={country}
+                  svg={false}
+                  style={{ fontSize: "25px", lineHeight: "30px" }}
+                />
+                ) : null
+              }
               />
             </div>
           </div>
