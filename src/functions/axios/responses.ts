@@ -68,24 +68,83 @@ export interface SectionCoach {
 }
 
 export interface CreateSectionResponse {
-  id:           number;
-  club_id:      number;
-  name:         string;
-  level:        'beginner' | 'intermediate' | 'advanced';
-  capacity:     number;
-  price:        number;
-  duration_min: number;
-  coach_id:     number;
-  tags:         string[];
-  schedule:     Record<string, unknown>;
-  active:       boolean;
-  club:         SectionClub;
-  coach:        SectionCoach;
-  created_at:   string;
-  updated_at:   string;
+  id: number;
+  club_id: number;
+  name: string;
+  description: string;
+  coach_id: number;
+  active: boolean;
+  club: SectionClub;
+  coach: SectionCoach;
+  groups: SectionGroupSummary[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SectionClub {
+  id: number;
+  name: string;
+  city: string;
+}
+
+export interface SectionCoach {
+  id: number;
+  first_name: string;
+  last_name: string;
+  username: string;
+}
+
+export interface SectionGroupSummary {
+  id: number;
+  name: string;
+  level: string;
+  capacity: number;
+  price: string;
+  active: boolean;
+  enrolled_students: number;
 }
 
 export type GetMySectionsResponse = CreateSectionResponse[];
+
+export interface CreateGroupResponse {
+  section_id: number;
+  name: string;
+  description: string;
+  schedule: Record<string, unknown>;
+  price: number;
+  capacity: number;
+  level: string;
+  coach_id: number;
+  tags: string[];
+  active: boolean;
+}
+
+export interface GetMyGroupResponse {
+  section_id: number;
+  name: string;
+  description: string;
+  schedule: Record<string, unknown>;
+  price: string;
+  capacity: number;
+  level: string;
+  coach_id: number;
+  tags: string[];
+  active: boolean;
+  id: number;
+  section: {
+    id: number;
+    name: string;
+    club_id: number;
+  };
+  coach: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Invitation {
   phone_number: string;

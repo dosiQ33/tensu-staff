@@ -36,6 +36,11 @@ export const ENDPOINTS = {
     STATS: (sId: string) => `/sections/${sId}/stats`,
   },
 
+  GROUPS: {
+    BASE: '/groups/',
+    BY_SECTION_ID: (sId: string) => `/groups/section/${sId}`,
+  },
+
   INVITATIONS: {
     CREATE: (clubId: string) => `/invitations/club/${clubId}`,
     CLUB: (clubId: string) => `/invitations/club/${clubId}`,

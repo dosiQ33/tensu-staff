@@ -31,13 +31,22 @@ export interface CreateStuffInvitationRequest {
 }
 
 export interface CreateSectionRequest {
-  club_id?:      number;
-  name:         string;
-  level:       string;
-  capacity?:     number;
-  price?:        number;
-  coach_id?:    number | null;
-  tags?:         string[];
-  schedule?:     Record<string, { start: string; end: string }[]>;
-  active:       boolean;
+  club_id?: number;
+  name: string;
+  description: string;
+  coach_id?: number | null;
+  active: boolean;
+}
+
+export interface CreateGroupRequest {
+  section_id: number;
+  name: string;
+  description: string;
+  schedule: Record<string, unknown>;
+  price: number;
+  capacity: number;
+  level: string;
+  coach_id: number;
+  tags: string[];
+  active: boolean;
 }

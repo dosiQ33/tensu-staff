@@ -34,18 +34,52 @@ export interface NewStaff {
 }
 
 export interface NewSection {
-  capacity?: number;
-  price?: number;
-  coachId?: number;
-  tags: string[];
-  schedule: [];
-  clubId?: number;
+  id?: number;
+  club_id?: number;
   name: string;
-  level: string;
+  description?: string;
+  coach_id?: number;
+  active?: boolean;
+  club?: {
+    id: number;
+    name: string;
+    city: string;
+  };
+  coach?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+  };
+  groups?: {
+    schedule: never[];
+    id: number;
+    name: string;
+    level: string;
+    capacity: number;
+    price: string;
+    active: boolean;
+    enrolled_students: number;
+  }[];
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ScheduleEntry {
   day: string;
   start: string;
   end: string;
+}
+
+export interface NewGroup {
+  section_id?: number;
+  name: string;
+  description?: string;
+  schedule?: Record<string, unknown>;
+  price: number;
+  capacity: number;
+  level: string;
+  coach_id?: number;
+  tags?: string[];
+  active?: boolean;
 }

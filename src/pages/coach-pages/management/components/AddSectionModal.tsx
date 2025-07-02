@@ -3,6 +3,8 @@ import React from "react";
 import { X, Plus, ChevronDown } from "lucide-react";
 import type { NewSection, ScheduleEntry, Staff } from "@/types/types";
 import type { CreateClubResponse } from "@/functions/axios/responses";
+import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
+import { toast } from "react-toastify";
 
 interface AddSectionModalProps {
   show: boolean;
@@ -11,12 +13,30 @@ interface AddSectionModalProps {
   allStaff: Staff[];
   userFullName: string;
   userId: string;
-  newSection: NewSection & { schedule?: ScheduleEntry[] };
-  onChange: (field: keyof NewSection | "schedule", value: unknown) => void;
+  newSection: NewSection & {
+    groups?: ({
+      id?: number;
+      name?: string;
+      level?: string;
+      capacity?: number;
+      price?: number;
+      active?: boolean;
+      description?: string;
+      coach_id?: number;
+      tags?: string[];
+      schedule?: ScheduleEntry[];
+    })[];
+  };
+  onChange: (
+    field: keyof NewSection | "schedule" | "groups",
+    value: unknown
+  ) => void;
   onAdd: () => void;
   onSave: () => void;
   onClose: () => void;
 }
+
+const token = localStorage.getItem("telegramToken") || "";
 
 const weekdays = [
   "Monday",
@@ -37,30 +57,119 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   userId,
   newSection,
   onChange,
-  onAdd,
   onSave,
   onClose,
 }) => {
   if (!show) return null;
-  const schedule: ScheduleEntry[] = newSection.schedule || [];
 
-  const addEntry = () => {
-    const entry: ScheduleEntry = { day: weekdays[0], start: "", end: "" };
-    onChange("schedule", [...schedule, entry]);
+  const groups = newSection.groups || [];
+
+  // Добавить пустую группу в состояние
+  const addGroup = () => {
+    const newGroup = {
+      id: Date.now(),
+      name: "",
+      level: "",
+      capacity: 1,
+      price: 0,
+      active: true,
+      description: "",
+      coach_id: newSection.coach_id,
+      tags: [] as string[],
+      schedule: [] as ScheduleEntry[],
+    };
+    onChange("groups", [...groups, newGroup]);
   };
-  const updateEntry = (
+
+  const updateGroup = (
     idx: number,
+    field: keyof typeof groups[0],
+    value: unknown
+  ) => {
+    const updated = groups.map((g, i) =>
+      i === idx ? { ...g, [field]: value } : g
+    );
+    onChange("groups", updated);
+  };
+
+  const removeGroup = (idx: number) => {
+    const updated = groups.filter((_, i) => i !== idx);
+    onChange("groups", updated);
+  };
+
+  const addGroupEntry = (gIdx: number) => {
+    const sched = groups[gIdx].schedule || [];
+    const entry: ScheduleEntry = { day: weekdays[0], start: "", end: "" };
+    const updatedSched = [...sched, entry];
+    updateGroup(gIdx, "schedule", updatedSched);
+  };
+
+  const updateGroupEntry = (
+    gIdx: number,
+    eIdx: number,
     field: keyof ScheduleEntry,
     value: unknown
   ) => {
-    const updated = schedule.map((e, i) =>
-      i === idx ? { ...e, [field]: value } : e
+    const sched = groups[gIdx].schedule || [];
+    const updatedSched = sched.map((e, i) =>
+      i === eIdx ? { ...(e as ScheduleEntry), [field]: value } : e
     );
-    onChange("schedule", updated);
+    updateGroup(gIdx, "schedule", updatedSched);
   };
-  const removeEntry = (idx: number) => {
-    const updated = schedule.filter((_, i) => i !== idx);
-    onChange("schedule", updated);
+
+  const removeGroupEntry = (gIdx: number, eIdx: number) => {
+    const sched = groups[gIdx].schedule || [];
+    const updatedSched = sched.filter((_, i) => i !== eIdx);
+    updateGroup(gIdx, "schedule", updatedSched);
+  };
+
+  // Преобразуем массив ScheduleEntry в объект вида { Monday: { start, end }, ... }
+  const buildScheduleObject = (entries: ScheduleEntry[]) =>
+    entries.reduce<Record<string, { start: string; end: string }>>(
+      (acc, { day, start, end }) => {
+        acc[day] = { start, end };
+        return acc;
+      },
+      {}
+    );
+
+  // Основная функция создания секции + групп
+  const handleCreate = async () => {
+    
+    try {
+      const sectionPayload = {
+        club_id: newSection.club_id,
+        name: newSection.name,
+        description: newSection.description ?? "",
+        coach_id: newSection.coach_id,
+        active: newSection.active ?? true,
+      };
+      const { data: createdSection } = await sectionsApi.create(sectionPayload, token);
+      const sectionId = createdSection.id;
+
+      // 2) Для каждой группы создаём запись
+      for (const grp of groups) {
+        const groupPayload = {
+          section_id: sectionId,
+          name: grp.name,
+          description: grp.description ?? "",
+          schedule: buildScheduleObject(grp.schedule || []),
+          price: grp.price,
+          capacity: grp.capacity,
+          level: grp.level,
+          coach_id: grp.coach_id ?? newSection.coach_id ?? Number(userId),
+          tags: grp.tags ?? [],
+          active: grp.active,
+        };
+        await groupsApi.create(groupPayload, token);
+      }
+
+      toast.success("Секция и группы успешно созданы");
+      onClose();
+    } catch (err) {
+      console.error(err);
+      toast.error("Не удалось создать секцию и группы");
+    }
   };
 
   return (
@@ -81,174 +190,238 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
         {/* Body */}
         <div className="px-6 py-5 space-y-4 max-h-[80vh] overflow-y-auto">
-          {/* Club & Name */}
+          {/* Club & Section Name */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Клуб */}
             <div className="space-y-1">
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 Клуб <span className="text-red-500">*</span>
               </label>
-              <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm ">
+              <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                 <select
-                  value={
-                    newSection.clubId || allClubs.length === 1
-                      ? allClubs[0].id
-                      : ""
+                  value={newSection.club_id ?? (allClubs[0]?.id || "")}
+                  onChange={(e) =>
+                    onChange("club_id", Number(e.target.value))
                   }
-                  onChange={(e) => onChange("clubId", e.target.value)}
-                  className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none transition hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-transparent"
+                  className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none"
                 >
-                  {allClubs.length !== 1 ? (
-                    <>
-                      <option value="" className="w-[40%]">
-                        Выберите клуб
-                      </option>
-                      {allClubs.map((club) => (
-                        <option key={club.id} value={club.id}>
-                          {club.name}
-                        </option>
-                      ))}
-                    </>
-                  ) : (
-                    <option value={allClubs[0].id} className="w-[40%]">
-                      {allClubs[0].name}
-                    </option>
+                  {allClubs.length > 1 && (
+                    <option value="">Выберите клуб</option>
                   )}
+                  {allClubs.map((club) => (
+                    <option key={club.id} value={club.id}>
+                      {club.name}
+                    </option>
+                  ))}
                 </select>
-
                 <ChevronDown className="mr-2" />
               </div>
             </div>
-
+            {/* Название секции */}
             <div className="space-y-1">
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 Название секции <span className="text-red-500">*</span>
               </label>
-              <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm ">
-                <input
-                  type="text"
-                  value={newSection.name}
-                  onChange={(e) => onChange("name", e.target.value)}
-                  className="block w-full border-none rounded-xl py-2.5 px-4"
-                />
-              </div>
+              <input
+                type="text"
+                value={newSection.name}
+                onChange={(e) => onChange("name", e.target.value)}
+                className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+              />
             </div>
           </div>
 
-          {/* Details Grid */}
+          {/* Price, Coach */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Цена */}
             <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-800 mb-2">
-                Уровень
-              </label>
-              <div className="rounded-xl shadow-sm flex items-center border border-gray-300 bg-white w-full relative">
-                <input
-                  type="text"
-                  value={newSection.level}
-                  onChange={(e) => onChange("level", e.target.value)}
-                  className="block w-full border-none rounded-xl py-2.5 px-4"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-800 mb-2">
-                Вместимость
-              </label>
-              <input
-                type="number"
-                min={1}
-                value={newSection.capacity || ""}
-                onChange={(e) => onChange("capacity", Number(e.target.value))}
-                className="rounded-xl py-2.5 px-4 shadow-sm border border-gray-300 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none"
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 Цена
               </label>
+              {/* Уберите поле цены для секции, если оно не нужно */}
+              {/* <input
+                type="number"
+                value={newSection.price ?? ""}
+                onChange={(e) => onChange("price", Number(e.target.value))}
+                className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+              /> */}
               <input
                 type="number"
-                value={newSection.price || ""}
-                onChange={(e) => onChange("price", Number(e.target.value))}
-                className="rounded-xl py-2.5 px-4 shadow-sm border border-gray-300 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                value=""
+                disabled
+                placeholder="Цена задаётся для каждой группы"
+                className="block w-full border border-gray-300 rounded-xl py-2.5 px-4 bg-gray-100 text-gray-400"
               />
             </div>
-            <div className="sm:col-span-2">
+            {/* Тренер */}
+            <div className="sm:col-span-2 space-y-1">
               <label className="block text-sm font-medium text-gray-800 mb-2">
-                Тренер  <span className="text-red-500">*</span>
+                Тренер <span className="text-red-500">*</span>
               </label>
-              <div className="rounded-xl shadow-sm flex items-center border border-gray-300 bg-white w-full relative">
+              <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                 <select
-                  value={newSection.coachId ?? ""}
-                  onChange={(e) => onChange("coachId", Number(e.target.value))}
-                  className="py-2.5 px-4 block w-full border-gray-300 focus:outline-none appearance-none"
+                  value={newSection.coach_id ?? Number(userId)}
+                  onChange={(e) =>
+                    onChange("coach_id", Number(e.target.value))
+                  }
+                  className="block w-full py-2.5 px-4 appearance-none"
                 >
-                  <option value={Number(userId)}>{userFullName} (выбрать себя)</option>
+                  <option value={Number(userId)}>
+                    {userFullName} (выбрать себя)
+                  </option>
                   {allStaff
                     .filter((s) => s.role === "coach")
                     .map((s) => (
-                      <option key={s.id} value={Number(s.id)}>
+                      <option key={s.id} value={s.id}>
                         {s.name} {s.surname}
                       </option>
                     ))}
-                  
                 </select>
                 <ChevronDown className="mr-2" />
               </div>
             </div>
           </div>
 
-          {/* Schedule Section */}
+          {/* Группы */}
           <div className="pt-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-medium text-gray-800">
-                Расписание
-              </h3>
+              <h3 className="text-base font-medium text-gray-800">Группы</h3>
               <button
-                onClick={addEntry}
-                className="inline-flex items-center px-2 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50"
+                onClick={addGroup}
+                className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50"
               >
                 <Plus size={16} />
-                <span className="ml-1">Добавить время</span>
+                <span className="ml-1">Добавить группу</span>
               </button>
             </div>
-            <div className="mt-3 space-y-3">
-              {schedule.map((entry, idx) => (
-                <div
-                  key={idx}
-                  className="flex flex-col gap-2 bg-gray-50 p-3 rounded-md"
-                >
-                  <select
-                    value={entry.day}
-                    onChange={(e) => updateEntry(idx, "day", e.target.value)}
-                    className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[38%]"
-                  >
-                    {weekdays.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="flex items-center gap-2 mt-3">
-                    <input
-                      type="time"
-                      value={entry.start}
-                      onChange={(e) =>
-                        updateEntry(idx, "start", e.target.value)
-                      }
-                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[38%]"
-                    />
-                    <span className="text-gray-500">—</span>
-                    <input
-                      type="time"
-                      value={entry.end}
-                      onChange={(e) => updateEntry(idx, "end", e.target.value)}
-                      className="block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 w-[38%]"
-                    />
+            <div className="mt-3 space-y-6">
+              {groups.map((group, gIdx) => (
+                <div key={gIdx} className="bg-gray-50 p-4 rounded-md space-y-4">
+                  {/* Поля группы */}
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                        Имя группы
+                      </label>
+                      <input
+                        type="text"
+                        value={group.name}
+                        onChange={(e) =>
+                          updateGroup(gIdx, "name", e.target.value)
+                        }
+                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                        Уровень
+                      </label>
+                      <input
+                        type="text"
+                        value={group.level}
+                        onChange={(e) =>
+                          updateGroup(gIdx, "level", e.target.value)
+                        }
+                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                        Вместимость
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={group.capacity}
+                        onChange={(e) =>
+                          updateGroup(gIdx, "capacity", Number(e.target.value))
+                        }
+                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-sm font-medium text-gray-800 mb-2">
+                        Цена
+                      </label>
+                      <input
+                        type="number"
+                        value={group.price}
+                        onChange={(e) =>
+                          updateGroup(gIdx, "price", Number(e.target.value))
+                        }
+                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Расписание */}
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium text-gray-800">
+                        Расписание
+                      </h4>
+                      <button
+                        onClick={() => addGroupEntry(gIdx)}
+                        className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50"
+                      >
+                        <Plus size={16} />
+                        <span className="ml-1">Добавить время</span>
+                      </button>
+                    </div>
+                    <div className="mt-2 space-y-3">
+                      {(group.schedule || []).map((entry: ScheduleEntry, eIdx) => (
+                        <div
+                          key={eIdx}
+                          className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200"
+                        >
+                          <select
+                            value={entry.day}
+                            onChange={(e) =>
+                              updateGroupEntry(gIdx, eIdx, "day", e.target.value)
+                            }
+                            className="p-2 border rounded-md"
+                          >
+                            {weekdays.map((d) => (
+                              <option key={d} value={d}>
+                                {d}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="time"
+                            value={entry.start}
+                            onChange={(e) =>
+                              updateGroupEntry(gIdx, eIdx, "start", e.target.value)
+                            }
+                            className="p-2 border rounded-md"
+                          />
+                          <span className="text-gray-500">—</span>
+                          <input
+                            type="time"
+                            value={entry.end}
+                            onChange={(e) =>
+                              updateGroupEntry(gIdx, eIdx, "end", e.target.value)
+                            }
+                            className="p-2 border rounded-md"
+                          />
+                          <button
+                            onClick={() => removeGroupEntry(gIdx, eIdx)}
+                            className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Удалить группу */}
+                  <div className="flex justify-end">
                     <button
-                      onClick={() => removeEntry(idx)}
-                      className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
+                      onClick={() => removeGroup(gIdx)}
+                      className="text-sm text-red-600 hover:underline"
                     >
-                      <X size={16} />
+                      Удалить группу
                     </button>
                   </div>
                 </div>
@@ -256,14 +429,16 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="pt-2">
+          {/* Действие: создать или сохранить */}
+          <div className="pt-4">
             <button
-              onClick={editing ? onSave : onAdd}
-              disabled={!newSection.clubId || !newSection.name}
+              onClick={editing ? onSave : handleCreate}
+              disabled={!newSection.club_id || !newSection.name}
               className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
-              <span className="ml-2">{editing ? "Сохранить" : "Добавить"}</span>
+              <span className="ml-2">
+                {editing ? "Сохранить" : "Добавить"}
+              </span>
             </button>
           </div>
         </div>
