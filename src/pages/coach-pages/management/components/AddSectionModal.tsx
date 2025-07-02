@@ -14,7 +14,7 @@ interface AddSectionModalProps {
   userFullName: string;
   userId: string;
   newSection: NewSection & {
-    groups?: ({
+    groups?: {
       id?: number;
       name?: string;
       level?: string;
@@ -25,13 +25,12 @@ interface AddSectionModalProps {
       coach_id?: number;
       tags?: string[];
       schedule?: ScheduleEntry[];
-    })[];
+    }[];
   };
   onChange: (
     field: keyof NewSection | "schedule" | "groups",
     value: unknown
   ) => void;
-  onAdd: () => void;
   onSave: () => void;
   onClose: () => void;
 }
@@ -83,7 +82,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   const updateGroup = (
     idx: number,
-    field: keyof typeof groups[0],
+    field: keyof (typeof groups)[0],
     value: unknown
   ) => {
     const updated = groups.map((g, i) =>
@@ -135,7 +134,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   // Основная функция создания секции + групп
   const handleCreate = async () => {
-    
     try {
       const sectionPayload = {
         club_id: newSection.club_id,
@@ -144,7 +142,10 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
         coach_id: newSection.coach_id,
         active: newSection.active ?? true,
       };
-      const { data: createdSection } = await sectionsApi.create(sectionPayload, token);
+      const { data: createdSection } = await sectionsApi.create(
+        sectionPayload,
+        token
+      );
       const sectionId = createdSection.id;
 
       // 2) Для каждой группы создаём запись
@@ -200,9 +201,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                 <select
                   value={newSection.club_id ?? (allClubs[0]?.id || "")}
-                  onChange={(e) =>
-                    onChange("club_id", Number(e.target.value))
-                  }
+                  onChange={(e) => onChange("club_id", Number(e.target.value))}
                   className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none"
                 >
                   {allClubs.length > 1 && (
@@ -261,9 +260,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                 <select
                   value={newSection.coach_id ?? Number(userId)}
-                  onChange={(e) =>
-                    onChange("coach_id", Number(e.target.value))
-                  }
+                  onChange={(e) => onChange("coach_id", Number(e.target.value))}
                   className="block w-full py-2.5 px-4 appearance-none"
                 >
                   <option value={Number(userId)}>
@@ -369,49 +366,66 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       </button>
                     </div>
                     <div className="mt-2 space-y-3">
-                      {(group.schedule || []).map((entry: ScheduleEntry, eIdx) => (
-                        <div
-                          key={eIdx}
-                          className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200"
-                        >
-                          <select
-                            value={entry.day}
-                            onChange={(e) =>
-                              updateGroupEntry(gIdx, eIdx, "day", e.target.value)
-                            }
-                            className="p-2 border rounded-md"
+                      {(group.schedule || []).map(
+                        (entry: ScheduleEntry, eIdx) => (
+                          <div
+                            key={eIdx}
+                            className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200"
                           >
-                            {weekdays.map((d) => (
-                              <option key={d} value={d}>
-                                {d}
-                              </option>
-                            ))}
-                          </select>
-                          <input
-                            type="time"
-                            value={entry.start}
-                            onChange={(e) =>
-                              updateGroupEntry(gIdx, eIdx, "start", e.target.value)
-                            }
-                            className="p-2 border rounded-md"
-                          />
-                          <span className="text-gray-500">—</span>
-                          <input
-                            type="time"
-                            value={entry.end}
-                            onChange={(e) =>
-                              updateGroupEntry(gIdx, eIdx, "end", e.target.value)
-                            }
-                            className="p-2 border rounded-md"
-                          />
-                          <button
-                            onClick={() => removeGroupEntry(gIdx, eIdx)}
-                            className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      ))}
+                            <select
+                              value={entry.day}
+                              onChange={(e) =>
+                                updateGroupEntry(
+                                  gIdx,
+                                  eIdx,
+                                  "day",
+                                  e.target.value
+                                )
+                              }
+                              className="p-2 border rounded-md"
+                            >
+                              {weekdays.map((d) => (
+                                <option key={d} value={d}>
+                                  {d}
+                                </option>
+                              ))}
+                            </select>
+                            <input
+                              type="time"
+                              value={entry.start}
+                              onChange={(e) =>
+                                updateGroupEntry(
+                                  gIdx,
+                                  eIdx,
+                                  "start",
+                                  e.target.value
+                                )
+                              }
+                              className="p-2 border rounded-md"
+                            />
+                            <span className="text-gray-500">—</span>
+                            <input
+                              type="time"
+                              value={entry.end}
+                              onChange={(e) =>
+                                updateGroupEntry(
+                                  gIdx,
+                                  eIdx,
+                                  "end",
+                                  e.target.value
+                                )
+                              }
+                              className="p-2 border rounded-md"
+                            />
+                            <button
+                              onClick={() => removeGroupEntry(gIdx, eIdx)}
+                              className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        )
+                      )}
                     </div>
                   </div>
 
@@ -436,9 +450,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               disabled={!newSection.club_id || !newSection.name}
               className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
-              <span className="ml-2">
-                {editing ? "Сохранить" : "Добавить"}
-              </span>
+              <span className="ml-2">{editing ? "Сохранить" : "Добавить"}</span>
             </button>
           </div>
         </div>

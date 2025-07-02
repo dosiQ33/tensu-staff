@@ -27,6 +27,21 @@ import type {
 } from "@/functions/axios/responses";
 import SectionCard from "./components/SectionCard";
 
+type SectionForm = NewSection & {
+  groups: Array<{
+    id?: number;
+    name?: string;
+    level?: string;
+    capacity?: number;
+    price?: number;
+    active?: boolean;
+    description?: string;
+    coach_id?: number;
+    tags?: string[];
+    schedule?: ScheduleEntry[];
+  }>;
+};
+
 const ManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
   const userFullName = localStorage.getItem("telegramFullName") || "";
@@ -47,14 +62,12 @@ const ManagementPage: React.FC = () => {
     clubId: "",
   });
   const [newSection, setNewSection] = useState<NewSection>({
-    clubId: undefined,
+    club_id: undefined,
     name: "",
-    price: undefined,
-    level: "",
-    capacity: undefined,
-    coachId: undefined,
-    tags: [],
-    schedule: [],
+    coach_id: undefined,
+    description: "",
+    active: true,
+    groups: [],
   });
 
   const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
@@ -99,53 +112,6 @@ const ManagementPage: React.FC = () => {
       }
     })();
   }, []);
-
-  const handleAddSection = async () => {
-    const token = localStorage.getItem("telegramToken") || "";
-    if (!newSection.clubId || !newSection.name) return;
-
-    // Конвертируем массив ScheduleEntry[] в объект для API
-    const buildSchedule = (
-      entries: ScheduleEntry[]
-    ): Record<string, { start: string; end: string }[]> => {
-      return entries.reduce((acc, { day, start, end }) => {
-        if (!acc[day]) acc[day] = [];
-        acc[day].push({ start, end });
-        return acc;
-      }, {} as Record<string, { start: string; end: string }[]>);
-    };
-
-    try {
-      const payload = {
-        club_id: newSection.clubId,
-        name: newSection.name,
-        level: newSection.level,
-        capacity: newSection.capacity,
-        price: newSection.price,
-        coach_id: newSection.coachId ?? undefined,
-        tags: newSection.tags,
-        schedule: buildSchedule(newSection.schedule || []),
-        active: true,
-      };
-
-      const { data } = await sectionsApi.create(payload, token);
-      setSectionsRaw((prev) => [...prev, data]);
-      setSections((prev) => [...prev, data]);
-      setShowAddSection(false);
-      setNewSection({
-        clubId: undefined,
-        name: "",
-        price: data.price,
-        level: data.level,
-        capacity: data.capacity,
-        coachId: data.coach_id,
-        tags: [],
-        schedule: [],
-      });
-    } catch (err) {
-      console.error("Ошибка создания секции:", err);
-    }
-  };
 
   const handleAddInvitation = async () => {
     const token = localStorage.getItem("telegramToken") || "";
@@ -273,13 +239,12 @@ const ManagementPage: React.FC = () => {
         editing={false}
         allClubs={clubsRaw}
         allStaff={staff}
-        newSection={newSection}
+        newSection={newSection as SectionForm}
         userFullName={userFullName}
         userId={userId}
         onChange={(f, v) =>
           setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
         }
-        onAdd={handleAddSection}
         onSave={() => {}}
         onClose={() => setShowAddSection(false)}
       />
