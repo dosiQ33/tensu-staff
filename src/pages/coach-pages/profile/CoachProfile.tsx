@@ -218,7 +218,7 @@ const CoachProfile: React.FC = () => {
     clubsApi
       .getMy(localStorage.getItem("telegramToken")!)
       .then((res) => {
-        setClubs(res.data.map(mapClub));
+        setClubs(res.data.clubs.map(mapClub));
       })
       .catch(console.error);
   }, []);
