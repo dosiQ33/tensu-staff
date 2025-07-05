@@ -82,7 +82,7 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
                 rel="noopener noreferrer"
                 className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-[20px]"
               >
-                <MessageCircle size={20} />
+                <MessageCircle size={17} />
               </a>
             )}
             <button className="p-1 text-gray-400 hover:text-blue-600">
