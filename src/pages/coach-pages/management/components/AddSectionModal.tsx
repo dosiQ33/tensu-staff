@@ -260,13 +260,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div className="pt-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-medium text-gray-800">Группы</h3>
-              <button
-                onClick={addGroup}
-                className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50"
-              >
-                <Plus size={16} />
-                <span className="ml-1">Добавить группу</span>
-              </button>
             </div>
             <div className="mt-3 space-y-6">
               {groups.map((group, gIdx) => (
@@ -418,6 +411,13 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 </div>
               ))}
             </div>
+            <button
+              onClick={addGroup}
+              className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50"
+            >
+              <Plus size={16} />
+              <span className="ml-1">Добавить группу</span>
+            </button>
           </div>
 
           {/* Действие: создать или сохранить */}

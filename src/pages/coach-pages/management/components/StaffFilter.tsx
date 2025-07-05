@@ -20,7 +20,7 @@ const StaffFilter: React.FC<StaffFilterProps> = ({
   allSections,
   onChange,
 }) => {
-  const roles = ["coach", "admin"] as const;
+  const roles = ["owner", "coach", "admin"] as const;
 
   return (
     <>

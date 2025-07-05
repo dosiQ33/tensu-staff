@@ -49,4 +49,8 @@ export const ENDPOINTS = {
     DELETE: (invitationId: string) => `/invitations/${invitationId}`,
     STATS_MY: '/invitations/stats/my',
   },
+
+  TEAM: {
+    BASE: '/team/',
+  }
 } as const;

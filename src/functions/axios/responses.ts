@@ -164,6 +164,7 @@ export interface Invitation {
   created_by_id: number;
   is_used: boolean;
   created_at: string;
+  status: string;
 }
 
 export interface GetMyInvitationsResponse {
@@ -180,4 +181,42 @@ export interface GetClubsLimitCheckResponse {
   max_clubs: number,
   remaining: number,
   reason: string
+}
+
+export interface ClubAndRole {
+  club_id: number
+  club_name: string
+  role: "owner" | "admin" | "coach" 
+  joined_at: string    
+  is_active: boolean
+  sections_count: number
+}
+
+export interface TeamMember {
+  id: number
+  telegram_id: number
+  first_name: string
+  last_name: string
+  username: string
+  phone_number: string
+  photo_url: string
+  created_at: string   
+  updated_at: string   
+  clubs_and_roles: ClubAndRole[]
+}
+
+export interface CurrentUserClub {
+  club_id: number
+  club_name: string
+  user_role: "owner" | "admin" | "coach" // or string if roles vary
+}
+
+export interface GetTeamMembersResponse {
+  staff_members: TeamMember[]
+  total: number
+  page: number
+  size: number
+  pages: number
+  applied_filters: Record<string, unknown> | null
+  current_user_clubs: CurrentUserClub[]
 }

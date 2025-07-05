@@ -1,13 +1,14 @@
+
 export interface Staff {
-  id: number;
+  id: string;                          // теперь строка, т.к. мы используем toString()
   name: string;
   surname: string;
   telegramUsername?: string;
-  role: 'coach' | 'admin';
+  role: 'owner' | 'coach' | 'admin';
   sports: string[];
   clubs: string[];
-  phone?: string;
-  status: 'active' | 'pending' | 'vacation' | 'blocked';
+  phone?: string;                      // может отсутствовать для уже существующих членов
+  status: string;        // строго разделяем активных и ожидающих
 }
 
 export interface Club {

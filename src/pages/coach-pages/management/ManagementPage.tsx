@@ -18,13 +18,13 @@ import {
   clubsApi,
   invitationsApi,
   sectionsApi,
+  teamApi,
 } from "@/functions/axios/axiosFunctions";
 import type { CreateStuffInvitationRequest } from "@/functions/axios/requests";
 import type {
   CreateSectionResponse,
   CreateClubResponse,
   Invitation,
-  ClubWithRole,
 } from "@/functions/axios/responses";
 import SectionCard from "./components/SectionCard";
 
@@ -77,45 +77,75 @@ const ManagementPage: React.FC = () => {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [sections, setSections] = useState<CreateSectionResponse[]>([]);
 
-  const allRoles = ["coach", "admin"];
+  const allRoles = ["owner", "coach", "admin"];
 
   useEffect(() => {
     const token = localStorage.getItem("telegramToken") || "";
     if (!token) return;
+
     (async () => {
       try {
-        const [secRes, clubRes, invRes] = await Promise.all([
+        const [secRes, clubRes, teamRes, invRes] = await Promise.all([
           sectionsApi.getMy(token),
           clubsApi.getMy(token),
+          teamApi.get(token),
           invitationsApi.getMy(token),
         ]);
 
         setSectionsRaw(secRes.data);
-        setClubsRaw(
-          clubRes.data.clubs.map((wrapper: ClubWithRole) => wrapper.club)
-        );
+        setClubsRaw(clubRes.data.clubs.map((w) => w.club));
         setSections(secRes.data);
 
-        setStaff(
-          invRes.data.invitations.map((inv) => {
-            const club = (
-              clubRes.data.clubs as unknown as CreateClubResponse[]
-            ).find((c) => c.id === inv.club_id);
+        // 1) Маппим реальных членов команды
+        const teamMembers: Staff[] = (
+          teamRes.data.staff_members as unknown[]
+        ).map((m) => {
+          const member = m as {
+            id: number | string;
+            first_name: string;
+            last_name: string;
+            username?: string;
+            clubs_and_roles: Array<{ role: string; club_name: string }>;
+            phone_number?: string;
+          };
+          return {
+            id: member.id.toString(),
+            name: member.first_name,
+            surname: member.last_name,
+            telegramUsername: member.username,
+            role: (member.clubs_and_roles[0]?.role as Staff["role"]) || "coach",
+            sports: [] as string[],
+            clubs: member.clubs_and_roles.map((cr) => cr.club_name),
+            phone: member.phone_number,
+            status: "active", // литерал 'active'
+          };
+        });
+
+        // 2) Маппим только pending-приглашения
+        const pendingInvs: Staff[] = invRes.data.invitations
+          .filter((inv) => inv.status === "pending")
+          .map((inv) => {
+            // находим название клуба
+            const wrapper = clubRes.data.clubs.find(
+              (w) => w.club.id === inv.club_id
+            );
             return {
-              id: inv.id,
+              id: inv.id.toString(),
               name: "",
               surname: "",
               telegramUsername: undefined,
-              role: inv.role as "coach" | "admin",
-              sports: [],
-              clubs: club ? [club.name] : [],
+              role: inv.role as Staff["role"],
+              sports: [] as string[],
+              clubs: wrapper ? [wrapper.club.name] : [],
               phone: inv.phone_number,
-              status: "pending",
+              status: "pending", // литерал 'pending'
             };
-          })
-        );
+          });
+
+        // 3) Объединяем: сначала реальные члены, потом приглашённые
+        setStaff([...teamMembers, ...pendingInvs]);
       } catch (err) {
-        console.error("Error fetching dashboard data:", err);
+        console.error(err);
       }
     })();
   }, []);
@@ -135,21 +165,21 @@ const ManagementPage: React.FC = () => {
       );
       const typedInvitation = invitation as Invitation;
       setStaff((prev) => [
-        ...prev,
-        {
-          id: typedInvitation.id,
-          name: "",
-          surname: "",
-          telegramUsername: undefined,
-          role: typedInvitation.role as "coach" | "admin",
-          sports: [],
-          clubs: clubsRaw
-            .filter((c) => c.id === typedInvitation.club_id)
-            .map((c) => c.name),
-          phone: typedInvitation.phone_number,
-          status: "pending",
-        },
-      ]);
+              ...prev,
+              {
+                id: typedInvitation.id.toString(),
+                name: "",
+                surname: "",
+                telegramUsername: undefined,
+                role: typedInvitation.role as "owner" | "coach" | "admin",
+                sports: [],
+                clubs: clubsRaw
+                  .filter((c) => c.id === typedInvitation.club_id)
+                  .map((c) => c.name),
+                phone: typedInvitation.phone_number,
+                status: typedInvitation.status,
+              },
+            ]);
       setShowAddStaff(false);
       setNewStaff({ role: "", phone: "", clubId: "" });
     } catch (err) {
@@ -196,12 +226,7 @@ const ManagementPage: React.FC = () => {
             </div>
             <div className="space-y-2">
               {filteredStaff.map((member) => (
-                <StaffCard
-                  key={member.id}
-                  member={member}
-                  expanded={false}
-                  onToggle={() => {}}
-                />
+                <StaffCard key={member.id} member={member} />
               ))}
               <button
                 onClick={() => setShowAddStaff(true)}

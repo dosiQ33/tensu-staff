@@ -18,6 +18,7 @@ export const getRoleLabel = (role: Staff['role']) => {
   switch (role) {
     case 'admin': return 'Administrator';
     case 'coach': return 'Coach';
+    case 'owner': return 'Owner';
     default: return role;
   }
 };
@@ -28,6 +29,16 @@ export const getStatusColor = (status: Staff['status']) => {
     case 'blocked': return 'bg-red-100 text-red-800';
     case 'vacation': return 'bg-orange-100 text-orange-800';
     case 'pending': return 'bg-yellow-100 text-yellow-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
+
+export const getStatusLabel = (status: Staff['status']) => {
+  switch (status) {
+    case 'active': return 'активен';
+    case 'blocked': return 'в блоке';
+    case 'vacation': return 'в отпуске';
+    case 'pending': return 'в ожидании';
     default: return 'bg-gray-100 text-gray-800';
   }
 };
