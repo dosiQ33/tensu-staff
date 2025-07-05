@@ -64,12 +64,12 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
           </div>
           <div className="flex gap-2">
             {member.phone && (
-              <button
-                className="p-1 text-gray-400 hover:text-blue-600"
-                onClick={() => (window.location.href = `tel:+${member.phone}`)}
+              <a
+                href={`tel:+${member.phone}`}
+                className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1"
               >
                 <Phone size={16} />+{member.phone}
-              </button>
+              </a>
             )}
 
             {member.telegramUsername && (
