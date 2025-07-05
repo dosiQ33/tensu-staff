@@ -69,7 +69,7 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
                 href={`tel:+${member.phone}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-xl"
+                className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-[17px]"
               >
                 <Phone size={17} />+{member.phone}
               </a>
@@ -80,7 +80,7 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
                 href={`https://t.me/${member.telegramUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-[20px]"
+                className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-[17px]"
               >
                 <MessageCircle size={17} />
               </a>
