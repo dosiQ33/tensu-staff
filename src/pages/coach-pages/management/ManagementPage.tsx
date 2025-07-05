@@ -165,21 +165,21 @@ const ManagementPage: React.FC = () => {
       );
       const typedInvitation = invitation as Invitation;
       setStaff((prev) => [
-              ...prev,
-              {
-                id: typedInvitation.id.toString(),
-                name: "",
-                surname: "",
-                telegramUsername: undefined,
-                role: typedInvitation.role as "owner" | "coach" | "admin",
-                sports: [],
-                clubs: clubsRaw
-                  .filter((c) => c.id === typedInvitation.club_id)
-                  .map((c) => c.name),
-                phone: typedInvitation.phone_number,
-                status: typedInvitation.status,
-              },
-            ]);
+        ...prev,
+        {
+          id: typedInvitation.id.toString(),
+          name: "",
+          surname: "",
+          telegramUsername: undefined,
+          role: typedInvitation.role as "owner" | "coach" | "admin",
+          sports: [],
+          clubs: clubsRaw
+            .filter((c) => c.id === typedInvitation.club_id)
+            .map((c) => c.name),
+          phone: typedInvitation.phone_number,
+          status: typedInvitation.status,
+        },
+      ]);
       setShowAddStaff(false);
       setNewStaff({ role: "", phone: "", clubId: "" });
     } catch (err) {
@@ -225,15 +225,15 @@ const ManagementPage: React.FC = () => {
               {filteredStaff.length} сотрудников
             </div>
             <div className="space-y-2">
-              {filteredStaff.map((member) => (
-                <StaffCard key={member.id} member={member} />
-              ))}
               <button
                 onClick={() => setShowAddStaff(true)}
                 className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
               >
                 <Plus size={20} /> Добавить Тренера/Администратора
               </button>
+              {filteredStaff.map((member) => (
+                <StaffCard key={member.id} member={member} />
+              ))}
             </div>
           </>
         ) : (
