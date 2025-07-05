@@ -64,9 +64,9 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
           </div>
           <div className="flex gap-2">
             {member.phone && (
-              <button className="p-1 text-gray-400 hover:text-blue-600">
+              <button className="flex flex-row p-1 text-gray-400 hover:text-blue-600">
                 <Phone size={16} />
-                {member.phone}
+                +{member.phone}
               </button>
             )}
             {member.telegramUsername && (
