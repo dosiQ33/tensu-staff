@@ -27,7 +27,7 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
             </span>
             {member.telegramUsername && (
               <span className="text-xs text-gray-500">
-                {'@' + member.telegramUsername}
+                {"@" + member.telegramUsername}
               </span>
             )}
           </div>
@@ -64,11 +64,14 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
           </div>
           <div className="flex gap-2">
             {member.phone && (
-              <button className="flex flex-row p-1 text-gray-400 hover:text-blue-600">
-                <Phone size={16} />
-                +{member.phone}
+              <button
+                className="p-1 text-gray-400 hover:text-blue-600"
+                onClick={() => (window.location.href = `tel:+${member.phone}`)}
+              >
+                <Phone size={16} />+{member.phone}
               </button>
             )}
+
             {member.telegramUsername && (
               <button className="p-1 text-gray-400 hover:text-blue-600">
                 <MessageCircle size={16} />
