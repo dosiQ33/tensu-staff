@@ -24,62 +24,25 @@ import {
 import { clubsApi, staffApi } from "@/functions/axios/axiosFunctions";
 import { CreateClubModal } from "./components/CreateClubModal";
 import type {
-  CreateClubResponse,
+  ClubWithRole,
   GetClubsLimitCheckResponse,
 } from "@/functions/axios/responses";
 import { BottomNav } from "@/components/Layout";
-
-interface Club {
-  id: string;
-  name: string;
-  logo: string;
-  userRole: "owner" | "admin" | "coach";
-  sections: number;
-  students: number;
-  monthlyRevenue: number;
-  studentGrowth: number;
-  plan: string;
-  nextPayment: string;
-  paymentStatus: "paid" | "pending" | "expired";
-  analytics: {
-    totalStudents: number;
-    newStudents: number;
-    lostStudents: number;
-    weeklyRevenue: number;
-    averageTicket: number;
-    totalWorkouts: number;
-    peakHours: string;
-    revenueHistory: { month: string; amount: number }[];
-    studentHistory: { month: string; count: number }[];
-    sectionDistribution: { name: string; count: number; color: string }[];
-  };
-  paymentHistory: {
-    date: string;
-    amount: number;
-    method: string;
-    status: string;
-  }[];
-}
+import type { Club } from "@/types/types";
 
 const CoachProfile: React.FC = () => {
-  const [selectedClub, setSelectedClub] = useState<Club | null>(null);
-  const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
-    null
-  );
-
-  const mapClub = (c: CreateClubResponse): Club => ({
+  const mapClub = ({ club: c, role }: ClubWithRole): Club => ({
     id: c.id.toString(),
     name: c.name,
-    logo: c.logo_url, // или дефолтный эмодзи
-    userRole: "owner", // можно вычислить по c.owner_id
+    logo: c.logo_url,
+    userRole: role,
     sections: 0,
     students: 0,
     monthlyRevenue: 0,
     studentGrowth: 0,
     plan: "Basic",
-    nextPayment: "", // нет в API
-    paymentStatus: "pending", // по умолчанию
-
+    nextPayment: "",
+    paymentStatus: "pending",
     analytics: {
       totalStudents: 0,
       newStudents: 0,
@@ -92,11 +55,15 @@ const CoachProfile: React.FC = () => {
       studentHistory: [],
       sectionDistribution: [],
     },
-
     paymentHistory: [],
   });
-
   const [clubs, setClubs] = useState<Club[]>([]);
+
+  const [selectedClub, setSelectedClub] = useState<Club | null>(null);
+  const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
+    null
+  );
+
   const [showCreate, setShowCreate] = useState(false);
   const [showLimitPopup, setShowLimitPopup] = useState(false);
   const [limitInfo, setLimitInfo] = useState<GetClubsLimitCheckResponse | null>(
@@ -215,8 +182,9 @@ const CoachProfile: React.FC = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("telegramToken")!;
     clubsApi
-      .getMy(localStorage.getItem("telegramToken")!)
+      .getMy(token)
       .then((res) => {
         setClubs(res.data.clubs.map(mapClub));
       })

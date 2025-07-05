@@ -10,6 +10,38 @@ export interface Staff {
   status: 'active' | 'pending' | 'vacation' | 'blocked';
 }
 
+export interface Club {
+  id: string;
+  name: string;
+  logo: string;
+  userRole: "owner" | "admin" | "coach";
+  sections: number;
+  students: number;
+  monthlyRevenue: number;
+  studentGrowth: number;
+  plan: string;
+  nextPayment: string;
+  paymentStatus: "paid" | "pending" | "expired";
+  analytics: {
+    totalStudents: number;
+    newStudents: number;
+    lostStudents: number;
+    weeklyRevenue: number;
+    averageTicket: number;
+    totalWorkouts: number;
+    peakHours: string;
+    revenueHistory: { month: string; amount: number }[];
+    studentHistory: { month: string; count: number }[];
+    sectionDistribution: { name: string; count: number; color: string }[];
+  };
+  paymentHistory: {
+    date: string;
+    amount: number;
+    method: string;
+    status: string;
+  }[];
+}
+
 export interface SportsSection {
   id: string;
   name: string;

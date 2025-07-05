@@ -91,13 +91,13 @@ const ManagementPage: React.FC = () => {
 
         setSectionsRaw(secRes.data);
         setClubsRaw(
-          Array.isArray(clubRes.data.clubs) ? clubRes.data.clubs : []
+          Array.isArray(clubRes.data) ? clubRes.data : []
         );
         setSections(secRes.data);
 
         setStaff(
           invRes.data.invitations.map((inv) => {
-            const club = (clubRes.data.clubs as CreateClubResponse[]).find(
+            const club = (clubRes.data.clubs as unknown as CreateClubResponse[]).find(
               (c) => c.id === inv.club_id
             );
             return {

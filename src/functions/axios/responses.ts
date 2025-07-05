@@ -42,13 +42,16 @@ export interface CreateClubResponse {
   updated_at: string;
 }
 
+export interface ClubWithRole {
+  club: CreateClubResponse;
+  role: "owner" | "admin" | "coach";
+  is_owner: boolean;
+}
+
 export interface GetMyClubsResponse {
-  clubs: CreateClubResponse[];
+  clubs: ClubWithRole[];
   total: number;
-  page: number;
-  size: number;
-  pages: number;
-  filters: Record<string, unknown>;
+  user_id: number;
 }
 
 export interface CreateClubStuffInvitationResponse {
