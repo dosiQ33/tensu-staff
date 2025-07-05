@@ -76,19 +76,14 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
             )}
 
             {member.telegramUsername && (
-              <button
+              <a
+                href={`https://t.me/${member.telegramUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-[20px]"
-                onClick={() => {
-                  // если Telegram Mini App ещё не инициализирован — ничего не делаем
-                  if (window.Telegram?.WebApp) {
-                    (window.Telegram.WebApp as any).openLink(
-                      `tg://resolve?domain=${member.telegramUsername}`
-                    );
-                  }
-                }}
               >
-                <MessageCircle size={17} />
-              </button>
+                <MessageCircle size={20} />
+              </a>
             )}
             <button className="p-1 text-gray-400 hover:text-blue-600">
               <Edit3 size={17} />
