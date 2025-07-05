@@ -66,6 +66,8 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
             {member.phone && (
               <a
                 href={`tel:+${member.phone}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1"
               >
                 <Phone size={16} />+{member.phone}
