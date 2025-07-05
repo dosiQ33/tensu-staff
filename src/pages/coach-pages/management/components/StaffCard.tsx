@@ -71,7 +71,7 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
                 rel="noopener noreferrer"
                 className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-xl"
               >
-                <Phone size={20} />+{member.phone}
+                <Phone size={17} />+{member.phone}
               </a>
             )}
 
@@ -87,11 +87,11 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
                   }
                 }}
               >
-                <MessageCircle size={20} />
+                <MessageCircle size={17} />
               </button>
             )}
             <button className="p-1 text-gray-400 hover:text-blue-600">
-              <Edit3 size={20} />
+              <Edit3 size={17} />
             </button>
           </div>
         </div>
