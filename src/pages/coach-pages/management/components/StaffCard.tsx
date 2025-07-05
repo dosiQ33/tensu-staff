@@ -6,7 +6,7 @@ import { Phone, MessageCircle, Edit3 } from 'lucide-react';
 interface StaffCardProps {
   member: Staff;
   expanded: boolean;
-  onToggle: (id: string) => void;
+  onToggle: (id: number) => void;
 }
 
 const StaffCard: React.FC<StaffCardProps> = ({ member, expanded, onToggle }) => (
