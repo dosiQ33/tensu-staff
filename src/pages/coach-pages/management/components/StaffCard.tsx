@@ -27,7 +27,7 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
             </span>
             {member.telegramUsername && (
               <span className="text-xs text-gray-500">
-                {member.telegramUsername}
+                {'@' + member.telegramUsername}
               </span>
             )}
           </div>

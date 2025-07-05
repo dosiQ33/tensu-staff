@@ -2,15 +2,22 @@ import {
   Shield,
   User,
   AlertCircle,
-  Pause
+  Pause,
+  Crown,
+  UserCheck,
 } from 'lucide-react';
 import type { Staff } from '@/types/types';
 
 export const getRoleIcon = (role: Staff['role']) => {
   switch (role) {
-    case 'admin': return <Shield size={16} className="text-purple-600" />;
-    case 'coach': return <User size={16} className="text-blue-600" />;
-    default: return <User size={16} className="text-gray-600" />;
+    case "owner":
+      return <Crown size={16} className="text-yellow-500" />;
+    case "admin":
+      return <Shield size={16} className="text-purple-600" />;
+    case "coach":
+      return <UserCheck size={16} className="text-green-600" />;
+    default:
+      return <User size={16} className="text-gray-400" />;
   }
 };
 
