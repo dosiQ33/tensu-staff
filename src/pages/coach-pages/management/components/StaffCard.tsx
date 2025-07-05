@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import type { Staff } from "@/types/types";
 import {
@@ -75,7 +76,17 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
             )}
 
             {member.telegramUsername && (
-              <button className="p-1 text-gray-400 hover:text-blue-600">
+              <button
+                className="p-1 text-gray-400 hover:text-blue-600 flex items-center gap-1 text-[20px]"
+                onClick={() => {
+                  // если Telegram Mini App ещё не инициализирован — ничего не делаем
+                  if (window.Telegram?.WebApp) {
+                    (window.Telegram.WebApp as any).openLink(
+                      `tg://resolve?domain=${member.telegramUsername}`
+                    );
+                  }
+                }}
+              >
                 <MessageCircle size={20} />
               </button>
             )}
