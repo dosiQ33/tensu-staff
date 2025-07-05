@@ -79,7 +79,7 @@ const StaffFilter: React.FC<StaffFilterProps> = ({
             {allClubs.map((club) => {
               const selected = filters.clubs.includes(club.name);
               // Укорачиваем длинные названия
-              const label =
+              const label = club.name &&
                 club.name.length > 8 ? `${club.name.slice(0, 8)}…` : club.name;
               return (
                 <button

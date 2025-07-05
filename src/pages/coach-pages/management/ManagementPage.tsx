@@ -101,7 +101,7 @@ const ManagementPage: React.FC = () => {
               (c) => c.id === inv.club_id
             );
             return {
-              id: inv.id.toString(),
+              id: inv.id,
               name: "",
               surname: "",
               telegramUsername: undefined,
@@ -136,7 +136,7 @@ const ManagementPage: React.FC = () => {
       setStaff((prev) => [
         ...prev,
         {
-          id: typedInvitation.id.toString(),
+          id: typedInvitation.id,
           name: "",
           surname: "",
           telegramUsername: undefined,

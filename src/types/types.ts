@@ -1,5 +1,5 @@
 export interface Staff {
-  id: string;
+  id: number;
   name: string;
   surname: string;
   telegramUsername?: string;
