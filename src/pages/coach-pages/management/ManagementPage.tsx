@@ -24,6 +24,7 @@ import type {
   CreateSectionResponse,
   CreateClubResponse,
   Invitation,
+  ClubWithRole,
 } from "@/functions/axios/responses";
 import SectionCard from "./components/SectionCard";
 
@@ -91,15 +92,15 @@ const ManagementPage: React.FC = () => {
 
         setSectionsRaw(secRes.data);
         setClubsRaw(
-          Array.isArray(clubRes.data) ? clubRes.data : []
+          clubRes.data.clubs.map((wrapper: ClubWithRole) => wrapper.club)
         );
         setSections(secRes.data);
 
         setStaff(
           invRes.data.invitations.map((inv) => {
-            const club = (clubRes.data.clubs as unknown as CreateClubResponse[]).find(
-              (c) => c.id === inv.club_id
-            );
+            const club = (
+              clubRes.data.clubs as unknown as CreateClubResponse[]
+            ).find((c) => c.id === inv.club_id);
             return {
               id: inv.id,
               name: "",
