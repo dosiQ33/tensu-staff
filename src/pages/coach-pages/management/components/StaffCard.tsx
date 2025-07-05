@@ -19,19 +19,19 @@ const StaffCard: React.FC<StaffCardProps> = ({ member }) => {
 
   return (
     <div className="bg-white rounded-lg p-4 border border-gray-200">
+      <div className="flex items-center gap-2 mb-1">
+        {getRoleIcon(member.role)}
+        <span className="font-medium text-gray-900">
+          {member.name} {member.surname}
+        </span>
+        {member.telegramUsername && (
+          <span className="text-xs text-gray-500">
+            {"@" + member.telegramUsername}
+          </span>
+        )}
+      </div>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            {getRoleIcon(member.role)}
-            <span className="font-medium text-gray-900">
-              {member.name} {member.surname}
-            </span>
-            {member.telegramUsername && (
-              <span className="text-xs text-gray-500">
-                {"@" + member.telegramUsername}
-              </span>
-            )}
-          </div>
           <div className="text-sm text-gray-600 mb-2">
             {getRoleLabel(member.role)}
           </div>
