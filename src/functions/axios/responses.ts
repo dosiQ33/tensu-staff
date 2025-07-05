@@ -42,7 +42,14 @@ export interface CreateClubResponse {
   updated_at: string;
 }
 
-export type GetMyClubsResponse = CreateClubResponse[];
+export interface GetMyClubsResponse {
+  clubs: CreateClubResponse[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+  filters: Record<string, unknown>;
+}
 
 export interface CreateClubStuffInvitationResponse {
   phone_number: string,

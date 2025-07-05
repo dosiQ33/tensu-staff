@@ -63,7 +63,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   const groups = newSection.groups || [];
 
-  // Добавить пустую группу в состояние
   const addGroup = () => {
     const newGroup = {
       id: Date.now(),
@@ -122,7 +121,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
     updateGroup(gIdx, "schedule", updatedSched);
   };
 
-  // Преобразуем массив ScheduleEntry в объект вида { Monday: { start, end }, ... }
   const buildScheduleObject = (entries: ScheduleEntry[]) =>
     entries.reduce<Record<string, { start: string; end: string }>>(
       (acc, { day, start, end }) => {
@@ -148,7 +146,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       );
       const sectionId = createdSection.id;
 
-      // 2) Для каждой группы создаём запись
       for (const grp of groups) {
         const groupPayload = {
           section_id: sectionId,
@@ -232,26 +229,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
           {/* Price, Coach */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {/* Цена */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-800 mb-2">
-                Цена
-              </label>
-              {/* Уберите поле цены для секции, если оно не нужно */}
-              {/* <input
-                type="number"
-                value={newSection.price ?? ""}
-                onChange={(e) => onChange("price", Number(e.target.value))}
-                className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
-              /> */}
-              <input
-                type="number"
-                value=""
-                disabled
-                placeholder="Цена задаётся для каждой группы"
-                className="block w-full border border-gray-300 rounded-xl py-2.5 px-4 bg-gray-100 text-gray-400"
-              />
-            </div>
             {/* Тренер */}
             <div className="sm:col-span-2 space-y-1">
               <label className="block text-sm font-medium text-gray-800 mb-2">

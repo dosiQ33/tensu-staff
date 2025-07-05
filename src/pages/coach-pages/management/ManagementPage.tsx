@@ -88,12 +88,18 @@ const ManagementPage: React.FC = () => {
           clubsApi.getMy(token),
           invitationsApi.getMy(token),
         ]);
+
         setSectionsRaw(secRes.data);
-        setClubsRaw(clubRes.data);
+        setClubsRaw(
+          Array.isArray(clubRes.data.clubs) ? clubRes.data.clubs : []
+        );
         setSections(secRes.data);
+
         setStaff(
           invRes.data.invitations.map((inv) => {
-            const club = clubRes.data.find((c) => c.id === inv.club_id);
+            const club = (clubRes.data.clubs as CreateClubResponse[]).find(
+              (c) => c.id === inv.club_id
+            );
             return {
               id: inv.id.toString(),
               name: "",
