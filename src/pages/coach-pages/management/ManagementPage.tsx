@@ -201,7 +201,7 @@ const ManagementPage: React.FC = () => {
   }, [staff, filters]);
 
   return (
-    <div className="min-h-max bg-gray-50 pb-20">
+    <div className="min-h-max bg-gray-50 pb-50">
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="px-4 py-3">
           <h1 className="text-xl font-semibold text-gray-900 mb-4">
