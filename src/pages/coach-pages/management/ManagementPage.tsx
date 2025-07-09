@@ -69,7 +69,6 @@ const ManagementPage: React.FC = () => {
     coach_id: undefined,
     description: "",
     active: true,
-    groups: [],
   });
 
   const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
@@ -84,22 +83,22 @@ const ManagementPage: React.FC = () => {
   const [showSecNotAllowed, setShowSecNotAllowed] = useState(false);
   const [showStaffNotAllowed, setShowStaffNotAllowed] = useState(false);
 
-  const addSection = () => {
-    if (sectionCreateAllowed) {
-      // setNewSection((prev) => ({
-      //   ...prev,
-      //   club_id: newSection.club_id,
-      //   name: newSection.name,
-      //   coach_id: newSection.coach_id,
-      //   description: newSection.description,
-      //   active: true,
-      //   groups: [],
-      // }));
-      setShowAddSection(true);
-    } else {
-      setShowSecNotAllowed(true);
-    }
-  };
+const addSection = () => {
+  if (!sectionCreateAllowed) {
+    setShowSecNotAllowed(true);
+    return;
+  }
+  // Инициализируем newSection перед показом
+  setNewSection({
+    club_id: clubsRaw[0]?.id,    // первый клуб из списка
+    name: "",
+    coach_id: userId,            // текущий пользователь
+    description: "",
+    active: true,
+    // groups будет добавляться в AddSectionModal
+  });
+  setShowAddSection(true);
+};
 
   const addClub = () => {
     if (staffCreateAllowed) {
