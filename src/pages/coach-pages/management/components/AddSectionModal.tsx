@@ -256,7 +256,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                 <select
                   value={newSection.coach_id ?? userId}
-                  onChange={(e) => onChange("coach_id", Number(e.target.value))}
+                  onChange={(e) => onChange("coach_id", e.target.value)}
                   className="block w-full py-2.5 px-4 appearance-none"
                 >
                   <option value={userId}>
