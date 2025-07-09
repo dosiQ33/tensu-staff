@@ -71,7 +71,7 @@ export interface NewSection {
   club_id?: number;
   name: string;
   description?: string;
-  coach_id?: number;
+  coach_id?: number | null;
   active?: boolean;
   club?: {
     id: number;
@@ -112,7 +112,7 @@ export interface NewGroup {
   price: number;
   capacity: number;
   level: string;
-  coach_id?: number;
+  coach_id?: number | null;
   tags?: string[];
   active?: boolean;
 }
