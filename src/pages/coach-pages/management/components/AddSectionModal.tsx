@@ -1,6 +1,6 @@
 // AddSectionModal.tsx
-import React from "react";
-import { X, Plus, ChevronDown } from "lucide-react";
+import React, { useState } from "react";
+import { X, Plus, ChevronDown, CheckCircle } from "lucide-react";
 import type { NewSection, ScheduleEntry, Staff } from "@/types/types";
 import type { CreateClubResponse } from "@/functions/axios/responses";
 import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
@@ -59,6 +59,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   onSave,
   onClose,
 }) => {
+  const [sectionCreated, setSectionCreated] = useState(false);
   if (!show) return null;
 
   const groups = newSection.groups || [];
@@ -68,8 +69,8 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       id: Date.now(),
       name: "",
       level: "",
-      capacity: 1,
-      price: 0,
+      capacity: null,
+      price: null,
       active: true,
       description: "",
       coach_id: newSection.coach_id,
@@ -143,6 +144,11 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
         sectionPayload,
         token
       );
+
+      if (createdSection.id) {
+        setSectionCreated(true);
+      }
+
       const sectionId = createdSection.id;
 
       for (const grp of groups) {
@@ -188,43 +194,57 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
         {/* Body */}
         <div className="px-6 py-5 space-y-4 max-h-[80vh] overflow-y-auto">
           {/* Club & Section Name */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {/* Клуб */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-800 mb-2">
-                Клуб <span className="text-red-500">*</span>
-              </label>
-              <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
-                <select
-                  value={newSection.club_id ?? (allClubs[0]?.id || "")}
-                  onChange={(e) => onChange("club_id", Number(e.target.value))}
-                  className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none"
-                >
-                  {allClubs.length > 1 && (
-                    <option value="">Выберите клуб</option>
-                  )}
-                  {allClubs.map((club) => (
-                    <option key={club.id} value={club.id}>
-                      {club.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="mr-2" />
+          {sectionCreated ? (
+            <div className="flex items-center justify-between bg-white p-4 rounded-2xl shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {newSection.name}
+              </h3>
+              <span className="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-green-100 text-green-800 rounded-full">
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Создан
+              </span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* Клуб */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Клуб <span className="text-red-500">*</span>
+                </label>
+                <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
+                  <select
+                    value={newSection.club_id ?? (allClubs[0]?.id || "")}
+                    onChange={(e) =>
+                      onChange("club_id", Number(e.target.value))
+                    }
+                    className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none"
+                  >
+                    {allClubs.length > 1 && (
+                      <option value="">Выберите клуб</option>
+                    )}
+                    {allClubs.map((club) => (
+                      <option key={club.id} value={club.id}>
+                        {club.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="mr-2" />
+                </div>
+              </div>
+              {/* Название секции */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-800 mb-2">
+                  Название секции <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newSection.name}
+                  onChange={(e) => onChange("name", e.target.value)}
+                  className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                />
               </div>
             </div>
-            {/* Название секции */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-800 mb-2">
-                Название секции <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={newSection.name}
-                onChange={(e) => onChange("name", e.target.value)}
-                className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
-              />
-            </div>
-          </div>
+          )}
 
           {/* Price, Coach */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -267,7 +287,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-1">
                       <label className="block text-sm font-medium text-gray-800 mb-2">
-                        Имя группы
+                        Имя группы <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -296,26 +316,31 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         Вместимость
                       </label>
                       <input
-                        type="number"
-                        min={1}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="\d*"
                         value={group.capacity}
                         onChange={(e) =>
+                          /^\d*$/.test(e.target.value) &&
                           updateGroup(gIdx, "capacity", Number(e.target.value))
                         }
-                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                        className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4"
                       />
                     </div>
                     <div className="space-y-1">
                       <label className="block text-sm font-medium text-gray-800 mb-2">
-                        Цена
+                        Цена (₸)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="\d*"
                         value={group.price}
                         onChange={(e) =>
+                          /^\d*$/.test(e.target.value) &&
                           updateGroup(gIdx, "price", Number(e.target.value))
                         }
-                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                        className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4"
                       />
                     </div>
                   </div>
