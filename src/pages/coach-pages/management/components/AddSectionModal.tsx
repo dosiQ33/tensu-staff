@@ -12,7 +12,7 @@ interface AddSectionModalProps {
   allClubs: CreateClubResponse[];
   allStaff: Staff[];
   userFullName: string;
-  userId: string;
+  userId: number;
   newSection: NewSection & {
     groups?: {
       id?: number;
@@ -160,7 +160,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           price: grp.price,
           capacity: grp.capacity,
           level: grp.level,
-          coach_id: grp.coach_id ?? newSection.coach_id ?? Number(userId),
+          coach_id: grp.coach_id ?? newSection.coach_id ?? userId,
           tags: grp.tags ?? [],
           active: grp.active,
         };
