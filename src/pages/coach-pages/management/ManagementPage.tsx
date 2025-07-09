@@ -77,7 +77,7 @@ const ManagementPage: React.FC = () => {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [sections, setSections] = useState<CreateSectionResponse[]>([]);
 
-  const [sectionCreateAllowed, setSectionCreateAllowed] = useState(true);
+  const [sectionCreateAllowed, setSectionCreateAllowed] = useState(false);
   const [staffCreateAllowed, setStaffCreateAllowed] = useState(false);
 
   const [showSecNotAllowed, setShowSecNotAllowed] = useState(false);
