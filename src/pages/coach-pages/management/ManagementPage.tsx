@@ -128,7 +128,7 @@ const addSection = () => {
         setClubsRaw(clubRes.data.clubs.map((w) => w.club));
         setSections(secRes.data);
 
-        if (clubRes.data.clubs.length === 0) {
+        if (clubRes.data.clubs.length > 1) {
           setSectionCreateAllowed(true);
           setStaffCreateAllowed(true);
         }
@@ -357,7 +357,7 @@ const addSection = () => {
             </div>
             <div className="flex flex-col items-center justify-center h-full text-center">
               <h2 className="text-lg font-semibold text-gray-800">
-                Невозможно создать секцию
+                Невозможно добавить тренера
               </h2>
               <p className="mt-1 text-sm text-gray-500">
                 Пожалуйста, сначала создайте клуб
