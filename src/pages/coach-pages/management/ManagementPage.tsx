@@ -66,7 +66,7 @@ const ManagementPage: React.FC = () => {
   const [newSection, setNewSection] = useState<NewSection>({
     club_id: undefined,
     name: "",
-    coach_id: null,
+    coach_id: undefined,
     description: "",
     active: true,
     groups: [],
