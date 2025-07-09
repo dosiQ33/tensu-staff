@@ -101,10 +101,9 @@ const addSection = () => {
 };
 
   const addClub = () => {
-    if (staffCreateAllowed) {
-      setShowAddStaff(true);
-    } else {
-      setShowStaffNotAllowed(true);
+    if (!staffCreateAllowed) {
+      setShowStaffNotAllowed(true); 
+      return
     }
   };
 
