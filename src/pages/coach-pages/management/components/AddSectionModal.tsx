@@ -130,7 +130,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       {}
     );
 
-  // Основная функция создания секции + групп
   const handleCreate = async () => {
     try {
       const sectionPayload = {
@@ -340,7 +339,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         (entry: ScheduleEntry, eIdx) => (
                           <div
                             key={eIdx}
-                            className="flex items-center gap-2 bg-white p-2 rounded-md border border-gray-200"
+                            className="flex flex-col gap-2 bg-white p-2 rounded-md border border-gray-200"
                           >
                             <select
                               value={entry.day}
@@ -352,7 +351,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                                   e.target.value
                                 )
                               }
-                              className="p-2 border rounded-md"
+                              className="p-2 border rounded-md border-gray-400"
                             >
                               {weekdays.map((d) => (
                                 <option key={d} value={d}>
@@ -360,33 +359,36 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                                 </option>
                               ))}
                             </select>
-                            <input
-                              type="time"
-                              value={entry.start}
-                              onChange={(e) =>
-                                updateGroupEntry(
-                                  gIdx,
-                                  eIdx,
-                                  "start",
-                                  e.target.value
-                                )
-                              }
-                              className="p-2 border rounded-md"
-                            />
-                            <span className="text-gray-500">—</span>
-                            <input
-                              type="time"
-                              value={entry.end}
-                              onChange={(e) =>
-                                updateGroupEntry(
-                                  gIdx,
-                                  eIdx,
-                                  "end",
-                                  e.target.value
-                                )
-                              }
-                              className="p-2 border rounded-md"
-                            />
+                            <div className="flex flex-row gap-2 items-center">
+                              <input
+                                type="time"
+                                value={entry.start}
+                                onChange={(e) =>
+                                  updateGroupEntry(
+                                    gIdx,
+                                    eIdx,
+                                    "start",
+                                    e.target.value
+                                  )
+                                }
+                                className="p-2 border rounded-md border-gray-400"
+                              />
+                              <span className="text-gray-400">—</span>
+                              <input
+                                type="time"
+                                value={entry.end}
+                                onChange={(e) =>
+                                  updateGroupEntry(
+                                    gIdx,
+                                    eIdx,
+                                    "end",
+                                    e.target.value
+                                  )
+                                }
+                                className="p-2 border rounded-md border-gray-400"
+                              />
+                            </div>
+
                             <button
                               onClick={() => removeGroupEntry(gIdx, eIdx)}
                               className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"

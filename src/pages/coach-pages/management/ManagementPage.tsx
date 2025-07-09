@@ -13,7 +13,7 @@ import type {
   ScheduleEntry,
 } from "@/types/types";
 import { BottomNav } from "@/components/Layout";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import {
   clubsApi,
   invitationsApi,
@@ -77,6 +77,30 @@ const ManagementPage: React.FC = () => {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [sections, setSections] = useState<CreateSectionResponse[]>([]);
 
+  const [sectionCreateAllowed, setSectionCreateAllowed] = useState(true);
+  const [staffCreateAllowed, setStaffCreateAllowed] = useState(false);
+
+
+  const [showSecNotAllowed, setShowSecNotAllowed] = useState(false);
+  const [showStaffNotAllowed, setShowStaffNotAllowed] = useState(false);
+
+
+  const addSection = () => {
+    if (sectionCreateAllowed) {
+      setShowAddSection(true);
+    } else {
+      setShowSecNotAllowed(true);
+    }
+  };
+
+  const addClub = () => {
+    if (staffCreateAllowed) {
+      setShowAddStaff(true);
+    } else {
+      setShowStaffNotAllowed(true);
+    }
+  }
+
   const allRoles = ["owner", "coach", "admin"];
 
   useEffect(() => {
@@ -95,6 +119,11 @@ const ManagementPage: React.FC = () => {
         setSectionsRaw(secRes.data);
         setClubsRaw(clubRes.data.clubs.map((w) => w.club));
         setSections(secRes.data);
+
+        if (clubRes.data.clubs.length === 0) {
+          setSectionCreateAllowed(true);
+          setStaffCreateAllowed(true);
+        }
 
         // 1) Маппим реальных членов команды
         const teamMembers: Staff[] = (
@@ -165,21 +194,21 @@ const ManagementPage: React.FC = () => {
       );
       const typedInvitation = invitation as Invitation;
       setStaff((prev) => [
-              ...prev,
-              {
-                id: typedInvitation.id.toString(),
-                name: "",
-                surname: "",
-                telegramUsername: undefined,
-                role: typedInvitation.role as "owner" | "coach" | "admin",
-                sports: [],
-                clubs: clubsRaw
-                  .filter((c) => c.id === typedInvitation.club_id)
-                  .map((c) => c.name),
-                phone: typedInvitation.phone_number,
-                status: typedInvitation.status,
-              },
-            ]);
+        ...prev,
+        {
+          id: typedInvitation.id.toString(),
+          name: "",
+          surname: "",
+          telegramUsername: undefined,
+          role: typedInvitation.role as "owner" | "coach" | "admin",
+          sports: [],
+          clubs: clubsRaw
+            .filter((c) => c.id === typedInvitation.club_id)
+            .map((c) => c.name),
+          phone: typedInvitation.phone_number,
+          status: typedInvitation.status,
+        },
+      ]);
       setShowAddStaff(false);
       setNewStaff({ role: "", phone: "", clubId: "" });
     } catch (err) {
@@ -201,59 +230,63 @@ const ManagementPage: React.FC = () => {
   }, [staff, filters]);
 
   return (
-    <div className="min-h-max bg-gray-50 pb-50">
-      <div className="bg-white border-b sticky top-0 z-10">
-        <div className="px-4 py-3">
-          <h1 className="text-xl font-semibold text-gray-900 mb-4">
-            Панель Управления
-          </h1>
-          <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
-          {activeTab === "staff" && (
-            <StaffFilter
-              filters={filters}
-              allClubs={clubsRaw}
-              allSections={sectionsRaw}
-              onChange={(f) => setFilters((prev) => ({ ...prev, ...f }))}
-            />
+    <>
+      <div className="min-h-max bg-gray-50 pb-50">
+        <div className="bg-white border-b sticky top-0 z-10">
+          <div className="px-4 py-3">
+            <h1 className="text-xl font-semibold text-gray-900 mb-4">
+              Панель Управления
+            </h1>
+            <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
+            {activeTab === "staff" && (
+              <StaffFilter
+                filters={filters}
+                allClubs={clubsRaw}
+                allSections={sectionsRaw}
+                onChange={(f) => setFilters((prev) => ({ ...prev, ...f }))}
+              />
+            )}
+          </div>
+        </div>
+        <div className="px-4 py-2">
+          {activeTab === "staff" ? (
+            <>
+              <div className="mb-3 text-sm text-gray-600">
+                {filteredStaff.length} сотрудников
+              </div>
+              <div className="space-y-2">
+                {filteredStaff.map((member) => (
+                  <StaffCard key={member.id} member={member} />
+                ))}
+                <button
+                  onClick={addClub}
+                  className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
+                >
+                  <Plus size={20} /> Добавить Тренера/Администратора
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mb-3 text-sm text-gray-600">
+                {sections.length} секций
+              </div>
+              <div className="space-y-4">
+                {sections.map((sec) => (
+                  <SectionCard key={sec.id} section={sec} onEdit={() => {}} />
+                ))}
+                <button
+                  onClick={addSection}
+                  className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
+                >
+                  <Plus size={20} /> Добавить Секцию
+                </button>
+              </div>
+            </>
           )}
         </div>
-      </div>
-      <div className="px-4 py-2">
-        {activeTab === "staff" ? (
-          <>
-            <div className="mb-3 text-sm text-gray-600">
-              {filteredStaff.length} сотрудников
-            </div>
-            <div className="space-y-2">
-              {filteredStaff.map((member) => (
-                <StaffCard key={member.id} member={member} />
-              ))}
-              <button
-                onClick={() => setShowAddStaff(true)}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
-              >
-                <Plus size={20} /> Добавить Тренера/Администратора
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="mb-3 text-sm text-gray-600">
-              {sections.length} секций
-            </div>
-            <div className="space-y-4">
-              {sections.map((sec) => (
-                <SectionCard key={sec.id} section={sec} onEdit={() => {}} />
-              ))}
-              <button
-                onClick={() => setShowAddSection(true)}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
-              >
-                <Plus size={20} /> Добавить Секцию
-              </button>
-            </div>
-          </>
-        )}
+
+        <BottomNav page="management" />
       </div>
       <AddStaffModal
         show={showAddStaff}
@@ -280,8 +313,52 @@ const ManagementPage: React.FC = () => {
         onSave={() => {}}
         onClose={() => setShowAddSection(false)}
       />
-      <BottomNav page="management" />
-    </div>
+      {showSecNotAllowed && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="relative bg-white w-[95%] max-w-md shadow-xl ring-1 ring-gray-200 rounded-2xl px-6 py-5">
+            <div className="absolute top-4 right-4">
+              <button
+                onClick={() => setShowSecNotAllowed(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <h2 className="text-lg font-semibold text-gray-800">
+                Невозможно создать секцию
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Пожалуйста, сначала создайте клуб
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showStaffNotAllowed && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="relative bg-white w-[95%] max-w-md shadow-xl ring-1 ring-gray-200 rounded-2xl px-6 py-5">
+            <div className="absolute top-4 right-4">
+              <button
+                onClick={() => setShowStaffNotAllowed(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <h2 className="text-lg font-semibold text-gray-800">
+                Невозможно создать секцию
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Пожалуйста, сначала создайте клуб
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 export default ManagementPage;
