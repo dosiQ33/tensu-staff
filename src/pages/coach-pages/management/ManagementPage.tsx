@@ -86,15 +86,15 @@ const ManagementPage: React.FC = () => {
 
   const addSection = () => {
     if (sectionCreateAllowed) {
-      setNewSection((prev) => ({
-        ...prev,
-        club_id: newSection.club_id,
-        name: newSection.name,
-        coach_id: newSection.coach_id,
-        description: newSection.description,
-        active: true,
-        groups: [],
-      }));
+      // setNewSection((prev) => ({
+      //   ...prev,
+      //   club_id: newSection.club_id,
+      //   name: newSection.name,
+      //   coach_id: newSection.coach_id,
+      //   description: newSection.description,
+      //   active: true,
+      //   groups: [],
+      // }));
       setShowAddSection(true);
     } else {
       setShowSecNotAllowed(true);
