@@ -175,6 +175,8 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
     }
   };
 
+  console.log('user id' + userId)
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
       <div className="bg-white w-full h-full max-w-lg overflow-hidden">
