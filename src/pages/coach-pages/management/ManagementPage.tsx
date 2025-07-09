@@ -80,13 +80,20 @@ const ManagementPage: React.FC = () => {
   const [sectionCreateAllowed, setSectionCreateAllowed] = useState(true);
   const [staffCreateAllowed, setStaffCreateAllowed] = useState(false);
 
-
   const [showSecNotAllowed, setShowSecNotAllowed] = useState(false);
   const [showStaffNotAllowed, setShowStaffNotAllowed] = useState(false);
 
-
   const addSection = () => {
     if (sectionCreateAllowed) {
+      setNewSection((prev) => ({
+        ...prev,
+        club_id: clubsRaw[0]?.id,
+        name: "",
+        coach_id: undefined,
+        description: "",
+        active: true,
+        groups: [],
+      }));
       setShowAddSection(true);
     } else {
       setShowSecNotAllowed(true);
@@ -99,7 +106,7 @@ const ManagementPage: React.FC = () => {
     } else {
       setShowStaffNotAllowed(true);
     }
-  }
+  };
 
   const allRoles = ["owner", "coach", "admin"];
 
