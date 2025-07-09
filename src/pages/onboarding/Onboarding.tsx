@@ -45,8 +45,6 @@ export default function OnboardingPage() {
             localStorage.setItem("telegramToken", token || "");
             localStorage.setItem("userId", resp.data.id.toString());
             // navigate("/coach/profile");
-
-            console.log('USER ID IS ' + resp.data.id)
           }
         } catch (e) {
             console.error("Ошибка getMe:", e);

@@ -47,6 +47,7 @@ const ManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
   const userFullName = localStorage.getItem("telegramFullName") || "";
   const userId = Number(localStorage.getItem("userId"));
+  console.log("User id is " + userId)
   const [filters, setFilters] = useState<Filters>({
     search: "",
     roles: [],
