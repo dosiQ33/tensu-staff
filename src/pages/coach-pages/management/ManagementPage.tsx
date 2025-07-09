@@ -123,6 +123,8 @@ const ManagementPage: React.FC = () => {
           invitationsApi.getMy(token),
         ]);
 
+        console.log(sectionsRaw)
+
         setSectionsRaw(secRes.data);
         setClubsRaw(clubRes.data.clubs.map((w) => w.club));
         setSections(secRes.data);
