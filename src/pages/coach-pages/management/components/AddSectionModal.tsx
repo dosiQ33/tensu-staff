@@ -259,7 +259,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   onChange={(e) => onChange("coach_id", Number(e.target.value))}
                   className="block w-full py-2.5 px-4 appearance-none"
                 >
-                  <option value={Number(userId)}>
+                  <option value={userId}>
                     {userFullName} (выбрать себя)
                   </option>
                   {allStaff
