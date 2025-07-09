@@ -88,7 +88,7 @@ const ManagementPage: React.FC = () => {
     if (sectionCreateAllowed) {
       setNewSection((prev) => ({
         ...prev,
-        club_id: clubsRaw[0]?.id,
+        club_id: newSection.club_id,
         name: newSection.name,
         coach_id: newSection.coach_id,
         description: newSection.description,
