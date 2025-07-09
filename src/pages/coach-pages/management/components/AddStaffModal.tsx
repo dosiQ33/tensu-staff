@@ -85,7 +85,7 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               international
               defaultCountry="KZ"
               value={newStaff.phone}
-              onChange={(value) => onChange("phone", (value || "").replace(/^\+/, ""))}
+              onChange={(value) => onChange("phone", value)}
               placeholder="+7 701 123 4567"
               className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm ring-0 focus:ring-0 focus:border-none focus:outline-none transition"
               flagComponent={({ country }) =>
