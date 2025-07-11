@@ -256,7 +256,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 </label>
                 <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                   <select
-                    value={newSection.club_id ?? (allClubs[0]?.id || "")}
+                    value={activeSection?.club_id ?? newSection.club_id ?? (allClubs[0]?.id || "")}
                     onChange={(e) =>
                       onChange("club_id", Number(e.target.value))
                     }
@@ -281,7 +281,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  value={newSection.name}
+                  value={activeSection?.name ?? newSection.name}
                   onChange={(e) => onChange("name", e.target.value)}
                   className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
                 />
@@ -298,7 +298,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               </label>
               <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                 <select
-                  value={newSection.coach_id ?? userId}
+                  value={activeSection?.coach_id ?? newSection.coach_id ?? userId}
                   onChange={(e) => onChange("coach_id", e.target.value)}
                   className="block w-full py-2.5 px-4 appearance-none"
                 >
