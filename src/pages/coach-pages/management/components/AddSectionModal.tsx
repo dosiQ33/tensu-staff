@@ -133,6 +133,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const onSave = async () => {
     if (!(groups.length > 0)) {
       onClose();
+      setSectionCreated(false);
       return
     }
 
@@ -157,6 +158,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       toast.success("Секция и группы успешно созданы");
 
       onClose();
+      setSectionCreated(false)
   }
 
   const handleCreate = async () => {
@@ -179,6 +181,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
       if (!(groups.length > 0)) {
         onClose();
+        setSectionCreated(false)
         return
       }
 
@@ -202,6 +205,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
       toast.success("Секция и группы успешно созданы");
       onClose();
+      setSectionCreated(false);
     } catch (err) {
       console.error(err);
       toast.error("Не удалось создать секцию и группы");
