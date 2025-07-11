@@ -35,7 +35,7 @@ const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
           Удалить секцию?
         </h2>
         <p className="text-sm text-gray-600 mb-6">
-          Вы действительно хотите удалить секцию безвозвратно? 
+          Вы не сможете отменить это действие. Все связанные данные будут удалены.  
         </p>
         <div className="flex justify-end space-x-3">
           <button
