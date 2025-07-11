@@ -547,6 +547,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
         <DeleteSectionAlert
           show={showDeleteSectionAlert}
           onClose={() => setShowDeleteSectionAlert(false)}
+          closeModal={() => onClose()}
           sectionId={activeSection?.id}
         />
       )}

@@ -5,12 +5,14 @@ import { toast } from "react-toastify";
 interface DeleteSectionAlertProps {
   show: boolean;
   onClose: () => void;
+  closeModal: () => void;
   sectionId: number;
 }
 
 const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
   show,
   onClose,
+  closeModal,
   sectionId,
 }) => {
   const token = localStorage.getItem("telegramToken") || "";
@@ -21,6 +23,7 @@ const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
         toast.success("Секция удалена успешно");
       }
       onClose();
+      closeModal();
     } catch {
       toast.error("Не удалось удалить секцию");
     }
@@ -46,7 +49,7 @@ const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
           </button>
           <button
             onClick={() => deleteSection(sectionId)}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none"
+            className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-700 focus:outline-none"
           >
             Удалить
           </button>
