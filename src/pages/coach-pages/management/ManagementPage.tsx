@@ -289,7 +289,7 @@ const ManagementPage: React.FC = () => {
               </div>
               <div className="space-y-4">
                 {sections.map((sec) => (
-                  <SectionCard key={sec.id} section={sec} onEdit={()=>editSection(sec.id)} />
+                  <SectionCard key={sec.id} section={sec} onEdit={editSection} />
                 ))}
                 <button
                   onClick={addSection}

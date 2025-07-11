@@ -26,7 +26,7 @@ const SectionCard: React.FC<SectionCardProps> = ({ section, onEdit }) => (
           </div>
         </div>
       </div>
-      <button onClick={()=>onEdit} className="p-2 text-gray-400 hover:text-blue-600">
+      <button onClick={() => onEdit(section.id)} className="p-2 text-gray-400 hover:text-blue-600">
         <Edit3 size={18} />
       </button>
     </div>
