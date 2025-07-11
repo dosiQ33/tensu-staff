@@ -75,7 +75,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   const addGroup = () => {
     const newGroup = {
-      id: Date.now(),
+      section_id: activeSection ?? newSection.id,
       name: "",
       level: "",
       capacity: null,
