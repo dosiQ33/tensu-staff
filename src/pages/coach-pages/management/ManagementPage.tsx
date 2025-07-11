@@ -138,6 +138,7 @@ const ManagementPage: React.FC = () => {
         setSections(secRes.data);
 
         if (clubRes.data.clubs.length > 0) {
+          console.log('Add' + clubRes.data.clubs)
           setSectionCreateAllowed(true);
           setStaffCreateAllowed(true);
         }
