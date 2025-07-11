@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // AddSectionModal.tsx
 import React, { useState } from "react";
-import { X, Plus, ChevronDown, CheckCircle } from "lucide-react";
+import { X, Plus, ChevronDown, CheckCircle, Users } from "lucide-react";
 import type { NewSection, ScheduleEntry, Staff } from "@/types/types";
 import type { CreateClubResponse, CreateSectionResponse } from "@/functions/axios/responses";
 import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
@@ -318,9 +318,16 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
           {/* Группы */}
           <div className="pt-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-medium text-gray-800">Группы</h3>
-              {activeSection?.groups && <span>Создано групп: {activeSection.groups.length}</span>}
+            <div className="bg-white shadow-md rounded-2xl p-5 mb-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-gray-900">Группы</h3>
+                <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">
+                    {activeSection?.groups?.length ?? 0}
+                  </span>
+                </div>
+              </div>
             </div>
             <div className="mt-3 space-y-6">
               {groups.map((group, gIdx) => (
