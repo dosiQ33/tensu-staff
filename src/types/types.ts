@@ -90,7 +90,7 @@ export interface NewSection {
     name: string;
     level: string;
     capacity: number;
-    price: string;
+    price: number;
     active: boolean;
     enrolled_students: number;
   }[];
