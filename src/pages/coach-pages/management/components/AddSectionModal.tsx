@@ -9,6 +9,7 @@ import type {
 } from "@/functions/axios/responses";
 import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
 import { toast } from "react-toastify";
+import DeleteSectionAlert from "./DeleteSectionAlert";
 
 interface AddSectionModalProps {
   show: boolean;
@@ -65,6 +66,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   onClose,
 }) => {
   const [sectionCreated, setSectionCreated] = useState(false);
+  const [showDeleteSectionAlert, setShowDeleteSectionAlert] = useState(false);
   if (!show) return null;
 
   const groups = newSection.groups || [];
@@ -165,6 +167,10 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
     onClose();
     setSectionCreated(false);
+  };
+
+  const deleteSection = () => {
+    setShowDeleteSectionAlert(true);
   };
 
   const handleCreate = async () => {
@@ -327,17 +333,17 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
           {/* Группы */}
           <div className="pt-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-gray-900">Группы</h3>
-                {activeSection?.groups && activeSection?.groups?.length > 0 && (
-                  <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
-                    <Users className="w-5 h-5 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-700">
-                      Уже создано: {activeSection?.groups?.length}
-                    </span>
-                  </div>
-                )}
-              </div>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-gray-900">Группы</h3>
+              {activeSection?.groups && activeSection?.groups?.length > 0 && (
+                <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">
+                    Уже создано: {activeSection?.groups?.length}
+                  </span>
+                </div>
+              )}
+            </div>
             <div className="mt-3 space-y-6">
               {groups.map((group, gIdx) => (
                 <div key={gIdx} className="bg-gray-50 p-4 rounded-md space-y-4">
@@ -521,9 +527,32 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 {editing || sectionCreated ? "Сохранить" : "Добавить"}
               </span>
             </button>
+            {activeSection?.id && (
+              <button
+                className="
+                w-full inline-flex justify-center items-center
+                py-3 px-4
+                bg-red-600 hover:bg-red-700
+                text-white font-medium
+                rounded-md shadow
+                focus:outline-none focus:ring-2 focus:ring-red-500
+                disabled:opacity-50 disabled:cursor-not-allowed
+              "
+                onClick={deleteSection}
+              >
+                Удалить секцию
+              </button>
+            )}
           </div>
         </div>
       </div>
+      {activeSection?.id && (
+        <DeleteSectionAlert
+          show={showDeleteSectionAlert}
+          onClose={() => setShowDeleteSectionAlert(false)}
+          sectionId={activeSection?.id}
+        />
+      )}
     </div>
   );
 };

@@ -31,7 +31,7 @@ export const ENDPOINTS = {
     CLUB: (clubId: string) => `/sections/club/${clubId}`,
     COACH: (coachId: string) => `/sections/coach/${coachId}`,
     MY: '/sections/my',
-    BY_ID: (sId: string) => `/sections/${sId}`,
+    BY_ID: (sId: number) => `/sections/${sId}`,
     TOGGLE: (sId: string) => `/sections/${sId}/toggle-status`,
     STATS: (sId: string) => `/sections/${sId}/stats`,
   },

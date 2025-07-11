@@ -48,6 +48,8 @@ export const sectionsApi = {
         axiosRequest<GetMySectionsResponse>(ENDPOINTS.SECTIONS.MY, 'GET', token),
     create: (data: CreateSectionRequest, token: string) =>
         axiosRequest<CreateSectionResponse>(ENDPOINTS.SECTIONS.BASE, 'POST', token, data),
+    delete: (id: number, token: string) =>
+        axiosRequest(ENDPOINTS.SECTIONS.BY_ID(id), 'DELETE', token)
 };
 
 export const groupsApi = {
