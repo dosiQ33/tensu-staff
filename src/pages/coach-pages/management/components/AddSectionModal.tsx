@@ -32,7 +32,6 @@ interface AddSectionModalProps {
     value: unknown
   ) => void;
   setEditing: () => void;
-  onSave: () => void;
   onClose: () => void;
 }
 
@@ -57,7 +56,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   userId,
   newSection,
   onChange,
-  onSave,
   onClose,
 }) => {
   const [sectionCreated, setSectionCreated] = useState(false);
@@ -131,6 +129,35 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       },
       {}
     );
+
+  const onSave = async () => {
+    if (!(groups.length > 0)) {
+      onClose();
+      return
+    }
+
+    const sectionId = newSection.id;
+
+    for (const grp of groups) {
+        const groupPayload = {
+          section_id: sectionId,
+          name: grp.name,
+          description: grp.description ?? "",
+          schedule: buildScheduleObject(grp.schedule || []),
+          price: grp.price,
+          capacity: grp.capacity,
+          level: grp.level,
+          coach_id: grp.coach_id ?? newSection.coach_id ?? userId,
+          tags: grp.tags ?? [],
+          active: grp.active,
+        };
+        await groupsApi.create(groupPayload, token);
+      }
+
+      toast.success("Секция и группы успешно созданы");
+
+      onClose();
+  }
 
   const handleCreate = async () => {
     try {

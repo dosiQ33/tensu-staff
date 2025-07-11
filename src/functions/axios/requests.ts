@@ -39,7 +39,7 @@ export interface CreateSectionRequest {
 }
 
 export interface CreateGroupRequest {
-  section_id: number;
+  section_id: number | undefined;
   name: string;
   description: string;
   schedule: Record<string, unknown>;
