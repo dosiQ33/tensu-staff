@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { X, Plus, ChevronDown, CheckCircle } from "lucide-react";
 import type { NewSection, ScheduleEntry, Staff } from "@/types/types";
-import type { CreateClubResponse } from "@/functions/axios/responses";
+import type { CreateClubResponse, CreateSectionResponse } from "@/functions/axios/responses";
 import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
 import { toast } from "react-toastify";
 
@@ -14,7 +14,7 @@ interface AddSectionModalProps {
   allStaff: Staff[];
   userFullName: string;
   userId: number;
-  activeSectionId: number;
+  activeSection: CreateSectionResponse | undefined;
   newSection: NewSection & {
     groups?: {
       id?: number;
@@ -56,7 +56,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   allStaff,
   userFullName,
   userId,
-  activeSectionId,
+  activeSection,
   newSection,
   onChange,
   onClose,
@@ -140,7 +140,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       return;
     }
 
-    const sectionId = activeSectionId ?? newSection.id;
+    const sectionId = (activeSection && activeSection.id) ?? newSection.id;
 
     for (const grp of groups) {
       const groupPayload = {
@@ -320,6 +320,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div className="pt-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-medium text-gray-800">Группы</h3>
+              {activeSection && <span>Создано групп: {activeSection.groups.length}</span>}
             </div>
             <div className="mt-3 space-y-6">
               {groups.map((group, gIdx) => (

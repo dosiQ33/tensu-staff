@@ -77,7 +77,9 @@ const ManagementPage: React.FC = () => {
 
   const [staff, setStaff] = useState<Staff[]>([]);
   const [sections, setSections] = useState<CreateSectionResponse[]>([]);
-  const [activeSectionId, setActiveSectionId] = useState(0);
+  const [activeSection, setActiveSection] = useState<
+    CreateSectionResponse | undefined
+  >(undefined);
 
   const [sectionCreateAllowed, setSectionCreateAllowed] = useState(false);
   const [staffCreateAllowed, setStaffCreateAllowed] = useState(false);
@@ -104,8 +106,8 @@ const ManagementPage: React.FC = () => {
   const editSection = (sectionId: number) => {
     setEditing(true);
     setShowAddSection(true);
-    setActiveSectionId(sectionId);
-  }
+    setActiveSection(sections.find((section) => section.id === sectionId));
+  };
 
   const addClub = () => {
     if (!staffCreateAllowed) {
@@ -286,7 +288,11 @@ const ManagementPage: React.FC = () => {
               </div>
               <div className="space-y-4">
                 {sections.map((sec) => (
-                  <SectionCard key={sec.id} section={sec} onEdit={editSection} />
+                  <SectionCard
+                    key={sec.id}
+                    section={sec}
+                    onEdit={editSection}
+                  />
                 ))}
                 <button
                   onClick={addSection}
@@ -320,7 +326,7 @@ const ManagementPage: React.FC = () => {
         newSection={newSection as SectionForm}
         userFullName={userFullName}
         userId={userId}
-        activeSectionId={activeSectionId}
+        activeSection={activeSection}
         onChange={(f, v) =>
           setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
         }
