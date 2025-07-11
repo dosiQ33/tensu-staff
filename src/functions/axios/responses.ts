@@ -109,7 +109,7 @@ export interface SectionGroupSummary {
   name: string;
   level: string;
   capacity: number;
-  price: string;
+  price: number;
   active: boolean;
   enrolled_students: number;
 }
@@ -134,7 +134,7 @@ export interface GetMyGroupResponse {
   name: string;
   description: string;
   schedule: Record<string, unknown>;
-  price: string;
+  price: number;
   capacity: number;
   level: string;
   coach_id: number;
