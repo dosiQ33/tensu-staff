@@ -74,7 +74,6 @@ const ManagementPage: React.FC = () => {
   });
 
   const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
-  const [sectionsRaw, setSectionsRaw] = useState<CreateSectionResponse[]>([]);
 
   const [staff, setStaff] = useState<Staff[]>([]);
   const [sections, setSections] = useState<CreateSectionResponse[]>([]);
@@ -132,7 +131,6 @@ const ManagementPage: React.FC = () => {
 
         console.log(secRes.data);
 
-        setSectionsRaw(secRes.data);
         setClubsRaw(clubRes.data.clubs.map((w) => w.club));
         setSections(secRes.data);
 
@@ -258,7 +256,6 @@ const ManagementPage: React.FC = () => {
               <StaffFilter
                 filters={filters}
                 allClubs={clubsRaw}
-                allSections={sectionsRaw}
                 onChange={(f) => setFilters((prev) => ({ ...prev, ...f }))}
               />
             )}

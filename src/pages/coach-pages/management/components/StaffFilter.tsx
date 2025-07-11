@@ -4,20 +4,17 @@ import type { Filters } from "@/types/types";
 import { getRoleLabel } from "@/utils";
 import type {
   CreateClubResponse,
-  CreateSectionResponse,
 } from "@/functions/axios/responses";
 
 interface StaffFilterProps {
   filters: Filters;
   allClubs: CreateClubResponse[];
-  allSections: CreateSectionResponse[];
   onChange: (f: Partial<Filters>) => void;
 }
 
 const StaffFilter: React.FC<StaffFilterProps> = ({
   filters,
   allClubs,
-  allSections,
   onChange,
 }) => {
   const roles = ["owner", "coach", "admin"] as const;
@@ -97,36 +94,6 @@ const StaffFilter: React.FC<StaffFilterProps> = ({
                   }`}
                 >
                   {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Секции */}
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Секции
-          </label>
-          <div className="flex flex-wrap gap-1">
-            {allSections.map((section) => {
-              const selected = filters.sections.includes(section.name);
-              return (
-                <button
-                  key={section.id}
-                  onClick={() => {
-                    const next = selected
-                      ? filters.sections.filter((s) => s !== section.name)
-                      : [...filters.sections, section.name];
-                    onChange({ sections: next });
-                  }}
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    selected
-                      ? "bg-purple-100 text-purple-800"
-                      : "bg-white text-gray-600 border border-gray-300"
-                  }`}
-                >
-                  {section.name}
                 </button>
               );
             })}
