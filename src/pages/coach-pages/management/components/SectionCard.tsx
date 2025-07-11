@@ -4,7 +4,7 @@ import type { CreateSectionResponse } from '@/functions/axios/responses';
 
 interface SectionCardProps {
   section: CreateSectionResponse;
-  onEdit: (sec: CreateSectionResponse) => void;
+  onEdit: (sectionId: number) => void;
 }
 
 const SectionCard: React.FC<SectionCardProps> = ({ section, onEdit }) => (
@@ -26,7 +26,7 @@ const SectionCard: React.FC<SectionCardProps> = ({ section, onEdit }) => (
           </div>
         </div>
       </div>
-      <button onClick={() => onEdit(section)} className="p-2 text-gray-400 hover:text-blue-600">
+      <button onClick={()=>onEdit} className="p-2 text-gray-400 hover:text-blue-600">
         <Edit3 size={18} />
       </button>
     </div>

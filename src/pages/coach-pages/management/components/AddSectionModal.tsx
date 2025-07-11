@@ -14,6 +14,7 @@ interface AddSectionModalProps {
   allStaff: Staff[];
   userFullName: string;
   userId: number;
+  activeSectionId: number;
   newSection: NewSection & {
     groups?: {
       id?: number;
@@ -55,6 +56,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   allStaff,
   userFullName,
   userId,
+  activeSectionId,
   newSection,
   onChange,
   onClose,
@@ -138,7 +140,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       return;
     }
 
-    const sectionId = newSection.id;
+    const sectionId = activeSectionId ?? newSection.id;
 
     for (const grp of groups) {
       const groupPayload = {
