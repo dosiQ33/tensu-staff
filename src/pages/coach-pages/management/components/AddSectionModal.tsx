@@ -33,6 +33,7 @@ interface AddSectionModalProps {
       schedule?: ScheduleEntry[];
     }[];
   };
+  refresh: () => void;
   onChange: (
     field: keyof NewSection | "schedule" | "groups",
     value: unknown
@@ -62,6 +63,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   userId,
   activeSection,
   newSection,
+  refresh,
   onChange,
   onClose,
 }) => {
@@ -141,8 +143,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const onSave = async () => {
     if (!(groups.length > 0)) {
       onClose();
-      setSectionCreated(false);
-      return;
+      refresh();
     }
 
     const sectionId = (activeSection && activeSection.id) ?? newSection.id;
@@ -166,7 +167,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
     toast.success("Секция и группы успешно созданы");
 
     onClose();
-    setSectionCreated(false);
+    refresh();
   };
 
   const deleteSection = () => {
@@ -193,8 +194,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
       if (!(groups.length > 0)) {
         onClose();
-        setSectionCreated(false);
-        return;
+        refresh();
       }
 
       const sectionId = createdSection.id;
@@ -217,7 +217,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
       toast.success("Секция и группы успешно созданы");
       onClose();
-      setSectionCreated(false);
+      refresh();
     } catch (err: any) {
       if (err.response?.status === 409) {
         toast.error("Секция с таким названием уже создана");
@@ -547,7 +547,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
         <DeleteSectionAlert
           show={showDeleteSectionAlert}
           onClose={() => setShowDeleteSectionAlert(false)}
-          closeModal={() => onClose()}
+          refresh={refresh}
           sectionId={activeSection?.id}
         />
       )}

@@ -5,14 +5,14 @@ import { toast } from "react-toastify";
 interface DeleteSectionAlertProps {
   show: boolean;
   onClose: () => void;
-  closeModal: () => void;
+  refresh: () => void;
   sectionId: number;
 }
 
 const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
   show,
   onClose,
-  closeModal,
+  refresh,
   sectionId,
 }) => {
   const token = localStorage.getItem("telegramToken") || "";
@@ -23,7 +23,7 @@ const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
         toast.success("Секция удалена успешно");
       }
       onClose();
-      closeModal();
+      refresh();
     } catch {
       toast.error("Не удалось удалить секцию");
     }

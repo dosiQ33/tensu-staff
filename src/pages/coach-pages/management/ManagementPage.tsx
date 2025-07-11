@@ -328,6 +328,7 @@ const ManagementPage: React.FC = () => {
         userFullName={userFullName}
         userId={userId}
         activeSection={activeSection}
+        refresh={() => window.location.reload()}
         onChange={(f, v) =>
           setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
         }
