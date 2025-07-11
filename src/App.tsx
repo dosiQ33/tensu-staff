@@ -15,6 +15,8 @@ import StudentsPage from "./pages/coach-pages/students/StudentsPage";
 import ManagementPage from "./pages/coach-pages/management/ManagementPage";
 import CoachProfile from "./pages/coach-pages/profile/CoachProfile";
 import CoachMainPage from "./pages/coach-pages/main/CoachMainPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 export default function App() {
   React.useEffect(() => {
@@ -46,6 +48,9 @@ export default function App() {
         {/* catch-all */}
         <Route path="*" element={<Navigate to="/onboarding" replace />} />
       </Routes>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+
     </Router>
   );
 }
