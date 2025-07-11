@@ -530,7 +530,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
             {activeSection?.id && (
               <button
                 className="
-                w-full inline-flex justify-center items-center
+                mt-10 w-full inline-flex justify-center items-center
                 py-3 px-4
                 text-red-700 font-medium
                 focus:outline-none
