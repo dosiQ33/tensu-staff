@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // AddSectionModal.tsx
 import React, { useState } from "react";
 import { X, Plus, ChevronDown, CheckCircle } from "lucide-react";
@@ -206,9 +207,12 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       toast.success("Секция и группы успешно созданы");
       onClose();
       setSectionCreated(false);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+    if (err.response?.status === 409) {
+      toast.error("Секция с таким названием уже создана");
+    } else {
       toast.error("Не удалось создать секцию и группы");
+    }
     }
   };
 
