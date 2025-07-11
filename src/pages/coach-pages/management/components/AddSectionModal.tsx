@@ -327,7 +327,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
           {/* Группы */}
           <div className="pt-4">
-            <div className="bg-white shadow-md rounded-2xl p-5 mb-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-xl font-semibold text-gray-900">Группы</h3>
                 {activeSection?.groups?.length && (
@@ -339,7 +338,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   </div>
                 )}
               </div>
-            </div>
             <div className="mt-3 space-y-6">
               {groups.map((group, gIdx) => (
                 <div key={gIdx} className="bg-gray-50 p-4 rounded-md space-y-4">
