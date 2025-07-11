@@ -124,14 +124,11 @@ const ManagementPage: React.FC = () => {
     if (!token) return;
 
     (async () => {
-      const [secRes, clubRes, teamRes, invRes] = await Promise.all([
-        sectionsApi.getMy(token),
-        clubsApi.getMy(token),
-        teamApi.get(token),
-        invitationsApi.getMy(token),
-      ]);
+      const secRes = await sectionsApi.getMy(token);
+      const clubRes = await clubsApi.getMy(token);
+      const teamRes = await teamApi.get(token);
+      const invRes = await invitationsApi.getMy(token);
 
-      console.log(secRes.data);
       setSections(secRes.data);
       console.log("Add" + clubRes.data.clubs);
 
