@@ -47,7 +47,7 @@ const ManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
   const userFullName = localStorage.getItem("telegramFullName") || "";
   const userId = Number(localStorage.getItem("userId"));
-  console.log("User id is " + userId)
+  console.log("User id is " + userId);
   const [filters, setFilters] = useState<Filters>({
     search: "",
     roles: [],
@@ -83,27 +83,26 @@ const ManagementPage: React.FC = () => {
   const [showSecNotAllowed, setShowSecNotAllowed] = useState(false);
   const [showStaffNotAllowed, setShowStaffNotAllowed] = useState(false);
 
-const addSection = () => {
-  if (!sectionCreateAllowed) {
-    setShowSecNotAllowed(true);
-    return;
-  }
-  // Инициализируем newSection перед показом
-  setNewSection({
-    club_id: clubsRaw[0]?.id,    // первый клуб из списка
-    name: "",
-    coach_id: userId,            // текущий пользователь
-    description: "",
-    active: true,
-    // groups будет добавляться в AddSectionModal
-  });
-  setShowAddSection(true);
-};
+  const addSection = () => {
+    if (!sectionCreateAllowed) {
+      setShowSecNotAllowed(true);
+      return;
+    }
+    setNewSection({
+      club_id: clubsRaw[0]?.id,
+      name: "",
+      coach_id: userId, // текущий пользователь
+      description: "",
+      active: true,
+      // groups будет добавляться в AddSectionModal
+    });
+    setShowAddSection(true);
+  };
 
   const addClub = () => {
     if (!staffCreateAllowed) {
-      setShowStaffNotAllowed(true); 
-      return
+      setShowStaffNotAllowed(true);
+      return;
     }
   };
 
@@ -122,11 +121,13 @@ const addSection = () => {
           invitationsApi.getMy(token),
         ]);
 
-        console.log(secRes.data)
+        console.log(secRes.data);
 
         setSectionsRaw(secRes.data);
         setClubsRaw(clubRes.data.clubs.map((w) => w.club));
         setSections(secRes.data);
+
+        console.log("Клубов пришло:", clubRes.data.clubs.length, clubRes.data.clubs);
 
         if (clubRes.data.clubs.length > 1) {
           setSectionCreateAllowed(true);
