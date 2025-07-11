@@ -135,32 +135,32 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
     if (!(groups.length > 0)) {
       onClose();
       setSectionCreated(false);
-      return
+      return;
     }
 
     const sectionId = newSection.id;
 
     for (const grp of groups) {
-        const groupPayload = {
-          section_id: sectionId,
-          name: grp.name,
-          description: grp.description ?? "",
-          schedule: buildScheduleObject(grp.schedule || []),
-          price: grp.price,
-          capacity: grp.capacity,
-          level: grp.level,
-          coach_id: grp.coach_id ?? newSection.coach_id ?? userId,
-          tags: grp.tags ?? [],
-          active: grp.active,
-        };
-        await groupsApi.create(groupPayload, token);
-      }
+      const groupPayload = {
+        section_id: sectionId,
+        name: grp.name,
+        description: grp.description ?? "",
+        schedule: buildScheduleObject(grp.schedule || []),
+        price: grp.price,
+        capacity: grp.capacity,
+        level: grp.level,
+        coach_id: grp.coach_id ?? newSection.coach_id ?? userId,
+        tags: grp.tags ?? [],
+        active: grp.active,
+      };
+      await groupsApi.create(groupPayload, token);
+    }
 
-      toast.success("Секция и группы успешно созданы");
+    toast.success("Секция и группы успешно созданы");
 
-      onClose();
-      setSectionCreated(false)
-  }
+    onClose();
+    setSectionCreated(false);
+  };
 
   const handleCreate = async () => {
     try {
@@ -182,8 +182,8 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
       if (!(groups.length > 0)) {
         onClose();
-        setSectionCreated(false)
-        return
+        setSectionCreated(false);
+        return;
       }
 
       const sectionId = createdSection.id;
@@ -208,15 +208,13 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       onClose();
       setSectionCreated(false);
     } catch (err: any) {
-    if (err.response?.status === 409) {
-      toast.error("Секция с таким названием уже создана");
-    } else {
-      toast.error("Не удалось создать секцию и группы");
-    }
+      if (err.response?.status === 409) {
+        toast.error("Секция с таким названием уже создана");
+      }
     }
   };
 
-  console.log('user id' + userId)
+  console.log("user id" + userId);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
@@ -302,9 +300,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   onChange={(e) => onChange("coach_id", e.target.value)}
                   className="block w-full py-2.5 px-4 appearance-none"
                 >
-                  <option value={userId}>
-                    {userFullName} (выбрать себя)
-                  </option>
+                  <option value={userId}>{userFullName} (выбрать себя)</option>
                   {allStaff
                     .filter((s) => s.role === "coach")
                     .map((s) => (
@@ -493,11 +489,18 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           {/* Действие: создать или сохранить */}
           <div className="pt-4">
             <button
-              disabled={(!newSection.club_id || !newSection.name || !newSection.coach_id) && true}
-              onClick={(editing || sectionCreated )? onSave : handleCreate}
+              disabled={
+                (!newSection.club_id ||
+                  !newSection.name ||
+                  !newSection.coach_id) &&
+                true
+              }
+              onClick={editing || sectionCreated ? onSave : handleCreate}
               className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
-              <span className="ml-2">{(editing || sectionCreated) ? "Сохранить" : "Добавить"}</span>
+              <span className="ml-2">
+                {editing || sectionCreated ? "Сохранить" : "Добавить"}
+              </span>
             </button>
           </div>
         </div>
