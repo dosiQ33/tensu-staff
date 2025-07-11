@@ -136,7 +136,7 @@ const ManagementPage: React.FC = () => {
       setClubsRaw(clubRes.data.clubs.map((w) => w.club));
       setSections(secRes.data);
 
-      if (clubRes.data.clubs.length > 0) {
+      if ((clubRes.data.clubs ?? []).length > 0) {
         console.log("Add" + clubRes.data.clubs);
         setSectionCreateAllowed(true);
         setStaffCreateAllowed(true);
