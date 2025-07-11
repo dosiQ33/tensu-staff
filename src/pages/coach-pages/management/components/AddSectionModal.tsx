@@ -236,7 +236,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               </h3>
               <span className="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-green-100 text-green-800 rounded-full">
                 <CheckCircle className="w-4 h-4 mr-1" />
-                Создан
+                Секция создана
               </span>
             </div>
           ) : (
