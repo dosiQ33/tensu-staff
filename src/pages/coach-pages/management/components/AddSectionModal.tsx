@@ -533,9 +533,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 w-full inline-flex justify-center items-center
                 py-3 px-4
                 text-red-700 font-medium
-                rounded-md shadow
                 focus:outline-none
-                disabled:opacity-50 disabled:cursor-not-allowed
               "
                 onClick={deleteSection}
               >
