@@ -452,6 +452,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           {/* Действие: создать или сохранить */}
           <div className="pt-4">
             <button
+              disabled={(!newSection.club_id || !newSection.name || !newSection.coach_id) && true}
               onClick={editing ? onSave : handleCreate}
               className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
