@@ -320,7 +320,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div className="pt-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-medium text-gray-800">Группы</h3>
-              {activeSection && <span>Создано групп: {activeSection.groups.length}</span>}
+              {activeSection?.groups && <span>Создано групп: {activeSection.groups.length}</span>}
             </div>
             <div className="mt-3 space-y-6">
               {groups.map((group, gIdx) => (
