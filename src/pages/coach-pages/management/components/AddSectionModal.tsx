@@ -329,7 +329,7 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div className="pt-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xl font-semibold text-gray-900">Группы</h3>
-                {activeSection?.groups?.length && (
+                {activeSection?.groups && activeSection?.groups?.length > 0 && (
                   <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
                     <Users className="w-5 h-5 text-blue-600" />
                     <span className="text-sm font-medium text-blue-700">
