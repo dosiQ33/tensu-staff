@@ -88,6 +88,7 @@ const ManagementPage: React.FC = () => {
   const [showStaffNotAllowed, setShowStaffNotAllowed] = useState(false);
 
   const addSection = () => {
+    setActiveSection(undefined);
     if (!sectionCreateAllowed) {
       setShowSecNotAllowed(true);
       return;
