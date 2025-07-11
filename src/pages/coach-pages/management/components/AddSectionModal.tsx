@@ -512,7 +512,21 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           </div>
 
           {/* Действие: создать или сохранить */}
-          <div className="pt-4">
+          <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex justify-between">
+            {activeSection?.id && (
+              <button
+                onClick={deleteSection}
+                className="
+        py-2 px-4
+        bg-red-600 hover:bg-red-700
+        text-white font-medium
+        rounded-md
+        focus:outline-none focus:ring-2 focus:ring-red-500
+      "
+              >
+                Удалить
+              </button>
+            )}
             <button
               disabled={
                 (!newSection.club_id ||
@@ -527,22 +541,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 {editing || sectionCreated ? "Сохранить" : "Добавить"}
               </span>
             </button>
-            {activeSection?.id && (
-              <button
-                className="
-                w-full inline-flex justify-center items-center
-                py-3 px-4
-                bg-red-600 hover:bg-red-700
-                text-white font-medium
-                rounded-md shadow
-                focus:outline-none focus:ring-2 focus:ring-red-500
-                disabled:opacity-50 disabled:cursor-not-allowed
-              "
-                onClick={deleteSection}
-              >
-                Удалить секцию
-              </button>
-            )}
           </div>
         </div>
       </div>
