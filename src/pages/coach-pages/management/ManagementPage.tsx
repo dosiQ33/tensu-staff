@@ -124,76 +124,72 @@ const ManagementPage: React.FC = () => {
     if (!token) return;
 
     (async () => {
-      try {
-        const [secRes, clubRes, teamRes, invRes] = await Promise.all([
-          sectionsApi.getMy(token),
-          clubsApi.getMy(token),
-          teamApi.get(token),
-          invitationsApi.getMy(token),
-        ]);
+      const [secRes, clubRes, teamRes, invRes] = await Promise.all([
+        sectionsApi.getMy(token),
+        clubsApi.getMy(token),
+        teamApi.get(token),
+        invitationsApi.getMy(token),
+      ]);
 
-        console.log(secRes.data);
+      console.log(secRes.data);
 
-        setClubsRaw(clubRes.data.clubs.map((w) => w.club));
-        setSections(secRes.data);
+      setClubsRaw(clubRes.data.clubs.map((w) => w.club));
+      setSections(secRes.data);
 
-        if (clubRes.data.clubs.length > 0) {
-          console.log('Add' + clubRes.data.clubs)
-          setSectionCreateAllowed(true);
-          setStaffCreateAllowed(true);
-        }
+      if (clubRes.data.clubs.length > 0) {
+        console.log("Add" + clubRes.data.clubs);
+        setSectionCreateAllowed(true);
+        setStaffCreateAllowed(true);
+      }
 
-        // 1) Маппим реальных членов команды
-        const teamMembers: Staff[] = (
-          teamRes.data.staff_members as unknown[]
-        ).map((m) => {
-          const member = m as {
-            id: number | string;
-            first_name: string;
-            last_name: string;
-            username?: string;
-            clubs_and_roles: Array<{ role: string; club_name: string }>;
-            phone_number?: string;
-          };
+      // 1) Маппим реальных членов команды
+      const teamMembers: Staff[] = (
+        teamRes.data.staff_members as unknown[]
+      ).map((m) => {
+        const member = m as {
+          id: number | string;
+          first_name: string;
+          last_name: string;
+          username?: string;
+          clubs_and_roles: Array<{ role: string; club_name: string }>;
+          phone_number?: string;
+        };
+        return {
+          id: member.id.toString(),
+          name: member.first_name,
+          surname: member.last_name,
+          telegramUsername: member.username,
+          role: (member.clubs_and_roles[0]?.role as Staff["role"]) || "coach",
+          sports: [] as string[],
+          clubs: member.clubs_and_roles.map((cr) => cr.club_name),
+          phone: member.phone_number,
+          status: "active", // литерал 'active'
+        };
+      });
+
+      // 2) Маппим только pending-приглашения
+      const pendingInvs: Staff[] = invRes.data.invitations
+        .filter((inv) => inv.status === "pending")
+        .map((inv) => {
+          // находим название клуба
+          const wrapper = clubRes.data.clubs.find(
+            (w) => w.club.id === inv.club_id
+          );
           return {
-            id: member.id.toString(),
-            name: member.first_name,
-            surname: member.last_name,
-            telegramUsername: member.username,
-            role: (member.clubs_and_roles[0]?.role as Staff["role"]) || "coach",
+            id: inv.id.toString(),
+            name: "",
+            surname: "",
+            telegramUsername: undefined,
+            role: inv.role as Staff["role"],
             sports: [] as string[],
-            clubs: member.clubs_and_roles.map((cr) => cr.club_name),
-            phone: member.phone_number,
-            status: "active", // литерал 'active'
+            clubs: wrapper ? [wrapper.club.name] : [],
+            phone: inv.phone_number,
+            status: "pending", // литерал 'pending'
           };
         });
 
-        // 2) Маппим только pending-приглашения
-        const pendingInvs: Staff[] = invRes.data.invitations
-          .filter((inv) => inv.status === "pending")
-          .map((inv) => {
-            // находим название клуба
-            const wrapper = clubRes.data.clubs.find(
-              (w) => w.club.id === inv.club_id
-            );
-            return {
-              id: inv.id.toString(),
-              name: "",
-              surname: "",
-              telegramUsername: undefined,
-              role: inv.role as Staff["role"],
-              sports: [] as string[],
-              clubs: wrapper ? [wrapper.club.name] : [],
-              phone: inv.phone_number,
-              status: "pending", // литерал 'pending'
-            };
-          });
-
-        // 3) Объединяем: сначала реальные члены, потом приглашённые
-        setStaff([...teamMembers, ...pendingInvs]);
-      } catch (err) {
-        console.error(err);
-      }
+      // 3) Объединяем: сначала реальные члены, потом приглашённые
+      setStaff([...teamMembers, ...pendingInvs]);
     })();
   }, []);
 
