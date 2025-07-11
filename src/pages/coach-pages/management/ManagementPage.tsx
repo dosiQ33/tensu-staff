@@ -129,7 +129,7 @@ const ManagementPage: React.FC = () => {
 
         console.log("Клубов пришло:", clubRes.data.clubs.length, clubRes.data.clubs);
 
-        if (clubRes.data.clubs.length > 1) {
+        if (clubRes.data.clubs.length > 0) {
           setSectionCreateAllowed(true);
           setStaffCreateAllowed(true);
         }
