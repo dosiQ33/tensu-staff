@@ -3,7 +3,10 @@
 import React, { useState } from "react";
 import { X, Plus, ChevronDown, CheckCircle, Users } from "lucide-react";
 import type { NewSection, ScheduleEntry, Staff } from "@/types/types";
-import type { CreateClubResponse, CreateSectionResponse } from "@/functions/axios/responses";
+import type {
+  CreateClubResponse,
+  CreateSectionResponse,
+} from "@/functions/axios/responses";
 import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
 import { toast } from "react-toastify";
 
@@ -256,7 +259,11 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 </label>
                 <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                   <select
-                    value={activeSection?.club_id ?? newSection.club_id ?? (allClubs[0]?.id || "")}
+                    value={
+                      activeSection?.club_id ??
+                      newSection.club_id ??
+                      (allClubs[0]?.id || "")
+                    }
                     onChange={(e) =>
                       onChange("club_id", Number(e.target.value))
                     }
@@ -298,7 +305,9 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
               </label>
               <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                 <select
-                  value={activeSection?.coach_id ?? newSection.coach_id ?? userId}
+                  value={
+                    activeSection?.coach_id ?? newSection.coach_id ?? userId
+                  }
                   onChange={(e) => onChange("coach_id", e.target.value)}
                   className="block w-full py-2.5 px-4 appearance-none"
                 >
@@ -321,12 +330,14 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
             <div className="bg-white shadow-md rounded-2xl p-5 mb-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-xl font-semibold text-gray-900">Группы</h3>
-                <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">
-                    {activeSection?.groups?.length ?? 0}
-                  </span>
-                </div>
+                {activeSection?.groups?.length && (
+                  <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
+                    <Users className="w-5 h-5 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-700">
+                      Уже создано: {activeSection?.groups?.length}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="mt-3 space-y-6">
