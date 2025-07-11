@@ -31,6 +31,7 @@ interface AddSectionModalProps {
     field: keyof NewSection | "schedule" | "groups",
     value: unknown
   ) => void;
+  setEditing: () => void;
   onSave: () => void;
   onClose: () => void;
 }
@@ -147,6 +148,11 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
       if (createdSection.id) {
         setSectionCreated(true);
+      }
+
+      if (!(groups.length > 0)) {
+        onClose();
+        return
       }
 
       const sectionId = createdSection.id;
@@ -453,10 +459,10 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div className="pt-4">
             <button
               disabled={(!newSection.club_id || !newSection.name || !newSection.coach_id) && true}
-              onClick={editing ? onSave : handleCreate}
+              onClick={(editing || sectionCreated )? onSave : handleCreate}
               className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
-              <span className="ml-2">{editing ? "Сохранить" : "Добавить"}</span>
+              <span className="ml-2">{(editing || sectionCreated) ? "Сохранить" : "Добавить"}</span>
             </button>
           </div>
         </div>

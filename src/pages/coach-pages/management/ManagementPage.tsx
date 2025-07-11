@@ -55,6 +55,8 @@ const ManagementPage: React.FC = () => {
     sections: [],
   });
 
+  const [editing, setEditing] = useState(false);
+
   const [showAddStaff, setShowAddStaff] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
 
@@ -308,7 +310,7 @@ const ManagementPage: React.FC = () => {
       />
       <AddSectionModal
         show={showAddSection}
-        editing={false}
+        editing={editing}
         allClubs={clubsRaw}
         allStaff={staff}
         newSection={newSection as SectionForm}
@@ -317,6 +319,7 @@ const ManagementPage: React.FC = () => {
         onChange={(f, v) =>
           setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
         }
+        setEditing={() => setEditing(true)}
         onSave={() => {}}
         onClose={() => setShowAddSection(false)}
       />
