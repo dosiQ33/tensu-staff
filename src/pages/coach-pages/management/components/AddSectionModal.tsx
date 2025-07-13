@@ -248,7 +248,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           await groupsApi.updateById(payload, grp.id, token);
           toast.success("Группы успешно обновлены");
         } else {
-          await groupsApi.create(payload, token);
+          if (grp.name) {
+            await groupsApi.create(payload, token);
+            toast.success("Группы успешно добавлены");
+          }
         }
       }
       refresh();
