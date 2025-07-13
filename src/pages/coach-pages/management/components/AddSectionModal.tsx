@@ -216,7 +216,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   // Save (create or update)
   const handleSave = async () => {
     try {
-      const sectionId = activeSection?.id ?? newSection.id!;
+      const sectionId = activeSection?.id ?? createdSection?.id ?? newSection.id!;
       for (const grp of groups) {
         const payload = {
           section_id: sectionId,
