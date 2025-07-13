@@ -245,6 +245,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   // Create section + groups
   const handleCreate = async () => {
+    if (createdSection?.id) {
+      refresh();
+      return;
+    }
     try {
       const secPayload = {
         club_id: newSection.club_id!,
@@ -256,7 +260,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
       const { data: created } = await sectionsApi.create(secPayload, token);
       setCreatedSection(created);
       setSectionCreated(true);
-      toast.success("Секция и группы успешно созданы");
+      toast.success("Секция успешно создана");
     } catch (err: any) {
       if (err.response?.status === 409) {
         toast.error("Секция с таким названием уже создана");
