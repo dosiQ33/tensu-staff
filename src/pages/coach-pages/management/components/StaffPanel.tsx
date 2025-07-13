@@ -12,8 +12,8 @@ export const StaffPanel: React.FC<{
       {staff.map((m) => (
         <StaffCard key={m.id} member={m} />
       ))}
-      <button onClick={onAdd} className="…">
-        <Plus size={20} /> Добавить Тренера/Администратора
+      <button onClick={onAdd} className="fixed bottom-28 right-4 bg-blue-500 p-4 rounded-full shadow-lg text-white hover:bg-blue-600 transition-colors">
+        <Plus size={20} /> 
       </button>
     </div>
   </>
