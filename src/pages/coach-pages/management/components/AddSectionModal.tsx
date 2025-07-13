@@ -82,7 +82,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
       onChange("club_id", activeSection.club_id);
       onChange("name", activeSection.name);
       onChange("coach_id", activeSection.coach_id);
-      onChange("description", activeSection.description || "");
+      onChange("description", activeSection.description);
       onChange("active", activeSection.active);
     }
   }, [editing, activeSection, onChange]);
