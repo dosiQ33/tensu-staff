@@ -44,7 +44,7 @@ export interface CreateGroupRequest {
   description: string;
   schedule: Record<string, unknown>;
   price: number;
-  capacity: number;
+  capacity: number | null;
   level: string;
   coach_id: number;
   tags: string[];
