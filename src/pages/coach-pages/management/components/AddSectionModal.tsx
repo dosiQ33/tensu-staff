@@ -155,8 +155,12 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     );
   };
 
-  const removeGroup = (idx: number) => {
+  const removeGroup = async (idx: number, groupId: number | undefined) => {
+    if (editing && activeSection?.club_id) {
+      await groupsApi.deleteById(groupId, token)
+    }
     setGroups((g) => g.filter((_, i) => i !== idx));
+
   };
 
   // Handlers for schedule rows
@@ -571,7 +575,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   {/* Удалить группу */}
                   <div className="flex justify-end">
                     <button
-                      onClick={() => removeGroup(gIdx)}
+                      onClick={() => removeGroup(gIdx, group?.id)}
                       className="text-sm text-red-600 hover:underline"
                     >
                       Удалить группу

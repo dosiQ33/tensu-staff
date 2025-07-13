@@ -58,7 +58,9 @@ export const groupsApi = {
     getBySectionId: (id: number | undefined, token: string) =>
         axiosRequest<GetSectionGroupsResponse>(ENDPOINTS.GROUPS.BY_SECTION_ID(id), 'GET', token),
     updateById: (data: CreateGroupRequest, id: number, token: string) => 
-        axiosRequest<CreateGroupResponse>(ENDPOINTS.GROUPS.BY_ID(id), 'PUT', token, data)
+        axiosRequest<CreateGroupResponse>(ENDPOINTS.GROUPS.BY_ID(id), 'PUT', token, data),
+    deleteById: (id: number | undefined, token: string) => 
+        axiosRequest<CreateGroupResponse>(ENDPOINTS.GROUPS.BY_ID(id), 'DELETE', token)
 }
 
 export const invitationsApi = {
