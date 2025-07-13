@@ -581,7 +581,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           {/* Действие: создать или сохранить */}
           <div className="pt-4">
             <button
-              disabled={
+              disabled={!activeSection?.club_id ||
                 !newSection.club_id || !newSection.name || !newSection.coach_id
               }
               onClick={editing || sectionCreated ? handleSave : handleCreate}
