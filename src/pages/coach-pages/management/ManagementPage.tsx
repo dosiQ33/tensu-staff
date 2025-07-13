@@ -110,11 +110,12 @@ const ManagementPage: React.FC = () => {
     setActiveSection(sections.find((section) => section.id === sectionId));
   };
 
-  const addClub = () => {
+  const addStaff = () => {
     if (!staffCreateAllowed) {
       setShowStaffNotAllowed(true);
       return;
     }
+    setShowAddStaff(true)
   };
 
   const allRoles = ["owner", "coach", "admin"];
@@ -275,7 +276,7 @@ const ManagementPage: React.FC = () => {
                   <StaffCard key={member.id} member={member} />
                 ))}
                 <button
-                  onClick={addClub}
+                  onClick={addStaff}
                   className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
                 >
                   <Plus size={20} /> Добавить Тренера/Администратора
