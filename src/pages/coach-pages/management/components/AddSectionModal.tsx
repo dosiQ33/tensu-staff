@@ -281,28 +281,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         toast.error("Секция с таким названием уже создана");
       }
     }
-
-    try {
-      const secId = createdSection?.id;
-      for (const grp of groups) {
-        const gp = {
-          section_id: secId,
-          name: grp.name,
-          description: grp.description,
-          schedule: buildScheduleEntry(grp.schedule),
-          price: grp.price,
-          capacity: grp.capacity,
-          level: grp.level,
-          coach_id: grp.coach_id,
-          tags: grp.tags,
-          active: grp.active,
-        };
-        await groupsApi.create(gp, token);
-        refresh();
-      }
-    } catch {
-      toast.error("Невозможно создать группу");
-    }
   };
 
   return (
