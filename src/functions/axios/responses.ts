@@ -1,3 +1,5 @@
+import type { ScheduleEntry } from "@/types/types";
+
 export interface StaffPreferences {
   [key: string]: Record<string, unknown>;
 }
@@ -120,7 +122,7 @@ export interface CreateGroupResponse {
   section_id: number;
   name: string;
   description: string;
-  schedule: Record<string, unknown>;
+  schedule: ScheduleEntry;
   price: number;
   capacity: number;
   level: string;
@@ -133,8 +135,9 @@ export interface GetMyGroupResponse {
   section_id: number;
   name: string;
   description: string;
-  schedule: Record<string, unknown>;
-  price: number;
+  schedule: {
+    [key: string]: unknown;
+  };  price: number;
   capacity: number;
   level: string;
   coach_id: number;
@@ -155,6 +158,8 @@ export interface GetMyGroupResponse {
   created_at: string;
   updated_at: string;
 }
+
+export type GetSectionGroupsResponse = GetMyGroupResponse[];
 
 export interface Invitation {
   phone_number: string;

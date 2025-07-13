@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // AddSectionModal.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Plus, ChevronDown, CheckCircle, Users } from "lucide-react";
-import type { NewSection, ScheduleEntry, Staff } from "@/types/types";
+import type { NewSection, Staff } from "@/types/types";
 import type {
   CreateClubResponse,
   CreateSectionResponse,
@@ -18,28 +18,27 @@ interface AddSectionModalProps {
   allStaff: Staff[];
   userFullName: string;
   userId: number;
-  activeSection: CreateSectionResponse | undefined;
-  newSection: NewSection & {
-    groups?: {
-      id?: number;
-      name?: string;
-      level?: string;
-      capacity?: number;
-      price?: number;
-      active?: boolean;
-      description?: string;
-      coach_id?: number;
-      tags?: string[];
-      schedule?: ScheduleEntry[];
-    }[];
-  };
+  activeSection?: CreateSectionResponse;
+  newSection: NewSection & { valid_from?: string; valid_until?: string };
   refresh: () => void;
-  onChange: (
-    field: keyof NewSection | "schedule" | "groups",
-    value: unknown
-  ) => void;
-  setEditing: () => void;
+  onChange: (field: keyof NewSection, value: unknown) => void;
   onClose: () => void;
+}
+
+type ScheduleRow = { day: string; start: string; end: string };
+
+interface GroupForm {
+  id?: number;
+  section_id: number;
+  name: string;
+  level: string;
+  capacity: number;
+  price: number;
+  description: string;
+  active: boolean;
+  coach_id: number;
+  tags: string[];
+  schedule: ScheduleRow[];
 }
 
 const token = localStorage.getItem("telegramToken") || "";
@@ -54,7 +53,7 @@ const weekdays = [
   "Sunday",
 ];
 
-const AddSectionModal: React.FC<AddSectionModalProps> = ({
+export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   show,
   editing,
   allClubs,
@@ -68,149 +67,203 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
   onClose,
 }) => {
   const [sectionCreated, setSectionCreated] = useState(false);
-  const [showDeleteSectionAlert, setShowDeleteSectionAlert] = useState(false);
-  if (!show) return null;
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [groups, setGroups] = useState<GroupForm[]>([]);
 
-  const groups = newSection.groups || [];
-
-  const addGroup = () => {
-    const newGroup = {
-      section_id: activeSection ?? newSection.id,
-      name: "",
-      level: "",
-      capacity: null,
-      price: null,
-      active: true,
-      description: "",
-      coach_id: newSection.coach_id,
-      tags: [] as string[],
-      schedule: [] as ScheduleEntry[],
-    };
-    onChange("groups", [...groups, newGroup]);
+  const deleteSection = () => {
+    setShowDeleteAlert(true);
   };
 
-  const updateGroup = (
-    idx: number,
-    field: keyof (typeof groups)[0],
-    value: unknown
-  ) => {
-    const updated = groups.map((g, i) =>
-      i === idx ? { ...g, [field]: value } : g
+  // Load existing groups when modal opens or activeSection changes
+  useEffect(() => {
+    if (!show) return;
+    (async () => {
+      if (activeSection) {
+        try {
+          const res = await groupsApi.getBySectionId(activeSection.id, token);
+          const forms: GroupForm[] = res.data.map((g: any) => ({
+            id: g.id,
+            section_id: g.section_id,
+            name: g.name,
+            level: g.level,
+            capacity: g.capacity,
+            price: g.price,
+            description: g.description,
+            active: g.active,
+            coach_id: g.coach_id,
+            tags: g.tags || [],
+            schedule: Object.entries(g.schedule.weekly_pattern).flatMap(
+              ([day, slots]) =>
+                (slots as any[]).map((s) => ({
+                  day,
+                  start: s.time,
+                  end: new Date(
+                    Date.parse(`1970-01-01T${s.time}`) + s.duration * 60000
+                  )
+                    .toISOString()
+                    .substr(11, 5),
+                }))
+            ),
+          }));
+          setGroups(forms);
+        } catch (err) {
+          console.error(err);
+        }
+      } else {
+        setGroups([]);
+      }
+    })();
+  }, [show, activeSection]);
+
+  if (!show) return null;
+
+  // Handlers for groups
+  const addGroup = () => {
+    setGroups((g) => [
+      ...g,
+      {
+        section_id: activeSection?.id ?? newSection.club_id!,
+        name: "",
+        level: "",
+        capacity: 0,
+        price: 0,
+        description: "",
+        active: true,
+        coach_id: newSection.coach_id!,
+        tags: [],
+        schedule: [],
+      },
+    ]);
+  };
+
+  const updateGroup = (idx: number, field: keyof GroupForm, value: any) => {
+    setGroups((g) =>
+      g.map((grp, i) => (i === idx ? { ...grp, [field]: value } : grp))
     );
-    onChange("groups", updated);
   };
 
   const removeGroup = (idx: number) => {
-    const updated = groups.filter((_, i) => i !== idx);
-    onChange("groups", updated);
+    setGroups((g) => g.filter((_, i) => i !== idx));
   };
 
-  const addGroupEntry = (gIdx: number) => {
-    const sched = groups[gIdx].schedule || [];
-    const entry: ScheduleEntry = { day: weekdays[0], start: "", end: "" };
-    const updatedSched = [...sched, entry];
-    updateGroup(gIdx, "schedule", updatedSched);
+  // Handlers for schedule rows
+  const addScheduleRow = (gIdx: number) => {
+    setGroups((g) =>
+      g.map((grp, i) =>
+        i === gIdx
+          ? {
+              ...grp,
+              schedule: [
+                ...grp.schedule,
+                { day: weekdays[0], start: "", end: "" },
+              ],
+            }
+          : grp
+      )
+    );
   };
 
-  const updateGroupEntry = (
+  const updateScheduleRow = (
     gIdx: number,
-    eIdx: number,
-    field: keyof ScheduleEntry,
-    value: unknown
+    rowIdx: number,
+    field: keyof ScheduleRow,
+    value: string
   ) => {
-    const sched = groups[gIdx].schedule || [];
-    const updatedSched = sched.map((e, i) =>
-      i === eIdx ? { ...(e as ScheduleEntry), [field]: value } : e
+    setGroups((g) =>
+      g.map((grp, i) =>
+        i === gIdx
+          ? {
+              ...grp,
+              schedule: grp.schedule.map((row, j) =>
+                j === rowIdx ? { ...row, [field]: value } : row
+              ),
+            }
+          : grp
+      )
     );
-    updateGroup(gIdx, "schedule", updatedSched);
   };
 
-  const removeGroupEntry = (gIdx: number, eIdx: number) => {
-    const sched = groups[gIdx].schedule || [];
-    const updatedSched = sched.filter((_, i) => i !== eIdx);
-    updateGroup(gIdx, "schedule", updatedSched);
+  const removeScheduleRow = (gIdx: number, rowIdx: number) => {
+    setGroups((g) =>
+      g.map((grp, i) =>
+        i === gIdx
+          ? { ...grp, schedule: grp.schedule.filter((_, j) => j !== rowIdx) }
+          : grp
+      )
+    );
   };
 
-  const buildScheduleObject = (entries: ScheduleEntry[]) =>
-    entries.reduce<Record<string, { start: string; end: string }>>(
-      (acc, { day, start, end }) => {
-        acc[day] = { start, end };
-        return acc;
-      },
-      {}
-    );
+  // Build final ScheduleEntry object
+  const buildScheduleEntry = (rows: ScheduleRow[]) => {
+    const pattern: Record<string, { time: string; duration: number }[]> = {};
+    rows.forEach(({ day, start, end }) => {
+      const duration =
+        (Date.parse(`1970-01-01T${end}`) - Date.parse(`1970-01-01T${start}`)) /
+        60000;
+      if (!pattern[day]) pattern[day] = [];
+      pattern[day].push({ time: start, duration });
+    });
+    return {
+      weekly_pattern: pattern,
+      valid_from: newSection.valid_from || "",
+      valid_until: newSection.valid_until || "",
+    };
+  };
 
-  const onSave = async () => {
-    if (!(groups.length > 0)) {
-      refresh();
-    }
-
-    const sectionId = (activeSection && activeSection.id) ?? newSection.id;
-
+  // Save (create or update)
+  const handleSave = async () => {
+    const sectionId = activeSection?.id ?? newSection.id!;
     for (const grp of groups) {
-      const groupPayload = {
+      const payload = {
         section_id: sectionId,
         name: grp.name,
-        description: grp.description ?? "",
-        schedule: buildScheduleObject(grp.schedule || []),
+        description: grp.description,
+        schedule: buildScheduleEntry(grp.schedule),
         price: grp.price,
         capacity: grp.capacity,
         level: grp.level,
-        coach_id: grp.coach_id ?? newSection.coach_id ?? userId,
-        tags: grp.tags ?? [],
+        coach_id: grp.coach_id,
+        tags: grp.tags,
         active: grp.active,
       };
-      await groupsApi.create(groupPayload, token);
+      if (grp.id) {
+        await groupsApi.updateById(payload, grp.id, token);
+      } else {
+        await groupsApi.create(payload, token);
+      }
     }
-
-    toast.success("Секция и группы успешно созданы");
+    toast.success("Группы успешно сохранены");
     refresh();
   };
 
-  const deleteSection = () => {
-    setShowDeleteSectionAlert(true);
-  };
-
+  // Create section + groups
   const handleCreate = async () => {
     try {
-      const sectionPayload = {
-        club_id: newSection.club_id,
+      const secPayload = {
+        club_id: newSection.club_id!,
         name: newSection.name,
-        description: newSection.description ?? "",
-        coach_id: newSection.coach_id,
+        description: newSection.description || "",
+        coach_id: newSection.coach_id!,
         active: newSection.active ?? true,
       };
-      const { data: createdSection } = await sectionsApi.create(
-        sectionPayload,
-        token
-      );
-
-      if (createdSection.id) {
-        setSectionCreated(true);
-      }
-
-      if (!(groups.length > 0)) {
-        refresh();
-      }
-
-      const sectionId = createdSection.id;
-
+      const { data: created } = await sectionsApi.create(secPayload, token);
+      setSectionCreated(true);
+      const secId = created.id;
       for (const grp of groups) {
-        const groupPayload = {
-          section_id: sectionId,
+        const gp = {
+          section_id: secId,
           name: grp.name,
-          description: grp.description ?? "",
-          schedule: buildScheduleObject(grp.schedule || []),
+          description: grp.description,
+          schedule: buildScheduleEntry(grp.schedule),
           price: grp.price,
           capacity: grp.capacity,
           level: grp.level,
-          coach_id: grp.coach_id ?? newSection.coach_id ?? userId,
-          tags: grp.tags ?? [],
+          coach_id: grp.coach_id,
+          tags: grp.tags,
           active: grp.active,
         };
-        await groupsApi.create(groupPayload, token);
+        await groupsApi.create(gp, token);
       }
-
       toast.success("Секция и группы успешно созданы");
       refresh();
     } catch (err: any) {
@@ -219,8 +272,6 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       }
     }
   };
-
-  console.log("user id" + userId);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
@@ -411,77 +462,80 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         Расписание
                       </h4>
                       <button
-                        onClick={() => addGroupEntry(gIdx)}
+                        onClick={() => addScheduleRow(gIdx)}
                         className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md text-blue-600 hover:bg-blue-50"
                       >
                         <Plus size={16} />
                         <span className="ml-1">Добавить время</span>
                       </button>
                     </div>
+
                     <div className="mt-2 space-y-3">
-                      {(group.schedule || []).map(
-                        (entry: ScheduleEntry, eIdx) => (
-                          <div
-                            key={eIdx}
-                            className="flex flex-col gap-2 bg-white p-2 rounded-md border border-gray-200"
+                      {group.schedule.map((row, rowIdx) => (
+                        <div
+                          key={rowIdx}
+                          className="flex flex-col gap-2 bg-white p-2 rounded-md border border-gray-200"
+                        >
+                          {/* День недели */}
+                          <select
+                            value={row.day}
+                            onChange={(e) =>
+                              updateScheduleRow(
+                                gIdx,
+                                rowIdx,
+                                "day",
+                                e.target.value
+                              )
+                            }
+                            className="p-2 border rounded-md border-gray-400"
                           >
-                            <select
-                              value={entry.day}
+                            {weekdays.map((d) => (
+                              <option key={d} value={d}>
+                                {d}
+                              </option>
+                            ))}
+                          </select>
+
+                          {/* Время начала и конца */}
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="time"
+                              value={row.start}
                               onChange={(e) =>
-                                updateGroupEntry(
+                                updateScheduleRow(
                                   gIdx,
-                                  eIdx,
-                                  "day",
+                                  rowIdx,
+                                  "start",
                                   e.target.value
                                 )
                               }
                               className="p-2 border rounded-md border-gray-400"
-                            >
-                              {weekdays.map((d) => (
-                                <option key={d} value={d}>
-                                  {d}
-                                </option>
-                              ))}
-                            </select>
-                            <div className="flex flex-row gap-2 items-center">
-                              <input
-                                type="time"
-                                value={entry.start}
-                                onChange={(e) =>
-                                  updateGroupEntry(
-                                    gIdx,
-                                    eIdx,
-                                    "start",
-                                    e.target.value
-                                  )
-                                }
-                                className="p-2 border rounded-md border-gray-400"
-                              />
-                              <span className="text-gray-400">—</span>
-                              <input
-                                type="time"
-                                value={entry.end}
-                                onChange={(e) =>
-                                  updateGroupEntry(
-                                    gIdx,
-                                    eIdx,
-                                    "end",
-                                    e.target.value
-                                  )
-                                }
-                                className="p-2 border rounded-md border-gray-400"
-                              />
-                            </div>
-
-                            <button
-                              onClick={() => removeGroupEntry(gIdx, eIdx)}
-                              className="ml-auto text-red-500 hover:text-red-700 p-1 rounded-full"
-                            >
-                              <X size={16} />
-                            </button>
+                            />
+                            <span className="text-gray-400">—</span>
+                            <input
+                              type="time"
+                              value={row.end}
+                              onChange={(e) =>
+                                updateScheduleRow(
+                                  gIdx,
+                                  rowIdx,
+                                  "end",
+                                  e.target.value
+                                )
+                              }
+                              className="p-2 border rounded-md border-gray-400"
+                            />
                           </div>
-                        )
-                      )}
+
+                          {/* Удалить строку */}
+                          <button
+                            onClick={() => removeScheduleRow(gIdx, rowIdx)}
+                            className="self-end text-red-500 hover:text-red-700 p-1 rounded-full"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -510,27 +564,20 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div className="pt-4">
             <button
               disabled={
-                (!newSection.club_id ||
-                  !newSection.name ||
-                  !newSection.coach_id) &&
-                true
+                !newSection.club_id || !newSection.name || !newSection.coach_id
               }
-              onClick={editing || sectionCreated ? onSave : handleCreate}
+              onClick={editing || sectionCreated ? handleSave : handleCreate}
               className="w-full inline-flex justify-center items-center py-3 px-4 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 disabled:opacity-50"
             >
               <span className="ml-2">
                 {editing || sectionCreated ? "Сохранить" : "Добавить"}
               </span>
             </button>
+
             {activeSection?.id && (
               <button
-                className="
-                mt-5 w-full inline-flex justify-center items-center
-                py-3 px-4
-                text-red-700 font-medium
-                focus:outline-none
-              "
                 onClick={deleteSection}
+                className="mt-5 w-full inline-flex justify-center items-center py-3 px-4 text-red-700 font-medium focus:outline-none"
               >
                 Удалить секцию
               </button>
@@ -540,8 +587,8 @@ const AddSectionModal: React.FC<AddSectionModalProps> = ({
       </div>
       {activeSection?.id && (
         <DeleteSectionAlert
-          show={showDeleteSectionAlert}
-          onClose={() => setShowDeleteSectionAlert(false)}
+          show={showDeleteAlert}
+          onClose={() => setShowDeleteAlert(false)}
           refresh={refresh}
           sectionId={activeSection?.id}
         />

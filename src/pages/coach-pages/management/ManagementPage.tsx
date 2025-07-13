@@ -332,7 +332,6 @@ const ManagementPage: React.FC = () => {
         onChange={(f, v) =>
           setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
         }
-        setEditing={() => setEditing(true)}
         onClose={() => setShowAddSection(false)}
       />
       {showSecNotAllowed && (

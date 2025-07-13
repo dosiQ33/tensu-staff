@@ -1,7 +1,7 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
 import type { CreateClubRequest, CreateGroupRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest, UpdateStaffRequest } from './requests';
-import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetClubsLimitCheckResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetMySectionsResponse, GetTeamMembersResponse } from './responses';
+import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetClubsLimitCheckResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetSectionGroupsResponse, GetMySectionsResponse, GetTeamMembersResponse, CreateGroupResponse } from './responses';
 
 export const staffApi = {
     getList: (token: string) =>
@@ -55,6 +55,10 @@ export const sectionsApi = {
 export const groupsApi = {
     create: (data: CreateGroupRequest, token: string) =>
         axiosRequest(ENDPOINTS.GROUPS.BASE, 'POST', token, data),
+    getBySectionId: (id: number | undefined, token: string) =>
+        axiosRequest<GetSectionGroupsResponse>(ENDPOINTS.GROUPS.BY_SECTION_ID(id), 'GET', token),
+    updateById: (data: CreateGroupRequest, id: number, token: string) => 
+        axiosRequest<CreateGroupResponse>(ENDPOINTS.GROUPS.BY_ID(id), 'PUT', token, data)
 }
 
 export const invitationsApi = {

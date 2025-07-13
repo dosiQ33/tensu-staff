@@ -38,7 +38,8 @@ export const ENDPOINTS = {
 
   GROUPS: {
     BASE: '/groups/',
-    BY_SECTION_ID: (sId: string) => `/groups/section/${sId}`,
+    BY_SECTION_ID: (sId: number | undefined) => `/groups/section/${sId}`,
+    BY_ID: (gId: number) => `/groups/${gId}`
   },
 
   INVITATIONS: {

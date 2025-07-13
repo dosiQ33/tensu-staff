@@ -17,6 +17,7 @@ export default function OnboardingPage() {
   const [contactData, setContactData] = useState<any>(null);
   const [tg, setTg] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
+  const urlParams = new URLSearchParams(window.location.search);
 
   // флаг, чтобы checkStuffExists вызвался только один раз
   const [hasChecked, setHasChecked] = useState(false);
@@ -37,17 +38,26 @@ export default function OnboardingPage() {
         try {
           const resp = await staffApi.getMe(token);
           if ((resp.status === 200 || resp.status === 201) && resp.data) {
-            localStorage.setItem("telegramUser", JSON.stringify(resp.data.username));
-            localStorage.setItem("telegramFullName", resp.data.first_name + " " + resp.data.last_name);
+            localStorage.setItem(
+              "telegramUser",
+              JSON.stringify(resp.data.username)
+            );
+            localStorage.setItem(
+              "telegramFullName",
+              resp.data.first_name + " " + resp.data.last_name
+            );
             localStorage.setItem("telegramPhone", resp.data.phone_number);
             localStorage.setItem("telegramAvatar", resp.data.photo_url);
-            localStorage.setItem("telegramId", resp.data.telegram_id.toString());
+            localStorage.setItem(
+              "telegramId",
+              resp.data.telegram_id.toString()
+            );
             localStorage.setItem("telegramToken", token || "");
             localStorage.setItem("userId", resp.data.id.toString());
             // navigate("/coach/profile");
           }
         } catch (e) {
-            console.error("Ошибка getMe:", e);
+          console.error("Ошибка getMe:", e);
         }
       })();
     }
@@ -63,7 +73,9 @@ export default function OnboardingPage() {
 
       const rawInitData =
         telegramApp.initData ||
-        JSON.stringify(telegramApp.initDataUnsafe || {});
+        JSON.stringify(
+          telegramApp.initDataUnsafe || urlParams.get("token") || {}
+        );
       setToken(rawInitData);
       localStorage.setItem("telegramInitData", rawInitData);
     } else {
@@ -118,7 +130,6 @@ export default function OnboardingPage() {
           // navigate("/coach/profile");
         }
         // после успешного создания — сразу в профиль
-
       } catch (err: any) {
         if (err.response?.status === 404) {
           setShowInvitationAlert(true);
@@ -156,7 +167,8 @@ export default function OnboardingPage() {
         {showInvitationAlert && (
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-lg">
             <p className="text-sm">
-              Вы не являетесь тренером или администратором клуба. Пожалуйста, свяжитесь с вашим клубом для получения доступа.
+              Вы не являетесь тренером или администратором клуба. Пожалуйста,
+              свяжитесь с вашим клубом для получения доступа.
             </p>
           </div>
         )}

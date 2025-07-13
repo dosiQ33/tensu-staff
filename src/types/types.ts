@@ -99,10 +99,16 @@ export interface NewSection {
 }
 
 export interface ScheduleEntry {
-  day: string;
-  start: string;
-  end: string;
+  weekly_pattern: Record<string, {
+    time: string;
+    duration: number;
+  }[]>;
+  valid_from: string;
+  valid_until: string;
 }
+
+
+export type TimeSlot = { time: string; duration: number };
 
 export interface NewGroup {
   section_id?: number;
