@@ -269,7 +269,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         await groupsApi.create(gp, token);
       }
       toast.success("Секция и группы успешно созданы");
-      refresh();
+      // refresh();
     } catch (err: any) {
       if (err.response?.status === 409) {
         toast.error("Секция с таким названием уже создана");
