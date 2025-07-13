@@ -2,7 +2,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import TabNavigation from "./components/TabNavigation";
 import StaffFilter from "./components/StaffFilter";
-import StaffCard from "./components/StaffCard";
 import AddStaffModal from "./components/AddStaffModal";
 import AddSectionModal from "./components/AddSectionModal";
 import type {
@@ -13,7 +12,7 @@ import type {
   ScheduleEntry,
 } from "@/types/types";
 import { BottomNav } from "@/components/Layout";
-import { Plus, X } from "lucide-react";
+import { X } from "lucide-react";
 import {
   clubsApi,
   invitationsApi,
@@ -26,7 +25,8 @@ import type {
   CreateClubResponse,
   Invitation,
 } from "@/functions/axios/responses";
-import SectionCard from "./components/SectionCard";
+import { SectionsPanel } from "./components/SectionPanel";
+import { StaffPanel } from "./components/StaffPanel";
 
 type SectionForm = NewSection & {
   groups: Array<{
@@ -104,22 +104,6 @@ const ManagementPage: React.FC = () => {
     setShowAddSection(true);
   };
 
-  const handleTabChange = (tab: "staff" | "sections") => {
-  setActiveTab(tab);
-  // при переключении на секции сбросим стейт staff-модалки
-  if (tab === "sections") {
-    setShowAddStaff(false);
-    // отменяем режим редактирования staff
-    // (если вы внутри staff открывали редактирование)
-  }
-  // при переключении на staff сбросим стейт секций
-  if (tab === "staff") {
-    setShowAddSection(false);
-    setEditing(false);
-    setActiveSection(undefined);
-  }
-};
-
   const editSection = (sectionId: number) => {
     setEditing(true);
     setShowAddSection(true);
@@ -131,7 +115,7 @@ const ManagementPage: React.FC = () => {
       setShowStaffNotAllowed(true);
       return;
     }
-    setShowAddStaff(true)
+    setShowAddStaff(true);
   };
 
   const allRoles = ["owner", "coach", "admin"];
@@ -271,7 +255,7 @@ const ManagementPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900 mb-4">
               Панель Управления
             </h1>
-            <TabNavigation activeTab={activeTab} onChange={handleTabChange} />
+            <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
             {activeTab === "staff" && (
               <StaffFilter
                 filters={filters}
@@ -282,44 +266,15 @@ const ManagementPage: React.FC = () => {
           </div>
         </div>
         <div className="px-4 py-2">
-          {activeTab === "staff" ? (
-            <>
-              <div className="mb-3 text-sm text-gray-600">
-                {filteredStaff.length} сотрудников
-              </div>
-              <div className="space-y-2">
-                {filteredStaff.map((member) => (
-                  <StaffCard key={member.id} member={member} />
-                ))}
-                <button
-                  onClick={addStaff}
-                  className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
-                >
-                  <Plus size={20} /> Добавить Тренера/Администратора
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="mb-3 text-sm text-gray-600">
-                {sections.length} секций
-              </div>
-              <div className="space-y-4">
-                {sections.map((sec) => (
-                  <SectionCard
-                    key={sec.id}
-                    section={sec}
-                    onEdit={editSection}
-                  />
-                ))}
-                <button
-                  onClick={addSection}
-                  className="w-full bg-blue-500 text-white py-3 rounded-lg flex items-center justify-center gap-2"
-                >
-                  <Plus size={20} /> Добавить Секцию
-                </button>
-              </div>
-            </>
+          {activeTab === "staff" && (
+            <StaffPanel staff={filteredStaff} onAdd={addStaff} />
+          )}
+          {activeTab === "sections" && (
+            <SectionsPanel
+              sections={sections}
+              onEdit={editSection}
+              onAdd={addSection}
+            />
           )}
         </div>
 
