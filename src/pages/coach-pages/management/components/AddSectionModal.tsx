@@ -77,6 +77,16 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     setShowDeleteAlert(true);
   };
 
+  useEffect(() => {
+    if (editing && activeSection) {
+      onChange("club_id", activeSection.club_id);
+      onChange("name", activeSection.name);
+      onChange("coach_id", activeSection.coach_id);
+      onChange("description", activeSection.description || "");
+      onChange("active", activeSection.active);
+    }
+  }, [editing, activeSection, onChange]);
+
   // Load existing groups when modal opens or activeSection changes
   useEffect(() => {
     if (!show) return;
@@ -216,7 +226,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   // Save (create or update)
   const handleSave = async () => {
     try {
-      const sectionId = activeSection?.id ?? createdSection?.id ?? newSection.id!;
+      const sectionId =
+        activeSection?.id ?? createdSection?.id ?? newSection.id!;
       for (const grp of groups) {
         const payload = {
           section_id: sectionId,
@@ -581,7 +592,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           {/* Действие: создать или сохранить */}
           <div className="pt-4">
             <button
-              disabled={!activeSection?.club_id ||
+              disabled={
                 !newSection.club_id || !newSection.name || !newSection.coach_id
               }
               onClick={editing || sectionCreated ? handleSave : handleCreate}
