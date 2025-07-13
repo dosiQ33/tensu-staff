@@ -232,11 +232,12 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         };
         if (grp.id) {
           await groupsApi.updateById(payload, grp.id, token);
+          toast.success("Группы успешно обновлены");
         } else {
           await groupsApi.create(payload, token);
+          toast.success("Группы успешно добавлены");
         }
       }
-      toast.success("Секция успешно создана");
       refresh();
     } catch {
       toast.error("Невозможно создать секцию");
