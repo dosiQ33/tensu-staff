@@ -69,6 +69,9 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const [sectionCreated, setSectionCreated] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [groups, setGroups] = useState<GroupForm[]>([]);
+  const [createdSection, setCreatedSection] = useState<
+    CreateSectionResponse | undefined
+  >(undefined);
 
   const deleteSection = () => {
     setShowDeleteAlert(true);
@@ -234,7 +237,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         }
       }
       toast.success("Секция успешно создана");
-      // refresh();
+      refresh();
     } catch {
       toast.error("Невозможно создать секцию");
     }
@@ -251,8 +254,17 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         active: newSection.active ?? true,
       };
       const { data: created } = await sectionsApi.create(secPayload, token);
+      setCreatedSection(created);
       setSectionCreated(true);
-      const secId = created.id;
+      toast.success("Секция и группы успешно созданы");
+    } catch (err: any) {
+      if (err.response?.status === 409) {
+        toast.error("Секция с таким названием уже создана");
+      }
+    }
+
+    try {
+      const secId = createdSection?.id;
       for (const grp of groups) {
         const gp = {
           section_id: secId,
@@ -267,13 +279,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           active: grp.active,
         };
         await groupsApi.create(gp, token);
+        refresh();
       }
-      toast.success("Секция и группы успешно созданы");
-      // refresh();
-    } catch (err: any) {
-      if (err.response?.status === 409) {
-        toast.error("Секция с таким названием уже создана");
-      }
+    } catch {
+      toast.error("Невозможно создать группу");
     }
   };
 
