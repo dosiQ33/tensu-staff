@@ -355,37 +355,38 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
                 />
               </div>
-            </div>
-          )}
-
-          {/* Price, Coach */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {/* Тренер */}
-            <div className="sm:col-span-2 space-y-1">
-              <label className="block text-sm font-medium text-gray-800 mb-2">
-                Тренер <span className="text-red-500">*</span>
-              </label>
-              <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
-                <select
-                  value={
-                    activeSection?.coach_id ?? newSection.coach_id ?? userId
-                  }
-                  onChange={(e) => onChange("coach_id", e.target.value)}
-                  className="block w-full py-2.5 px-4 appearance-none"
-                >
-                  <option value={userId}>{userFullName} (выбрать себя)</option>
-                  {allStaff
-                    .filter((s) => s.role === "coach")
-                    .map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name} {s.surname}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {/* Тренер */}
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="block text-sm font-medium text-gray-800 mb-2">
+                    Тренер <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
+                    <select
+                      value={
+                        activeSection?.coach_id ?? newSection.coach_id ?? userId
+                      }
+                      onChange={(e) => onChange("coach_id", e.target.value)}
+                      className="block w-full py-2.5 px-4 appearance-none"
+                    >
+                      <option value={userId}>
+                        {userFullName} (выбрать себя)
                       </option>
-                    ))}
-                </select>
-                <ChevronDown className="mr-2" />
+                      {allStaff
+                        .filter((s) => s.role === "coach")
+                        .map((s) => (
+                          s.status !== "pending" &&
+                          <option key={s.id} value={s.id}>
+                            {s.name} {s.surname}
+                          </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="mr-2" />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Группы */}
           <div className="pt-4">
