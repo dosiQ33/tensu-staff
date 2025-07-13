@@ -10,7 +10,6 @@ import type {
 import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
 import { toast } from "react-toastify";
 import DeleteSectionAlert from "./DeleteSectionAlert";
-import dayjs from "dayjs";
 
 interface AddSectionModalProps {
   show: boolean;
@@ -222,9 +221,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     });
     return {
       weekly_pattern: pattern,
-      valid_from: newSection.valid_from || dayjs().format("YYYY-MM-DD"),
-      valid_until:
-        newSection.valid_until || dayjs().add(1, "year").format("YYYY-MM-DD"),
+      valid_from: newSection.valid_from || "",
+      valid_until: newSection.valid_until || "",
     };
   };
 
