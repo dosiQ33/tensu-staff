@@ -104,6 +104,22 @@ const ManagementPage: React.FC = () => {
     setShowAddSection(true);
   };
 
+  const handleTabChange = (tab: "staff" | "sections") => {
+  setActiveTab(tab);
+  // при переключении на секции сбросим стейт staff-модалки
+  if (tab === "sections") {
+    setShowAddStaff(false);
+    // отменяем режим редактирования staff
+    // (если вы внутри staff открывали редактирование)
+  }
+  // при переключении на staff сбросим стейт секций
+  if (tab === "staff") {
+    setShowAddSection(false);
+    setEditing(false);
+    setActiveSection(undefined);
+  }
+};
+
   const editSection = (sectionId: number) => {
     setEditing(true);
     setShowAddSection(true);
@@ -255,7 +271,7 @@ const ManagementPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900 mb-4">
               Панель Управления
             </h1>
-            <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
+            <TabNavigation activeTab={activeTab} onChange={handleTabChange} />
             {activeTab === "staff" && (
               <StaffFilter
                 filters={filters}
