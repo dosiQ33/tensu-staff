@@ -212,28 +212,32 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   // Save (create or update)
   const handleSave = async () => {
-    const sectionId = activeSection?.id ?? newSection.id!;
-    for (const grp of groups) {
-      const payload = {
-        section_id: sectionId,
-        name: grp.name,
-        description: grp.description,
-        schedule: buildScheduleEntry(grp.schedule),
-        price: grp.price,
-        capacity: grp.capacity,
-        level: grp.level,
-        coach_id: grp.coach_id,
-        tags: grp.tags,
-        active: grp.active,
-      };
-      if (grp.id) {
-        await groupsApi.updateById(payload, grp.id, token);
-      } else {
-        await groupsApi.create(payload, token);
+    try {
+      const sectionId = activeSection?.id ?? newSection.id!;
+      for (const grp of groups) {
+        const payload = {
+          section_id: sectionId,
+          name: grp.name,
+          description: grp.description,
+          schedule: buildScheduleEntry(grp.schedule),
+          price: grp.price,
+          capacity: grp.capacity,
+          level: grp.level,
+          coach_id: grp.coach_id,
+          tags: grp.tags,
+          active: grp.active,
+        };
+        if (grp.id) {
+          await groupsApi.updateById(payload, grp.id, token);
+        } else {
+          await groupsApi.create(payload, token);
+        }
       }
+      toast.success("Секция успешно создана");
+      refresh();
+    } catch {
+      toast.error("Невозможно создать секцию");
     }
-    toast.success("Группы успешно сохранены");
-    refresh();
   };
 
   // Create section + groups
