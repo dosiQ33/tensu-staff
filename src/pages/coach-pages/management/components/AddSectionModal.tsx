@@ -352,7 +352,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  value={activeSection?.name ?? newSection.name}
+                  value={newSection.name}
                   onChange={(e) => onChange("name", e.target.value)}
                   className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
                 />
