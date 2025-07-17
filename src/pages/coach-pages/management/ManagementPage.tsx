@@ -47,7 +47,6 @@ const ManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
   const userFullName = localStorage.getItem("telegramFullName") || "";
   const userId = Number(localStorage.getItem("userId"));
-  console.log("User id is " + userId);
   const [filters, setFilters] = useState<Filters>({
     search: "",
     roles: [],
@@ -110,6 +109,10 @@ const ManagementPage: React.FC = () => {
     setActiveSection(sections.find((section) => section.id === sectionId));
   };
 
+  const onAddSectionModalClose = () => {
+    setShowAddSection(false);
+    setEditing(false);
+  }
   const addStaff = () => {
     if (!staffCreateAllowed) {
       setShowStaffNotAllowed(true);
@@ -304,7 +307,7 @@ const ManagementPage: React.FC = () => {
         onChange={(f, v) =>
           setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
         }
-        onClose={() => setShowAddSection(false)}
+        onClose={onAddSectionModalClose}
       />
       {showSecNotAllowed && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
