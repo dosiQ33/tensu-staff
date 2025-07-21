@@ -9,7 +9,6 @@ import type {
   NewStaff,
   NewSection,
   Staff,
-  ScheduleEntry,
 } from "@/types/types";
 import { BottomNav } from "@/components/Layout";
 import { X } from "lucide-react";
@@ -28,20 +27,20 @@ import type {
 import { SectionsPanel } from "./components/SectionPanel";
 import { StaffPanel } from "./components/StaffPanel";
 
-type SectionForm = NewSection & {
-  groups: Array<{
-    id?: number;
-    name?: string;
-    level?: string;
-    capacity?: number;
-    price?: number;
-    active?: boolean;
-    description?: string;
-    coach_id?: number;
-    tags?: string[];
-    schedule?: ScheduleEntry[];
-  }>;
-};
+// type SectionForm = NewSection & {
+//   groups: Array<{
+//     id?: number;
+//     name?: string;
+//     level?: string;
+//     capacity?: number;
+//     price?: number;
+//     active?: boolean;
+//     description?: string;
+//     coach_id?: number;
+//     tags?: string[];
+//     schedule?: ScheduleEntry[];
+//   }>;
+// };
 
 const ManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
@@ -54,7 +53,7 @@ const ManagementPage: React.FC = () => {
     sections: [],
   });
 
-  const [editing, setEditing] = useState(false);
+  const [sectionEditing, setSectionEditing] = useState(false);
 
   const [showAddStaff, setShowAddStaff] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
@@ -93,25 +92,24 @@ const ManagementPage: React.FC = () => {
       return;
     }
     setNewSection({
-      club_id: clubsRaw[0]?.id,
+      club_id: clubsRaw.length === 1? clubsRaw[0]?.id : undefined,
       name: "",
-      coach_id: userId, // текущий пользователь
+      coach_id: userId,
       description: "",
       active: true,
-      // groups будет добавляться в AddSectionModal
     });
     setShowAddSection(true);
   };
 
   const editSection = (sectionId: number) => {
-    setEditing(true);
+    setSectionEditing(true);
     setShowAddSection(true);
     setActiveSection(sections.find((section) => section.id === sectionId));
   };
 
   const onAddSectionModalClose = () => {
     setShowAddSection(false);
-    setEditing(false);
+    setSectionEditing(false);
   }
   const addStaff = () => {
     if (!staffCreateAllowed) {
@@ -296,10 +294,10 @@ const ManagementPage: React.FC = () => {
       />
       <AddSectionModal
         show={showAddSection}
-        editing={editing}
+        editing={sectionEditing}
         allClubs={clubsRaw}
         allStaff={staff}
-        newSection={newSection as SectionForm}
+        newSection={newSection}
         userFullName={userFullName}
         userId={userId}
         activeSection={activeSection}
