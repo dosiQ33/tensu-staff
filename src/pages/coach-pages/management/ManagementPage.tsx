@@ -1,15 +1,10 @@
 // ManagementPage.tsx
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import TabNavigation from "./components/TabNavigation";
 import StaffFilter from "./components/StaffFilter";
 import AddStaffModal from "./components/AddStaffModal";
 import AddSectionModal from "./components/AddSectionModal";
-import type {
-  Filters,
-  NewStaff,
-  NewSection,
-  Staff,
-} from "@/types/types";
+import type { Filters, NewStaff, NewSection, Staff } from "@/types/types";
 import { BottomNav } from "@/components/Layout";
 import { X } from "lucide-react";
 import {
@@ -71,6 +66,13 @@ const ManagementPage: React.FC = () => {
     active: true,
   });
 
+  const handleSectionChange = useCallback(
+    (field: keyof NewSection, value: unknown) => {
+      setNewSection((prev) => ({ ...prev, [field]: value }));
+    },
+    [] // no dependencies → stable
+  );
+
   const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
 
   const [staff, setStaff] = useState<Staff[]>([]);
@@ -92,7 +94,7 @@ const ManagementPage: React.FC = () => {
       return;
     }
     setNewSection({
-      club_id: clubsRaw.length === 1? clubsRaw[0]?.id : undefined,
+      club_id: clubsRaw.length === 1 ? clubsRaw[0]?.id : undefined,
       name: "",
       coach_id: userId,
       description: "",
@@ -110,7 +112,7 @@ const ManagementPage: React.FC = () => {
   const onAddSectionModalClose = () => {
     setShowAddSection(false);
     setSectionEditing(false);
-  }
+  };
   const addStaff = () => {
     if (!staffCreateAllowed) {
       setShowStaffNotAllowed(true);
@@ -302,9 +304,7 @@ const ManagementPage: React.FC = () => {
         userId={userId}
         activeSection={activeSection}
         refresh={() => window.location.reload()}
-        onChange={(f, v) =>
-          setNewSection((prev) => ({ ...prev, [f]: v as unknown }))
-        }
+        onChange={handleSectionChange}
         onClose={onAddSectionModalClose}
       />
       {showSecNotAllowed && (
