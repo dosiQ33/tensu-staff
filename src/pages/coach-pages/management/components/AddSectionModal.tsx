@@ -312,9 +312,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   Клуб <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                    Клуб <span className="text-red-500">*</span>
-                  </label>
 
                   {editing ? (
                     <div className="block w-full py-2.5 px-4 border border-gray-300 rounded-xl bg-gray-100 text-gray-900">
