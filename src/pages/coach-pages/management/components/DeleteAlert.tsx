@@ -37,6 +37,10 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
         }
       }
       onClose();
+
+      if (state === "section") {
+        refresh();
+      }
       refresh();
     } catch {
       toast.error(

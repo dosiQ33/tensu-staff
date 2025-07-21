@@ -74,7 +74,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     (g) => typeof g.id !== "undefined"
   ).length;
   const [pendingDeleteIdx, setPendingDeleteIdx] = useState<number | null>(null);
-  // id of the group on the server
   const [pendingDeleteGroupId, setPendingDeleteGroupId] = useState<
     number | undefined
   >();
