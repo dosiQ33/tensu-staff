@@ -6,14 +6,16 @@ interface DeleteSectionAlertProps {
   show: boolean;
   onClose: () => void;
   refresh: () => void;
-  sectionId: number;
+  id: number;
+  state: string;
 }
 
-const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
+const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
   show,
   onClose,
   refresh,
-  sectionId,
+  id,
+  state,
 }) => {
   const token = localStorage.getItem("telegramToken") || "";
   const deleteSection = async (sectionId: number) => {
@@ -35,10 +37,11 @@ const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Удалить секцию?
+          {state === "group" ? "Удалить группу" : "Удалить секцию"}?
         </h2>
         <p className="text-sm text-gray-600 mb-6">
-          Вы не сможете отменить это действие. Все связанные данные будут удалены.  
+          Вы не сможете отменить это действие. Все связанные данные будут
+          удалены.
         </p>
         <div className="flex justify-end space-x-3">
           <button
@@ -48,7 +51,7 @@ const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
             Отменить
           </button>
           <button
-            onClick={() => deleteSection(sectionId)}
+            onClick={() => deleteSection(id)}
             className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-700 focus:outline-none"
           >
             Удалить
@@ -59,4 +62,4 @@ const DeleteSectionAlert: React.FC<DeleteSectionAlertProps> = ({
   );
 };
 
-export default DeleteSectionAlert;
+export default DeleteAlert;

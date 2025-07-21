@@ -9,7 +9,7 @@ import type {
 } from "@/functions/axios/responses";
 import { sectionsApi, groupsApi } from "@/functions/axios/axiosFunctions";
 import { toast } from "react-toastify";
-import DeleteSectionAlert from "./DeleteSectionAlert";
+import DeleteAlert from "./DeleteAlert";
 
 interface AddSectionModalProps {
   show: boolean;
@@ -68,6 +68,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
 }) => {
   const [sectionCreated, setSectionCreated] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [showGroupDeleteAlert, setShowGroupDeleteAlert] = useState(false);
+  const [groupIdForDelete, setGroupIdForDelete] = useState<number | undefined>();
   const [groups, setGroups] = useState<GroupForm[]>([]);
   const [createdSection, setCreatedSection] = useState<
     CreateSectionResponse | undefined
@@ -147,7 +149,9 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
   const removeGroup = async (idx: number, groupId: number | undefined) => {
     if (editing && activeSection?.club_id) {
-      await groupsApi.deleteById(groupId, token);
+      setShowGroupDeleteAlert(true);
+      setGroupIdForDelete(groupId);
+      // await groupsApi.deleteById(groupId, token);
     }
     setGroups((g) => g.filter((_, i) => i !== idx));
   };
@@ -635,11 +639,21 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         </div>
       </div>
       {activeSection?.id && (
-        <DeleteSectionAlert
+        <DeleteAlert
           show={showDeleteAlert}
           onClose={() => setShowDeleteAlert(false)}
           refresh={refresh}
-          sectionId={activeSection?.id}
+          id={activeSection?.id}
+          state="section"
+        />
+      )}
+      {groupIdForDelete && (
+        <DeleteAlert
+          show={showGroupDeleteAlert}
+          onClose={() => setShowGroupDeleteAlert(false)}
+          refresh={refresh}
+          id={groupIdForDelete}
+          state="group"
         />
       )}
     </div>
