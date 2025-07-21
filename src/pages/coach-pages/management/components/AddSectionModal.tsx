@@ -277,7 +277,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         toast.success("Секция успешно обновлена");
         refresh();
       } else {
-        toast.info("Изменений в секции не обнаружено");
         refresh();
       }
     } catch (err) {
