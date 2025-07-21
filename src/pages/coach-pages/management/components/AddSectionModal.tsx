@@ -311,28 +311,44 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 <label className="block text-sm font-medium text-gray-800 mb-2">
                   Клуб <span className="text-red-500">*</span>
                 </label>
-                <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
-                  <select
-                    value={
-                      activeSection?.club_id ??
-                      newSection.club_id ??
-                      (allClubs[0]?.id || "")
-                    }
-                    onChange={(e) =>
-                      onChange("club_id", Number(e.target.value))
-                    }
-                    className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none"
-                  >
-                    {allClubs.length > 1 && (
-                      <option value="">Выберите клуб</option>
-                    )}
-                    {allClubs.map((club) => (
-                      <option key={club.id} value={club.id}>
-                        {club.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="mr-2" />
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-800 mb-2">
+                    Клуб <span className="text-red-500">*</span>
+                  </label>
+
+                  {editing ? (
+                    <div className="block w-full py-2.5 px-4 border border-gray-300 rounded-xl bg-gray-100 text-gray-900">
+                      {allClubs.find(
+                        (c) =>
+                          c.id ===
+                          (activeSection?.club_id ?? newSection.club_id)
+                      )?.name || "—"}
+                    </div>
+                  ) : (
+                    <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
+                      <select
+                        value={
+                          activeSection?.club_id ??
+                          newSection.club_id ??
+                          (allClubs[0]?.id || "")
+                        }
+                        onChange={(e) =>
+                          onChange("club_id", Number(e.target.value))
+                        }
+                        className="appearance-none block py-2.5 px-4 w-full pr-10 text-gray-900 outline-none"
+                      >
+                        {allClubs.length > 1 && (
+                          <option value="">Выберите клуб</option>
+                        )}
+                        {allClubs.map((club) => (
+                          <option key={club.id} value={club.id}>
+                            {club.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="mr-2" />
+                    </div>
+                  )}
                 </div>
               </div>
               {/* Название секции */}
@@ -366,12 +382,14 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       </option>
                       {allStaff
                         .filter((s) => s.role === "coach")
-                        .map((s) => (
-                          s.status !== "pending" &&
-                          <option key={s.id} value={s.id}>
-                            {s.name} {s.surname}
-                          </option>
-                        ))}
+                        .map(
+                          (s) =>
+                            s.status !== "pending" && (
+                              <option key={s.id} value={s.id}>
+                                {s.name} {s.surname}
+                              </option>
+                            )
+                        )}
                     </select>
                     <ChevronDown className="mr-2" />
                   </div>
