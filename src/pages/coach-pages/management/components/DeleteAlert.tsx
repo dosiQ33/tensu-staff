@@ -26,7 +26,7 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
         state === "group"
           ? await groupsApi.deleteById(id, token)
           : await sectionsApi.delete(id, token);
-      if (res.status === 200) {
+      if (res.status === 200 || res.status === 204) {
         toast.success(
           state === "group"
             ? "Группа удалена успешно"
