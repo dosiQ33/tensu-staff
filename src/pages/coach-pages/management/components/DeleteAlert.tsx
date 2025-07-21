@@ -8,7 +8,7 @@ interface DeleteSectionAlertProps {
   refresh: () => void;
   id: number;
   state: string;
-  setDeletedCount?: (count: number) => void;
+  onConfirm?: () => void;
 }
 
 const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
@@ -17,7 +17,7 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
   refresh,
   id,
   state,
-  setDeletedCount,
+  onConfirm,
 }) => {
   const token = localStorage.getItem("telegramToken") || "";
   const deleteById = async (id: number) => {
@@ -32,8 +32,8 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
             ? "Группа удалена успешно"
             : "Секция удалена успешно"
         );
-        if (state === "group" && setDeletedCount) {
-          setDeletedCount(1);
+        if (state === "group" && onConfirm) {
+          onConfirm();
         }
       }
       onClose();

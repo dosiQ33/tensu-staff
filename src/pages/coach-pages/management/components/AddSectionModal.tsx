@@ -69,12 +69,15 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const [sectionCreated, setSectionCreated] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showGroupDeleteAlert, setShowGroupDeleteAlert] = useState(false);
-  const [groupIdForDelete, setGroupIdForDelete] = useState<
+  const [groups, setGroups] = useState<GroupForm[]>([]);
+  const existingServerGroupsCount = groups.filter(
+    (g) => typeof g.id !== "undefined"
+  ).length;
+  const [pendingDeleteIdx, setPendingDeleteIdx] = useState<number | null>(null);
+  // id of the group on the server
+  const [pendingDeleteGroupId, setPendingDeleteGroupId] = useState<
     number | undefined
   >();
-  const [groups, setGroups] = useState<GroupForm[]>([]);
-  const [deletedGroups, setDeletedGroups] = useState(0);
-  const [deletedGroupIdx, setDeletedGroupIdx] = useState<number | null>(null);
   const [createdSection, setCreatedSection] = useState<
     CreateSectionResponse | undefined
   >(undefined);
@@ -82,13 +85,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const deleteSection = () => {
     setShowDeleteAlert(true);
   };
-
-  useEffect(() => {
-    if (deletedGroupIdx !== null) {
-      setGroups((g) => g.filter((_, i) => i !== deletedGroupIdx));
-      setDeletedGroupIdx(null);
-    }
-  }, [deletedGroupIdx, deletedGroups]);
 
   useEffect(() => {
     if (!show) return;
@@ -157,11 +153,11 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     );
   };
 
-  const removeGroup = async (idx: number, groupId: number | undefined) => {
+  const removeGroup = (idx: number, groupId?: number) => {
     if (editing && activeSection?.club_id) {
+      setPendingDeleteIdx(idx);
+      setPendingDeleteGroupId(groupId);
       setShowGroupDeleteAlert(true);
-      setGroupIdForDelete(groupId);
-      setDeletedGroupIdx(idx);
     } else {
       setGroups((g) => g.filter((_, i) => i !== idx));
     }
@@ -449,15 +445,12 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           <div className="pt-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold text-gray-900">Группы</h3>
-              {activeSection?.groups && activeSection?.groups?.length > 0 && (
+              {editing && existingServerGroupsCount > 0 && (
                 <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
                   <Users className="w-5 h-5 text-blue-600" />
-                  {activeSection?.groups?.length - deletedGroups > 0 && (
-                    <span className="text-sm font-medium text-blue-700">
-                      Уже создано:{" "}
-                      {activeSection?.groups?.length - deletedGroups}
-                    </span>
-                  )}
+                  <span className="text-sm font-medium text-blue-700">
+                    Уже создано: {existingServerGroupsCount}
+                  </span>
                 </div>
               )}
             </div>
@@ -661,14 +654,22 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           state="section"
         />
       )}
-      {groupIdForDelete && (
+      {showGroupDeleteAlert && pendingDeleteGroupId != null && (
         <DeleteAlert
           show={showGroupDeleteAlert}
-          onClose={() => setShowGroupDeleteAlert(false)}
+          onClose={() => {
+            setShowGroupDeleteAlert(false);
+            setPendingDeleteIdx(null);
+            setPendingDeleteGroupId(undefined);
+          }}
           refresh={refresh}
-          id={groupIdForDelete}
+          id={pendingDeleteGroupId}
           state="group"
-          setDeletedCount={setDeletedGroups}
+          onConfirm={() => {
+            if (pendingDeleteIdx !== null) {
+              setGroups((g) => g.filter((_, i) => i !== pendingDeleteIdx));
+            }
+          }}
         />
       )}
     </div>
