@@ -69,8 +69,11 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const [sectionCreated, setSectionCreated] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showGroupDeleteAlert, setShowGroupDeleteAlert] = useState(false);
-  const [groupIdForDelete, setGroupIdForDelete] = useState<number | undefined>();
+  const [groupIdForDelete, setGroupIdForDelete] = useState<
+    number | undefined
+  >();
   const [groups, setGroups] = useState<GroupForm[]>([]);
+  const [deletedGroups, setDeletedGroups] = useState(0);
   const [createdSection, setCreatedSection] = useState<
     CreateSectionResponse | undefined
   >(undefined);
@@ -441,9 +444,12 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               {activeSection?.groups && activeSection?.groups?.length > 0 && (
                 <div className="inline-flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
                   <Users className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">
-                    Уже создано: {activeSection?.groups?.length}
-                  </span>
+                  {activeSection?.groups?.length - deletedGroups > 0 && (
+                    <span className="text-sm font-medium text-blue-700">
+                      Уже создано:{" "}
+                      {activeSection?.groups?.length - deletedGroups}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -654,6 +660,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           refresh={refresh}
           id={groupIdForDelete}
           state="group"
+          setDeletedCount={setDeletedGroups}
         />
       )}
     </div>

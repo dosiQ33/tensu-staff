@@ -1,4 +1,4 @@
-import { sectionsApi } from "@/functions/axios/axiosFunctions";
+import { groupsApi, sectionsApi } from "@/functions/axios/axiosFunctions";
 import React from "react";
 import { toast } from "react-toastify";
 
@@ -8,6 +8,7 @@ interface DeleteSectionAlertProps {
   refresh: () => void;
   id: number;
   state: string;
+  setDeletedCount?: (count: number) => void;
 }
 
 const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
@@ -16,13 +17,24 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
   refresh,
   id,
   state,
+  setDeletedCount
 }) => {
   const token = localStorage.getItem("telegramToken") || "";
-  const deleteSection = async (sectionId: number) => {
+  const deleteById = async (id: number) => {
     try {
-      const res = await sectionsApi.delete(sectionId, token);
+      const res =
+        state === "group"
+          ? await groupsApi.deleteById(id, token)
+          : await sectionsApi.delete(id, token);
       if (res.status === 200) {
-        toast.success("Секция удалена успешно");
+        toast.success(
+          state === "group"
+            ? "Группа удалена успешно"
+            : "Секция удалена успешно"
+        );
+        if (state === "group" && setDeletedCount) {
+          setDeletedCount(1);
+        }
       }
       onClose();
       refresh();
@@ -51,7 +63,7 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
             Отменить
           </button>
           <button
-            onClick={() => deleteSection(id)}
+            onClick={() => deleteById(id)}
             className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-700 focus:outline-none"
           >
             Удалить
