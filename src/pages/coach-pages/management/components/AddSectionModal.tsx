@@ -312,7 +312,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   Клуб {!editing && <span className="text-red-500">*</span>}
                 </label>
                 <div className="space-y-1">
-
                   {editing ? (
                     <div className="block w-full py-2.5 px-4 border border-gray-300 rounded-xl bg-gray-100 text-gray-900">
                       {allClubs.find(
@@ -351,7 +350,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               {/* Название секции */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Название секции {!editing && <span className="text-red-500">*</span>}
+                  Название секции{" "}
+                  {!editing && <span className="text-red-500">*</span>}
                 </label>
                 <input
                   type="text"
@@ -368,10 +368,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                   </label>
                   <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                     <select
-                      value={
-                        activeSection?.coach_id ?? newSection.coach_id ?? userId
+                      value={newSection.coach_id ?? userId}
+                      onChange={(e) =>
+                        onChange("coach_id", Number(e.target.value))
                       }
-                      onChange={(e) => onChange("coach_id", e.target.value)}
                       className="block w-full py-2.5 px-4 appearance-none"
                     >
                       <option value={userId}>
