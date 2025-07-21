@@ -309,7 +309,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               {/* Клуб */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Клуб <span className="text-red-500">*</span>
+                  Клуб {!editing && <span className="text-red-500">*</span>}
                 </label>
                 <div className="space-y-1">
 
@@ -351,7 +351,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
               {/* Название секции */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Название секции <span className="text-red-500">*</span>
+                  Название секции {!editing && <span className="text-red-500">*</span>}
                 </label>
                 <input
                   type="text"
@@ -364,7 +364,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                 {/* Тренер */}
                 <div className="sm:col-span-2 space-y-1">
                   <label className="block text-sm font-medium text-gray-800 mb-2">
-                    Тренер <span className="text-red-500">*</span>
+                    Тренер {!editing && <span className="text-red-500">*</span>}
                   </label>
                   <div className="relative flex items-center border border-gray-300 bg-white w-full rounded-xl shadow-sm">
                     <select
