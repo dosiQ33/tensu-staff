@@ -74,6 +74,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   >();
   const [groups, setGroups] = useState<GroupForm[]>([]);
   const [deletedGroups, setDeletedGroups] = useState(0);
+  const [deletedGroupIdx, setDeletedGroupIdx] = useState<number | null>(null);
   const [createdSection, setCreatedSection] = useState<
     CreateSectionResponse | undefined
   >(undefined);
@@ -82,7 +83,13 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     setShowDeleteAlert(true);
   };
 
-  // Load existing groups when modal opens or activeSection changes
+  useEffect(() => {
+    if (deletedGroupIdx !== null) {
+      setGroups((g) => g.filter((_, i) => i !== deletedGroupIdx));
+      setDeletedGroupIdx(null);
+    }
+  }, [deletedGroupIdx, deletedGroups]);
+
   useEffect(() => {
     if (!show) return;
     (async () => {
@@ -154,9 +161,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     if (editing && activeSection?.club_id) {
       setShowGroupDeleteAlert(true);
       setGroupIdForDelete(groupId);
-      // await groupsApi.deleteById(groupId, token);
+      setDeletedGroupIdx(idx);
+    } else {
+      setGroups((g) => g.filter((_, i) => i !== idx));
     }
-    setGroups((g) => g.filter((_, i) => i !== idx));
   };
 
   // Handlers for schedule rows

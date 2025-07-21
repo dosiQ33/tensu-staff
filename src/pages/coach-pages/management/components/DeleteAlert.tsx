@@ -17,7 +17,7 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
   refresh,
   id,
   state,
-  setDeletedCount
+  setDeletedCount,
 }) => {
   const token = localStorage.getItem("telegramToken") || "";
   const deleteById = async (id: number) => {
@@ -39,7 +39,11 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
       onClose();
       refresh();
     } catch {
-      toast.error("Не удалось удалить секцию");
+      toast.error(
+        state === "group"
+          ? "Не удалось удалить группу"
+          : "Не удалось удалить секцию"
+      );
     }
   };
 
