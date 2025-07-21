@@ -451,7 +451,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                     </div>
                     <div className="space-y-1">
                       <label className="block text-sm font-medium text-gray-800 mb-2">
-                        Вместимость
+                        Вместимость (макс. 100)
                       </label>
                       <input
                         type="text"
