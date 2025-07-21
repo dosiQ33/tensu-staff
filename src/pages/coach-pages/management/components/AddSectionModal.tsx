@@ -254,7 +254,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           }
         }
       }
-      refresh();
+      // refresh();
     } catch {
       toast.error("Невозможно создать секцию");
     }
