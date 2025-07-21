@@ -28,7 +28,7 @@ export const ENDPOINTS = {
 
   SECTIONS: {
     BASE: '/sections/',
-    CLUB: (clubId: string) => `/sections/club/${clubId}`,
+    CLUB: (clubId: number) => `/sections/club/${clubId}`,
     COACH: (coachId: string) => `/sections/coach/${coachId}`,
     MY: '/sections/my',
     BY_ID: (sId: number) => `/sections/${sId}`,

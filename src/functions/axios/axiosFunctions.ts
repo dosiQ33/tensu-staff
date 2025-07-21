@@ -46,6 +46,8 @@ export const clubsApi = {
 export const sectionsApi = {
     getMy: (token: string) =>
         axiosRequest<GetMySectionsResponse>(ENDPOINTS.SECTIONS.MY, 'GET', token),
+    getByClubId: (clubId: number, token: string) =>
+        axiosRequest<GetMySectionsResponse>(ENDPOINTS.SECTIONS.CLUB(clubId), 'GET', token),
     create: (data: CreateSectionRequest, token: string) =>
         axiosRequest<CreateSectionResponse>(ENDPOINTS.SECTIONS.BASE, 'POST', token, data),
     delete: (id: number, token: string) =>
