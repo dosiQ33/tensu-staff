@@ -239,13 +239,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     }
 
     try {
-      if (shouldUpdateSection) {
-        await sectionsApi.updateById(secPayload, sectionId, token);
-        toast.success("Секция успешно обновлена");
-      } else {
-        toast.info("Изменений в секции не обнаружено");
-      }
-
       for (const grp of groups) {
         const payload = {
           section_id: sectionId,
@@ -266,6 +259,13 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           await groupsApi.create(payload, token);
           toast.success("Группы успешно добавлены");
         }
+      }
+
+      if (shouldUpdateSection) {
+        await sectionsApi.updateById(secPayload, sectionId, token);
+        toast.success("Секция успешно обновлена");
+      } else {
+        toast.info("Изменений в секции не обнаружено");
       }
 
       refresh();
