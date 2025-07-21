@@ -217,19 +217,34 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   };
 
   const handleSave = async () => {
-    try {
-      const sectionId =
-        activeSection?.id ?? createdSection?.id ?? newSection.id!;
+    if (!activeSection && !createdSection) return;
 
-      const secPayload = {
-        club_id: newSection.club_id!,
-        name: newSection.name,
-        description: newSection.description || "",
-        coach_id: newSection.coach_id!,
-        active: newSection.active ?? true,
-      };
-      await sectionsApi.updateById(secPayload, sectionId, token);
-      toast.success("Секция успешно обновлена");
+    const sectionId = activeSection?.id ?? createdSection!.id!;
+
+    const secPayload = {
+      club_id: newSection.club_id!,
+      name: newSection.name.trim(),
+      description: newSection.description?.trim() || "",
+      coach_id: newSection.coach_id!,
+      active: newSection.active ?? true,
+    };
+
+    let shouldUpdateSection = false;
+    if (activeSection) {
+      shouldUpdateSection =
+        secPayload.name !== activeSection.name ||
+        secPayload.description !== (activeSection.description || "") ||
+        secPayload.coach_id !== activeSection.coach_id ||
+        secPayload.active !== activeSection.active;
+    }
+
+    try {
+      if (shouldUpdateSection) {
+        await sectionsApi.updateById(secPayload, sectionId, token);
+        toast.success("Секция успешно обновлена");
+      } else {
+        toast.info("Изменений в секции не обнаружено");
+      }
 
       for (const grp of groups) {
         const payload = {
@@ -247,16 +262,16 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         if (grp.id) {
           await groupsApi.updateById(payload, grp.id, token);
           toast.success("Группы успешно обновлены");
-        } else {
-          if (grp.name) {
-            await groupsApi.create(payload, token);
-            toast.success("Группы успешно добавлены");
-          }
+        } else if (grp.name) {
+          await groupsApi.create(payload, token);
+          toast.success("Группы успешно добавлены");
         }
       }
+
       refresh();
-    } catch {
-      toast.error("Невозможно создать секцию");
+    } catch (err) {
+      console.error(err);
+      toast.error("Невозможно сохранить изменения");
     }
   };
 
