@@ -104,9 +104,17 @@ const ManagementPage: React.FC = () => {
   };
 
   const editSection = (sectionId: number) => {
+    const sec = sections.find((s) => s.id === sectionId)!;
+    setActiveSection(sec);
+    setNewSection({
+      club_id: sec.club_id,
+      name: sec.name,
+      coach_id: sec.coach_id,
+      description: sec.description,
+      active: sec.active,
+    });
     setSectionEditing(true);
     setShowAddSection(true);
-    setActiveSection(sections.find((section) => section.id === sectionId));
   };
 
   const onAddSectionModalClose = () => {

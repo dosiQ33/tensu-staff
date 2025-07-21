@@ -77,16 +77,6 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     setShowDeleteAlert(true);
   };
 
-  useEffect(() => {
-    if (editing && activeSection) {
-      onChange("club_id", activeSection.club_id);
-      onChange("name", activeSection.name);
-      onChange("coach_id", activeSection.coach_id);
-      onChange("description", activeSection.description);
-      onChange("active", activeSection.active);
-    }
-  }, [editing, activeSection, onChange]);
-
   // Load existing groups when modal opens or activeSection changes
   useEffect(() => {
     if (!show) return;
