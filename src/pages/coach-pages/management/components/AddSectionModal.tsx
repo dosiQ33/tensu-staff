@@ -252,6 +252,17 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           tags: grp.tags,
           active: grp.active,
         };
+
+        if (!grp.name.trim()) {
+          toast.error("Имя группы не может быть пустым");
+          return;
+        }
+
+        if (grp.capacity < 1 || grp.capacity > 100) {
+          toast.error("Вместимость группы должна быть от 1 до 100");
+          return;
+        }
+
         if (grp.id) {
           await groupsApi.updateById(payload, grp.id, token);
           toast.success("Группы успешно обновлены");
@@ -264,11 +275,11 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
       if (shouldUpdateSection) {
         await sectionsApi.updateById(secPayload, sectionId, token);
         toast.success("Секция успешно обновлена");
+        refresh();
       } else {
         toast.info("Изменений в секции не обнаружено");
+        refresh();
       }
-
-      refresh();
     } catch (err) {
       console.error(err);
       toast.error("Невозможно сохранить изменения");
