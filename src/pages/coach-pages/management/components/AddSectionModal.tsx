@@ -479,9 +479,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         Вместимость (макс. 100)
                       </label>
                       <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="\d*"
+                        type="number"
                         value={group.capacity}
                         onChange={(e) =>
                           /^\d*$/.test(e.target.value) &&
@@ -495,9 +493,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         Цена (₸)
                       </label>
                       <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="\d*"
+                        type="number"
                         value={group.price}
                         onChange={(e) =>
                           /^\d*$/.test(e.target.value) &&
