@@ -49,7 +49,9 @@ export const sectionsApi = {
     create: (data: CreateSectionRequest, token: string) =>
         axiosRequest<CreateSectionResponse>(ENDPOINTS.SECTIONS.BASE, 'POST', token, data),
     delete: (id: number, token: string) =>
-        axiosRequest(ENDPOINTS.SECTIONS.BY_ID(id), 'DELETE', token)
+        axiosRequest(ENDPOINTS.SECTIONS.BY_ID(id), 'DELETE', token),
+    updateById: (data: CreateSectionRequest, id: number, token: string) =>
+        axiosRequest<CreateSectionResponse>(ENDPOINTS.SECTIONS.BY_ID(id), 'PUT', token, data)
 };
 
 export const groupsApi = {

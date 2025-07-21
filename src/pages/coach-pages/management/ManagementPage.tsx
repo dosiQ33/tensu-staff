@@ -22,21 +22,6 @@ import type {
 import { SectionsPanel } from "./components/SectionPanel";
 import { StaffPanel } from "./components/StaffPanel";
 
-// type SectionForm = NewSection & {
-//   groups: Array<{
-//     id?: number;
-//     name?: string;
-//     level?: string;
-//     capacity?: number;
-//     price?: number;
-//     active?: boolean;
-//     description?: string;
-//     coach_id?: number;
-//     tags?: string[];
-//     schedule?: ScheduleEntry[];
-//   }>;
-// };
-
 const ManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
   const userFullName = localStorage.getItem("telegramFullName") || "";

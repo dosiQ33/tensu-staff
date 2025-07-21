@@ -216,11 +216,21 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
     };
   };
 
-  // Save (create or update)
   const handleSave = async () => {
     try {
       const sectionId =
         activeSection?.id ?? createdSection?.id ?? newSection.id!;
+
+      const secPayload = {
+        club_id: newSection.club_id!,
+        name: newSection.name,
+        description: newSection.description || "",
+        coach_id: newSection.coach_id!,
+        active: newSection.active ?? true,
+      };
+      await sectionsApi.updateById(secPayload, sectionId, token);
+      toast.success("Секция успешно обновлена");
+
       for (const grp of groups) {
         const payload = {
           section_id: sectionId,
