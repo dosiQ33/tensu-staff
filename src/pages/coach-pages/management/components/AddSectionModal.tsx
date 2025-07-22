@@ -268,7 +268,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           return;
         }
 
-        if (grp.capacity && (grp.capacity < 1 || grp.capacity > 100)) {
+        if (Number(grp.capacity) < 1 || Number(grp.capacity) > 100) {
           toast.error("Вместимость группы должна быть от 1 до 100");
           return;
         }
