@@ -153,7 +153,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   };
 
   const removeGroup = (idx: number, groupId?: number) => {
-    if (editing && activeSection?.club_id) {
+    if (editing && activeSection?.club_id && groupId) {
       setPendingDeleteIdx(idx);
       setPendingDeleteGroupId(groupId);
       setShowGroupDeleteAlert(true);
