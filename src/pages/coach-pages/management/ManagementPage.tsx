@@ -23,7 +23,9 @@ import { SectionsPanel } from "./components/SectionPanel";
 import { StaffPanel } from "./components/StaffPanel";
 
 const ManagementPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"staff" | "sections">("staff");
+  const [activeTab, setActiveTab] = useState(
+    localStorage.getItem("activeManagementTab") || "staff"
+  );
   const userFullName = localStorage.getItem("telegramFullName") || "";
   const userId = Number(localStorage.getItem("userId"));
   const [filters, setFilters] = useState<Filters>({
@@ -55,7 +57,7 @@ const ManagementPage: React.FC = () => {
     (field: keyof NewSection, value: unknown) => {
       setNewSection((prev) => ({ ...prev, [field]: value }));
     },
-    [] // no dependencies → stable
+    []
   );
 
   const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);

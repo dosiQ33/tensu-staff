@@ -39,6 +39,7 @@ const DeleteAlert: React.FC<DeleteSectionAlertProps> = ({
       onClose();
 
       if (state === "section") {
+        localStorage.setItem("activeManagementTab", "sections");
         refresh();
       }
     } catch {

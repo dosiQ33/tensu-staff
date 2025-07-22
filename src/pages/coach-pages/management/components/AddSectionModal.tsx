@@ -285,8 +285,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
       if (shouldUpdateSection) {
         await sectionsApi.updateById(secPayload, sectionId, token);
         toast.success("Секция успешно обновлена");
+        localStorage.setItem("activeManagementTab", "sections");
         refresh();
       } else {
+        localStorage.setItem("activeManagementTab", "sections");
         refresh();
       }
     } catch (err) {
@@ -298,6 +300,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   // Create section + groups
   const handleCreate = async () => {
     if (createdSection?.id) {
+      localStorage.setItem("activeManagementTab", "sections");
       refresh();
       return;
     }

@@ -1,11 +1,10 @@
 import React from 'react';
 import { Users, Settings } from 'lucide-react';
 
-type Tab = 'staff' | 'sections';
 
 interface TabNavigationProps {
-  activeTab: Tab;
-  onChange: (tab: Tab) => void;
+  activeTab: string;
+  onChange: (tab: string) => void;
 }
 
 const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onChange }) => (
