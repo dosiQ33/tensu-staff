@@ -112,17 +112,22 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
             active: g.active,
             coach_id: g.coach_id,
             tags: g.tags || [],
+
             schedule: Object.entries(g.schedule.weekly_pattern).flatMap(
               ([day, slots]) =>
-                (slots as any[]).map((s) => ({
-                  day,
-                  start: s.time,
-                  end: new Date(
-                    Date.parse(`1970-01-01T${s.time}`) + s.duration * 60000
-                  )
-                    .toISOString()
-                    .substr(11, 5),
-                }))
+                (slots as any[]).map((s) => {
+                  const [h, m] = (s.time as string).split(":").map(Number);
+                  const totalMin = h * 60 + m + s.duration;
+                  const endH = Math.floor(totalMin / 60) % 24;
+                  const endM = totalMin % 60;
+                  return {
+                    day,
+                    start: s.time,
+                    end: `${String(endH).padStart(2, "0")}:${String(
+                      endM
+                    ).padStart(2, "0")}`,
+                  };
+                })
             ),
           }));
           setGroups(forms);
