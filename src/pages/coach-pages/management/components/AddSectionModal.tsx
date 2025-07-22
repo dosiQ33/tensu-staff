@@ -27,6 +27,16 @@ interface AddSectionModalProps {
 
 type ScheduleRow = { day: string; start: string; end: string };
 
+const dayMap: Record<string, string> = {
+  Понедельник: "monday",
+  Вторник: "tuesday",
+  Среда: "wednesday",
+  Четверг: "thursday",
+  Пятница: "friday",
+  Суббота: "saturday",
+  Воскресенье: "sunday",
+};
+
 interface GroupForm {
   id?: number;
   section_id: number;
@@ -213,11 +223,12 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const buildScheduleEntry = (rows: ScheduleRow[]) => {
     const pattern: Record<string, { time: string; duration: number }[]> = {};
     rows.forEach(({ day, start, end }) => {
+      const engDay = dayMap[day] || day.toLowerCase();
       const duration =
         (Date.parse(`1970-01-01T${end}`) - Date.parse(`1970-01-01T${start}`)) /
         60000;
-      if (!pattern[day]) pattern[day] = [];
-      pattern[day].push({ time: start, duration });
+      if (!pattern[engDay]) pattern[engDay] = [];
+      pattern[engDay].push({ time: start, duration });
     });
     return {
       weekly_pattern: pattern,
@@ -494,11 +505,15 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       <input
                         type="number"
                         value={group.capacity}
-                        onChange={e => {
+                        onChange={(e) => {
                           const v = e.target.value;
                           // only digits or empty:
                           if (/^\d*$/.test(v)) {
-                            updateGroup(gIdx, "capacity", v === "" ? "" : Number(v));
+                            updateGroup(
+                              gIdx,
+                              "capacity",
+                              v === "" ? "" : Number(v)
+                            );
                           }
                         }}
                         className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
@@ -511,10 +526,14 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       <input
                         type="number"
                         value={group.price}
-                        onChange={e => {
+                        onChange={(e) => {
                           const v = e.target.value;
                           if (/^\d*$/.test(v)) {
-                            updateGroup(gIdx, "price", v === "" ? "" : Number(v));
+                            updateGroup(
+                              gIdx,
+                              "price",
+                              v === "" ? "" : Number(v)
+                            );
                           }
                         }}
                         className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
@@ -557,7 +576,11 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                             className="p-2 border rounded-md border-gray-200 text-gray-800"
                           >
                             {weekdays.map((d) => (
-                              <option key={d} value={d} className="border rounded-md border-gray-200 text-gray-800">
+                              <option
+                                key={d}
+                                value={d}
+                                className="border rounded-md border-gray-200 text-gray-800"
+                              >
                                 {d}
                               </option>
                             ))}

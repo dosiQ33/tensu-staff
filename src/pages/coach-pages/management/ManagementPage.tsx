@@ -45,12 +45,17 @@ const ManagementPage: React.FC = () => {
     phone: "",
     clubId: "",
   });
-  const [newSection, setNewSection] = useState<NewSection>({
+  
+  const [newSection, setNewSection] = useState<
+    NewSection & { valid_from?: string; valid_until?: string }
+  >({
     club_id: undefined,
     name: "",
     coach_id: undefined,
     description: "",
     active: true,
+    valid_from: "",
+    valid_until: "",
   });
 
   const handleSectionChange = useCallback(
