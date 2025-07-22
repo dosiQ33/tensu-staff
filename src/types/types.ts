@@ -89,8 +89,8 @@ export interface NewSection {
     id: number;
     name: string;
     level: string;
-    capacity: number;
-    price: number;
+    capacity: number | "";
+    price: number | "";
     active: boolean;
     enrolled_students: number;
   }[];
@@ -115,8 +115,8 @@ export interface NewGroup {
   name: string;
   description?: string;
   schedule?: Record<string, unknown>;
-  price: number;
-  capacity: number;
+  price: number | "";
+  capacity: number | "";
   level: string;
   coach_id?: number | null;
   tags?: string[];

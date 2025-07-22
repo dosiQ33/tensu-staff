@@ -36,3 +36,15 @@ body {
   background-color: none;
   box-shadow: none;
 }
+
+/* Hide number-input spinners in Chrome, Safari, Edge, Opera */
+input[type="number"].no-spinner::-webkit-outer-spin-button,
+input[type="number"].no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide number-input spinner in Firefox */
+input[type="number"].no-spinner {
+  -moz-appearance: textfield;
+}

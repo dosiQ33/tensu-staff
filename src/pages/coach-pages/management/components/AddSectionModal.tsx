@@ -32,8 +32,8 @@ interface GroupForm {
   section_id: number;
   name: string;
   level: string;
-  capacity: number;
-  price: number;
+  capacity: number | "";
+  price: number | "";
   description: string;
   active: boolean;
   coach_id: number;
@@ -135,8 +135,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         section_id: activeSection?.id ?? newSection.club_id!,
         name: "",
         level: "",
-        capacity: 0,
-        price: 0,
+        capacity: "",
+        price: "",
         description: "",
         active: true,
         coach_id: newSection.coach_id!,
@@ -268,10 +268,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           return;
         }
 
-        if (grp.capacity < 1 || grp.capacity > 100) {
-          toast.error("Вместимость группы должна быть от 1 до 100");
-          return;
-        }
+        // if (grp.capacity < 1 || grp.capacity > 100) {
+        //   toast.error("Вместимость группы должна быть от 1 до 100");
+        //   return;
+        // }
 
         if (grp.id) {
           await groupsApi.updateById(payload, grp.id, token);
@@ -491,11 +491,14 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       <input
                         type="number"
                         value={group.capacity}
-                        onChange={(e) =>
-                          /^\d*$/.test(e.target.value) &&
-                          updateGroup(gIdx, "capacity", Number(e.target.value))
-                        }
-                        className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4"
+                        onChange={e => {
+                          const v = e.target.value;
+                          // only digits or empty:
+                          if (/^\d*$/.test(v)) {
+                            updateGroup(gIdx, "capacity", v === "" ? "" : Number(v));
+                          }
+                        }}
+                        className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
                       />
                     </div>
                     <div className="space-y-1">
@@ -505,11 +508,13 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       <input
                         type="number"
                         value={group.price}
-                        onChange={(e) =>
-                          /^\d*$/.test(e.target.value) &&
-                          updateGroup(gIdx, "price", Number(e.target.value))
-                        }
-                        className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4"
+                        onChange={e => {
+                          const v = e.target.value;
+                          if (/^\d*$/.test(v)) {
+                            updateGroup(gIdx, "price", v === "" ? "" : Number(v));
+                          }
+                        }}
+                        className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
                       />
                     </div>
                   </div>

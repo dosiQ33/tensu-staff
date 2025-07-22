@@ -43,8 +43,8 @@ export interface CreateGroupRequest {
   name: string;
   description: string;
   schedule: Record<string, unknown>;
-  price: number;
-  capacity: number | null;
+  price: number | "";
+  capacity: number | "";
   level: string;
   coach_id: number;
   tags: string[];
