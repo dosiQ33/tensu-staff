@@ -44,13 +44,13 @@ interface GroupForm {
 const token = localStorage.getItem("telegramToken") || "";
 
 const weekdays = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
+  "Понедельник",
+  "Вторник",
+  "Среда",
+  "Четверг",
+  "Пятница",
+  "Суббота",
+  "Воскресенье",
 ];
 
 export const AddSectionModal: React.FC<AddSectionModalProps> = ({
@@ -546,10 +546,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                                 e.target.value
                               )
                             }
-                            className="p-2 border rounded-md border-gray-400"
+                            className="p-2 border rounded-md border-gray-200 text-gray-800"
                           >
                             {weekdays.map((d) => (
-                              <option key={d} value={d}>
+                              <option key={d} value={d} className="border rounded-md border-gray-200 text-gray-800">
                                 {d}
                               </option>
                             ))}
@@ -568,9 +568,9 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                                   e.target.value
                                 )
                               }
-                              className="p-2 border rounded-md border-gray-400"
+                              className="p-2 border rounded-md border-gray-200 text-gray-800"
                             />
-                            <span className="text-gray-400">—</span>
+                            <span className="text-gray-800">—</span>
                             <input
                               type="time"
                               value={row.end}
@@ -582,7 +582,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                                   e.target.value
                                 )
                               }
-                              className="p-2 border rounded-md border-gray-400"
+                              className="p-2 border rounded-md border-gray-200 text-gray-800"
                             />
                           </div>
 

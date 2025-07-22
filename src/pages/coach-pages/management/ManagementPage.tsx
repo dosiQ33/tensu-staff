@@ -36,7 +36,7 @@ const ManagementPage: React.FC = () => {
   const [sectionEditing, setSectionEditing] = useState(false);
 
   const [showAddStaff, setShowAddStaff] = useState(false);
-  const [showAddSection, setShowAddSection] = useState(false);
+  const [showAddSection, setShowAddSection] = useState(true);
 
   const [newStaff, setNewStaff] = useState<NewStaff>({
     role: "",
