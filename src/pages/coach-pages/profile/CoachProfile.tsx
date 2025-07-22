@@ -193,7 +193,7 @@ const CoachProfile: React.FC = () => {
 
   return (
     <>
-      <div className="bg-gray-50 pb-30">
+      <div className="bg-gray-50 pb-30 min-h-screen">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-4 py-4">

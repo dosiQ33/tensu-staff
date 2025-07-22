@@ -247,8 +247,8 @@ const ManagementPage: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-max bg-gray-50 pb-50">
-        <div className="bg-white border-b sticky top-0 z-10">
+      <div className="min-h-screen bg-gray-50 pb-50">
+        <div className="bg-white  sticky top-0 z-10 shadow-[0_-2px_8px_rgba(0,0,0,0.1)]">
           <div className="px-4 py-3">
             <h1 className="text-xl font-semibold text-gray-900 mb-4">
               Панель Управления

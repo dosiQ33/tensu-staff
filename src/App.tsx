@@ -50,7 +50,6 @@ export default function App() {
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />
-
     </Router>
   );
 }
