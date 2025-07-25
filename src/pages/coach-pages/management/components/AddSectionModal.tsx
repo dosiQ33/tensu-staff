@@ -511,19 +511,12 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         Вместимость (макс. 100)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="\d*"
                         value={group.capacity}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          // only digits or empty:
-                          if (/^\d*$/.test(v)) {
-                            updateGroup(
-                              gIdx,
-                              "capacity",
-                              v === "" ? "" : Number(v)
-                            );
-                          }
-                        }}
+                        onChange={(e) =>
+                          updateGroup(gIdx, "capacity", e.target.value)}
                         className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
                       />
                     </div>
