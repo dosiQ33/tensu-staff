@@ -272,7 +272,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           description: grp.description,
           schedule: buildScheduleEntry(grp.schedule),
           price: Number(grp.price) || 0,
-          capacity: grp.capacity,
+          capacity: Number(grp.capacity) || 0,
           level: grp.level,
           coach_id: grp.coach_id,
           tags: grp.tags,
