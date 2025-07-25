@@ -61,9 +61,9 @@ export const groupsApi = {
         axiosRequest(ENDPOINTS.GROUPS.BASE, 'POST', token, data),
     getBySectionId: (id: number | undefined, token: string) =>
         axiosRequest<GetSectionGroupsResponse>(ENDPOINTS.GROUPS.BY_SECTION_ID(id), 'GET', token),
-    updateById: (data: CreateGroupRequest, id: number, token: string) => 
+    updateById: (data: CreateGroupRequest, id: number, token: string) =>
         axiosRequest<CreateGroupResponse>(ENDPOINTS.GROUPS.BY_ID(id), 'PUT', token, data),
-    deleteById: (id: number | undefined, token: string) => 
+    deleteById: (id: number | undefined, token: string) =>
         axiosRequest<CreateGroupResponse>(ENDPOINTS.GROUPS.BY_ID(id), 'DELETE', token)
 }
 
@@ -77,7 +77,12 @@ export const invitationsApi = {
             'GET',
             token
         ),
-
+    getMyPending: (token: string) =>
+        axiosRequest<GetMyInvitationsResponse>(
+            ENDPOINTS.INVITATIONS.MY_PENDING,
+            'GET',
+            token
+        ),
     getById: (id: string, token: string) =>
         axiosRequest(ENDPOINTS.INVITATIONS.BY_ID(id), 'GET', token),
     delete: (id: string, token: string) =>

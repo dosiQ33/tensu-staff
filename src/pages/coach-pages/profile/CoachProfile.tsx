@@ -21,11 +21,16 @@ import {
   Globe,
   Mail,
 } from "lucide-react";
-import { clubsApi, staffApi } from "@/functions/axios/axiosFunctions";
+import {
+  clubsApi,
+  invitationsApi,
+  staffApi,
+} from "@/functions/axios/axiosFunctions";
 import { CreateClubModal } from "./components/CreateClubModal";
 import type {
   ClubWithRole,
   GetClubsLimitCheckResponse,
+  Invitation,
 } from "@/functions/axios/responses";
 import { BottomNav } from "@/components/Layout";
 import type { Club } from "@/types/types";
@@ -58,6 +63,7 @@ const CoachProfile: React.FC = () => {
     paymentHistory: [],
   });
   const [clubs, setClubs] = useState<Club[]>([]);
+  const [myInvitations, setMyInvitations] = useState<Invitation[]>([]);
 
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
@@ -88,12 +94,15 @@ const CoachProfile: React.FC = () => {
         return <Shield className="text-purple-600" size={16} />;
       case "coach":
         return <User className="text-blue-600" size={16} />;
+      case "pending":
+        return <Clock className="text-orange-600" size={16} />;
       default:
         return <User className="text-gray-600" size={16} />;
     }
   };
 
   const getRoleLabel = (role: string) => {
+    if (role === "pending") return "Pending";
     return role.charAt(0).toUpperCase() + role.slice(1);
   };
 
@@ -187,6 +196,14 @@ const CoachProfile: React.FC = () => {
       .getMy(token)
       .then((res) => {
         setClubs(res.data.clubs.map(mapClub));
+      })
+      .catch(console.error);
+    invitationsApi
+      .getMyPending(token)
+      .then((res) => {
+        if (res.data.invitations.length > 0) {
+          setMyInvitations(res.data.invitations);
+        }
       })
       .catch(console.error);
   }, []);
@@ -341,7 +358,7 @@ const CoachProfile: React.FC = () => {
           {/* Clubs Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">
-              Мои Клубы ({clubs.length})
+              Мои Клубы ({clubs.length + myInvitations.length})
             </h3>
 
             {clubs.map((club) => (
@@ -476,6 +493,38 @@ const CoachProfile: React.FC = () => {
                 </div>
               </div>
             ))}
+            {myInvitations.length > 0 && (
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Приглашения ({myInvitations.length})
+                </h4>
+                <ul className="space-y-3">
+                  {myInvitations.map((invitation) => (
+                    <li
+                      key={invitation.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {invitation.phone_number}
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Роль: {invitation.role} в клубе {invitation.club_id}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          // Handle invitation action (e.g., accept, decline)
+                        }}
+                        className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                      >
+                        Принять
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 

@@ -46,6 +46,7 @@ export const ENDPOINTS = {
     CREATE: (clubId: string) => `/invitations/club/${clubId}`,
     CLUB: (clubId: string) => `/invitations/club/${clubId}`,
     MY: '/invitations/my',
+    MY_PENDING: '/invitations/my-pending',
     BY_ID: (invitationId: string) => `/invitations/${invitationId}`,
     DELETE: (invitationId: string) => `/invitations/${invitationId}`,
     STATS_MY: '/invitations/stats/my',
