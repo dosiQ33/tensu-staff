@@ -271,7 +271,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           name: grp.name,
           description: grp.description,
           schedule: buildScheduleEntry(grp.schedule),
-          price: grp.price,
+          price: Number(grp.price) || 0,
           capacity: grp.capacity,
           level: grp.level,
           coach_id: grp.coach_id,
@@ -474,7 +474,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
             </div>
             <div className="mt-3 space-y-6">
               {groups.map((group, gIdx) => (
-                <div key={gIdx} className="bg-gray-50 p-4 rounded-md space-y-4">
+                <div
+                  key={group.id ?? `new-${gIdx}`}
+                  className="bg-gray-50 p-4 rounded-md space-y-4"
+                >
                   {/* Поля группы */}
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-1">
@@ -529,18 +532,13 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         Цена (₸)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="\d*"
                         value={group.price}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          if (/^\d*$/.test(v)) {
-                            updateGroup(
-                              gIdx,
-                              "price",
-                              v === "" ? "" : Number(v)
-                            );
-                          }
-                        }}
+                        onChange={(e) =>
+                          updateGroup(gIdx, "price", e.target.value)
+                        }
                         className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
                       />
                     </div>
