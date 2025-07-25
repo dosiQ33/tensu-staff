@@ -515,8 +515,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         inputMode="numeric"
                         pattern="\d*"
                         value={group.capacity}
-                        onChange={(e) =>
-                          updateGroup(gIdx, "capacity", e.target.value)}
+                        onChange={(e) => {
+                          const onlyDigits = e.target.value.replace(/\D/g, '');
+                          updateGroup(gIdx, 'capacity', onlyDigits);
+                        }}
                         className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
                       />
                     </div>
@@ -529,9 +531,10 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         inputMode="numeric"
                         pattern="\d*"
                         value={group.price}
-                        onChange={(e) =>
-                          updateGroup(gIdx, "price", e.target.value)
-                        }
+                        onChange={(e) => {
+                          const onlyDigits = e.target.value.replace(/\D/g, '');
+                          updateGroup(gIdx, 'price', onlyDigits);
+                        }}
                         className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
                       />
                     </div>
