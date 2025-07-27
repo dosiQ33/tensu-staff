@@ -10,7 +10,7 @@ export const StaffPanel: React.FC<{
   return (
     <>
       <div className="mb-3 text-sm text-gray-600">
-        {staff.length} сотрудников
+        {staff.length - 1 } сотрудников
       </div>
       <div className="space-y-2">
         {staff.map(
