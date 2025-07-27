@@ -70,7 +70,10 @@ export const groupsApi = {
 export const invitationsApi = {
     create: (clubId: string, data: CreateStuffInvitationRequest, token: string) =>
         axiosRequest(ENDPOINTS.INVITATIONS.CREATE(clubId), 'POST', token, data),
-
+    accept: (id: number, token: string) =>
+        axiosRequest(ENDPOINTS.INVITATIONS.ACCEPT(id), 'POST', token),
+    decline: (id: number, token: string) =>
+        axiosRequest(ENDPOINTS.INVITATIONS.DECLINE(id), 'POST', token),
     getMy: (token: string) =>
         axiosRequest<GetMyInvitationsResponse>(
             ENDPOINTS.INVITATIONS.MY,
