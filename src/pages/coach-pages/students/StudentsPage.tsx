@@ -248,7 +248,7 @@ const StudentsPage: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Search students..."
+                placeholder="Найти студентов..."
                 value={filters.search}
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, search: e.target.value }))
