@@ -488,7 +488,7 @@ const CoachProfile: React.FC = () => {
                   </div>
 
                   {/* Payment Info */}
-                  {club.userRole !== "owner" && (
+                  {club.userRole === "owner" && (
                     <div className="bg-gray-50 rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
