@@ -549,7 +549,7 @@ const CoachProfile: React.FC = () => {
                           onClick={() => {
                             acceptInvitation(invitation.id);
                           }}
-                          className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                          className="px-3 ml-2 mr-2 py-1 text-xs font-bold pt-2 pb-2 pl-4 pr-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                         >
                           Принять
                         </button>
@@ -561,7 +561,7 @@ const CoachProfile: React.FC = () => {
                           onClick={() => {
                             declineInvitation(invitation.id);
                           }}
-                          className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-blue-600 transition-colors"
+                          className="px-3 py-1 text-xs bg-transparent-500 font-bold pt-2 pb-2 pl-4 pr-4 text-red-700 rounded hover:bg-blue-600 transition-colors "
                         >
                           Отклонить
                         </button>
