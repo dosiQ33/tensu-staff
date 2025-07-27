@@ -486,50 +486,52 @@ const CoachProfile: React.FC = () => {
                   </div>
 
                   {/* Payment Info */}
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="text-gray-600" size={16} />
-                        <span className="text-sm font-medium text-gray-700">
-                          {club.plan} План
+                  {selectedClub?.userRole !== "owner" && (
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="text-gray-600" size={16} />
+                          <span className="text-sm font-medium text-gray-700">
+                            {club.plan} План
+                          </span>
+                        </div>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(
+                            club.paymentStatus
+                          )}`}
+                        >
+                          {club.paymentStatus.charAt(0).toUpperCase() +
+                            club.paymentStatus.slice(1)}
                         </span>
                       </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(
-                          club.paymentStatus
-                        )}`}
-                      >
-                        {club.paymentStatus.charAt(0).toUpperCase() +
-                          club.paymentStatus.slice(1)}
-                      </span>
-                    </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600">
-                        Следующая оплата: {formatDate(club.nextPayment)}
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setShowPaymentHistory(club.id)}
-                          className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors"
-                        >
-                          История
-                        </button>
-                        <button
-                          onClick={() => handlePayment(club.id)}
-                          className={`px-3 py-1 text-xs rounded font-medium transition-colors ${
-                            club.paymentStatus === "paid"
-                              ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                              : club.paymentStatus === "pending"
-                              ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                              : "bg-red-500 text-white hover:bg-red-600"
-                          }`}
-                        >
-                          {getPaymentAction(club.paymentStatus)}
-                        </button>
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-600">
+                          Следующая оплата: {formatDate(club.nextPayment)}
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setShowPaymentHistory(club.id)}
+                            className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors"
+                          >
+                            История
+                          </button>
+                          <button
+                            onClick={() => handlePayment(club.id)}
+                            className={`px-3 py-1 text-xs rounded font-medium transition-colors ${
+                              club.paymentStatus === "paid"
+                                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                : club.paymentStatus === "pending"
+                                ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                                : "bg-red-500 text-white hover:bg-red-600"
+                            }`}
+                          >
+                            {getPaymentAction(club.paymentStatus)}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             ))}
