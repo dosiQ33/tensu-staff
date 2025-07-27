@@ -34,9 +34,10 @@ import type {
 } from "@/functions/axios/responses";
 import { BottomNav } from "@/components/Layout";
 import type { Club } from "@/types/types";
+import { Spinner } from "@/components/ui";
 
 const CoachProfile: React.FC = () => {
-  const refresh = () => window.location.reload()
+  const refresh = () => window.location.reload();
   const mapClub = ({ club: c, role }: ClubWithRole): Club => ({
     id: c.id.toString(),
     name: c.name,
@@ -65,6 +66,7 @@ const CoachProfile: React.FC = () => {
   });
   const [clubs, setClubs] = useState<Club[]>([]);
   const [myInvitations, setMyInvitations] = useState<Invitation[]>([]);
+  const [acceptDeclineLoading, setAcceptDeclineLoading] = useState(false);
 
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
@@ -193,23 +195,30 @@ const CoachProfile: React.FC = () => {
 
   const acceptInvitation = async (invitationId: number) => {
     try {
+      setAcceptDeclineLoading(true);
       const token = localStorage.getItem("telegramToken")!;
       await invitationsApi.accept(invitationId, token);
+      setAcceptDeclineLoading(false);
+
       refresh();
     } catch (e) {
+      setAcceptDeclineLoading(false);
       console.error("Ошибка принятия приглашения", e);
     }
-  }
+  };
 
   const declineInvitation = async (invitationId: number) => {
     try {
+      setAcceptDeclineLoading(true);
       const token = localStorage.getItem("telegramToken")!;
       await invitationsApi.decline(invitationId, token);
+      setAcceptDeclineLoading(false);
       refresh();
     } catch (e) {
+      setAcceptDeclineLoading(false);
       console.error("Ошибка отклонения приглашения", e);
     }
-  }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("telegramToken")!;
@@ -533,22 +542,30 @@ const CoachProfile: React.FC = () => {
                           Роль: {invitation.role} в клубе {invitation.club.name}
                         </div>
                       </div>
-                      <button
-                        onClick={() => {
-                          acceptInvitation(invitation.id);
-                        }}
-                        className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                      >
-                        Принять
-                      </button>
-                      <button
-                        onClick={() => {
-                          declineInvitation(invitation.id);
-                        }}
-                        className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-blue-600 transition-colors"
-                      >
-                        Отклонить
-                      </button>
+                      {acceptDeclineLoading ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <button
+                          onClick={() => {
+                            acceptInvitation(invitation.id);
+                          }}
+                          className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        >
+                          Принять
+                        </button>
+                      )}
+                      {acceptDeclineLoading ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <button
+                          onClick={() => {
+                            declineInvitation(invitation.id);
+                          }}
+                          className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        >
+                          Отклонить
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ul>
