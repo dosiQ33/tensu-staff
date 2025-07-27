@@ -562,26 +562,24 @@ const CoachProfile: React.FC = () => {
                       {acceptDeclineLoading ? (
                         <Spinner size="sm" />
                       ) : (
-                        <button
-                          onClick={() => {
-                            acceptInvitation(invitation.id);
-                          }}
-                          className="px-3 ml-2 mr-2 py-1 text-xs font-bold pt-2 pb-2 pl-4 pr-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                        >
-                          Принять
-                        </button>
-                      )}
-                      {acceptDeclineLoading ? (
-                        <Spinner size="sm" />
-                      ) : (
-                        <button
-                          onClick={() => {
-                            declineInvitation(invitation.id);
-                          }}
-                          className="px-3 py-1 text-xs bg-transparent-500 font-bold pt-2 pb-2 pl-4 pr-4 text-red-700 rounded hover:bg-blue-600 transition-colors "
-                        >
-                          Отклонить
-                        </button>
+                        <>
+                          <button
+                            onClick={() => {
+                              acceptInvitation(invitation.id);
+                            }}
+                            className="px-3 ml-2 mr-2 py-1 text-xs font-bold pt-2 pb-2 pl-4 pr-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                          >
+                            Принять
+                          </button>
+                          <button
+                            onClick={() => {
+                              declineInvitation(invitation.id);
+                            }}
+                            className="px-3 py-1 text-xs bg-transparent-500 font-bold pt-2 pb-2 pl-4 pr-4 text-red-700 rounded hover:bg-blue-600 transition-colors "
+                          >
+                            Отклонить
+                          </button>
+                        </>
                       )}
                     </li>
                   ))}
