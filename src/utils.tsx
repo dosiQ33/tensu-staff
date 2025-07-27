@@ -23,9 +23,9 @@ export const getRoleIcon = (role: Staff['role']) => {
 
 export const getRoleLabel = (role: Staff['role']) => {
   switch (role) {
-    case 'admin': return 'Administrator';
-    case 'coach': return 'Coach';
-    case 'owner': return 'Owner';
+    case 'admin': return 'Администратор';
+    case 'coach': return 'Тренер';
+    case 'owner': return 'Владелец';
     default: return role;
   }
 };

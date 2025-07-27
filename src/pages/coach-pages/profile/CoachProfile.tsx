@@ -539,7 +539,8 @@ const CoachProfile: React.FC = () => {
                           {invitation.phone_number}
                         </div>
                         <div className="text-xs text-gray-600">
-                          Роль: {invitation.role} в клубе {invitation.club.name}
+                          Роль: <span className="font-bold text-blue-500">{getRoleLabel(invitation.role)}
+                          </span> в клубе <span className="font-bold text-blue-500">{getRoleLabel(invitation.club.name)}</span>
                         </div>
                       </div>
                       {acceptDeclineLoading ? (
