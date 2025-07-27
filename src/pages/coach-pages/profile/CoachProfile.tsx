@@ -509,7 +509,7 @@ const CoachProfile: React.FC = () => {
                           {invitation.phone_number}
                         </div>
                         <div className="text-xs text-gray-600">
-                          Роль: {invitation.role} в клубе {invitation.club_id}
+                          Роль: {invitation.role} в клубе {invitation.club.name}
                         </div>
                       </div>
                       <button

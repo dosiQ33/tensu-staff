@@ -165,6 +165,7 @@ export interface Invitation {
   phone_number: string;
   role: string;
   club_id: number;
+  club: SectionClub
   id: number;
   created_by_id: number;
   is_used: boolean;
