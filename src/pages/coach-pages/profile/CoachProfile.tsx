@@ -105,8 +105,18 @@ const CoachProfile: React.FC = () => {
   };
 
   const getRoleLabel = (role: string) => {
-    if (role === "pending") return "Pending";
-    return role.charAt(0).toUpperCase() + role.slice(1);
+    switch (role) {
+      case "admin":
+        return "Администратор";
+      case "coach":
+        return "Тренер";
+      case "owner":
+        return "Владелец";
+      case "pending":
+        return "В ожидании";
+      default:
+        return role;
+    }
   };
 
   const getPaymentStatusColor = (status: string) => {
@@ -539,8 +549,14 @@ const CoachProfile: React.FC = () => {
                           {invitation.phone_number}
                         </div>
                         <div className="text-xs text-gray-600">
-                          Роль: <span className="font-bold text-blue-500">{getRoleLabel(invitation.role)}
-                          </span> в клубе <span className="font-bold text-blue-500">{getRoleLabel(invitation.club.name)}</span>
+                          Роль:{" "}
+                          <span className="font-bold text-blue-500">
+                            {getRoleLabel(invitation.role)}
+                          </span>{" "}
+                          в клубе{" "}
+                          <span className="font-bold text-blue-500">
+                            {getRoleLabel(invitation.club.name)}
+                          </span>
                         </div>
                       </div>
                       {acceptDeclineLoading ? (
