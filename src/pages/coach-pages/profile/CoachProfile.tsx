@@ -466,18 +466,20 @@ const CoachProfile: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="bg-green-50 rounded-lg p-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <DollarSign className="text-green-600" size={16} />
-                        <span className="text-sm font-medium text-green-700">
-                          Revenue
-                        </span>
+                    {club.userRole === "owner" && (
+                      <div className="bg-green-50 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <DollarSign className="text-green-600" size={16} />
+                          <span className="text-sm font-medium text-green-700">
+                            Revenue
+                          </span>
+                        </div>
+                        <div className="text-xl font-bold text-green-800">
+                          {formatCurrency(club.monthlyRevenue)}
+                        </div>
+                        <div className="text-sm text-green-600">Помесячно</div>
                       </div>
-                      <div className="text-xl font-bold text-green-800">
-                        {formatCurrency(club.monthlyRevenue)}
-                      </div>
-                      <div className="text-sm text-green-600">Помесячно</div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="text-sm text-gray-600 mb-3">
@@ -486,7 +488,7 @@ const CoachProfile: React.FC = () => {
                   </div>
 
                   {/* Payment Info */}
-                  {selectedClub?.userRole !== "owner" && (
+                  {club.userRole !== "owner" && (
                     <div className="bg-gray-50 rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
