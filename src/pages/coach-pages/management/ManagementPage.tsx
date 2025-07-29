@@ -140,7 +140,7 @@ const ManagementPage: React.FC = () => {
 
         setClubsRaw(
           clubRes.data.clubs
-            .filter((w) => w.role === "admin" || w.role === "coach")
+            .filter((w) => w.role === "coach")
             .map((w) => w.club)
         );
         setSections(secRes.data);
