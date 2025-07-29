@@ -66,6 +66,7 @@ const ManagementPage: React.FC = () => {
   );
 
   const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
+  const [ownedClubs, setOwnedClubs] = useState<CreateClubResponse[]>([]);
 
   const [staff, setStaff] = useState<Staff[]>([]);
   const [sections, setSections] = useState<CreateSectionResponse[]>([]);
@@ -138,11 +139,13 @@ const ManagementPage: React.FC = () => {
 
         console.log(secRes.data);
 
-        setClubsRaw(
+        setClubsRaw(clubRes.data.clubs.map((w) => w.club));
+        setOwnedClubs(
           clubRes.data.clubs
-            .filter((w) => w.role === "coach")
+            .filter((w) => w.role === "owner" || w.role === "admin")
             .map((w) => w.club)
         );
+
         setSections(secRes.data);
 
         if (clubRes.data.clubs.length > 0) {
@@ -301,7 +304,7 @@ const ManagementPage: React.FC = () => {
       <AddSectionModal
         show={showAddSection}
         editing={sectionEditing}
-        allClubs={clubsRaw}
+        allClubs={ownedClubs}
         allStaff={staff}
         newSection={newSection}
         userFullName={userFullName}
