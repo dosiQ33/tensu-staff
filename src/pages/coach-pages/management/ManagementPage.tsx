@@ -45,7 +45,7 @@ const ManagementPage: React.FC = () => {
     phone: "",
     clubId: "",
   });
-  
+
   const [newSection, setNewSection] = useState<
     NewSection & { valid_from?: string; valid_until?: string }
   >({
@@ -138,7 +138,11 @@ const ManagementPage: React.FC = () => {
 
         console.log(secRes.data);
 
-        setClubsRaw(clubRes.data.clubs.map((w) => w.club));
+        setClubsRaw(
+          clubRes.data.clubs
+            .filter((w) => w.role === "admin" || w.role === "coach")
+            .map((w) => w.club)
+        );
         setSections(secRes.data);
 
         if (clubRes.data.clubs.length > 0) {

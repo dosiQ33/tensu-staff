@@ -58,6 +58,7 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               >
                 <option value="">– выбрать роль –</option>
                 {allRoles.map((r) => (
+                  r !== "owner" &&
                   <option key={r} value={r}>
                     {r}
                   </option>
