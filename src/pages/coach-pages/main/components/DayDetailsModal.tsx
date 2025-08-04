@@ -47,7 +47,7 @@ export const DayDetailsModal: React.FC<{
                   <div className="flex items-center gap-2">
                     <Users size={14} className="text-gray-500" />
                     <span className="text-sm text-gray-600">
-                      {t.coach.first_name} " " {t.coach.last_name} • {t.group.name}
+                      {t.coach.first_name} {t.coach.last_name} • {t.group.name}
                     </span>
                   </div>
                 </div>
