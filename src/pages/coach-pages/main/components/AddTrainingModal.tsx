@@ -61,7 +61,7 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-end">
+    <div className="fixed inset-0 bg-gray-50 border border-gray-200 bg-opacity-50 z-50 flex items-end">
       <div className="bg-white w-full max-h-[80vh] rounded-t-2xl overflow-hidden">
         <div className="sticky top-0 bg-white border-b px-4 py-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Добавить тренировку</h2>
@@ -79,7 +79,7 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
                 setSelectedClubId(Number(e.target.value));
                 setSelectedSectionId(''); setSelectedGroupId(''); setSelectedCoachId('');
               }}
-              className="w-full border rounded-lg p-2"
+              className="w-full border border-gray-200 rounded-lg p-2"
             >
               <option value="">Выбрать клуб</option>
               {clubOptions.map(id => <option key={id} value={id}>Club {id}</option>)}
@@ -93,7 +93,7 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
               value={selectedSectionId}
               onChange={e => { setSelectedSectionId(Number(e.target.value)); setSelectedGroupId(''); }}
               disabled={selectedClubId === ''}
-              className="w-full border rounded-lg p-2"
+              className="w-full border border-gray-200 rounded-lg p-2"
             >
               <option value="">Выбрать секцию</option>
               {sectionOptions.map(id => {
@@ -110,7 +110,7 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
               value={selectedGroupId}
               onChange={e => setSelectedGroupId(Number(e.target.value))}
               disabled={selectedSectionId === ''}
-              className="w-full border rounded-lg p-2"
+              className="w-full border border-gray-200 rounded-lg p-2"
             >
               <option value="">Выбрать группу</option>
               {groupOptions.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
@@ -124,7 +124,7 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
               value={selectedCoachId}
               onChange={e => setSelectedCoachId(Number(e.target.value))}
               disabled={selectedClubId === ''}
-              className="w-full border rounded-lg p-2"
+              className="w-full border border-gray-200 rounded-lg p-2"
             >
               <option value="">Выбрать тренера</option>
               {coachOptions.map(c => <option key={c.id} value={c.id}>{`${c.first_name} ${c.last_name}`}</option>)}
@@ -138,12 +138,12 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
               type="date"
               value={newTraining.date}
               onChange={e => setNewTraining(prev => ({ ...prev, date: e.target.value }))}
-              className="w-full border rounded-lg p-2"
+              className="w-full border border-gray-200 rounded-lg p-2"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <input type="time" className="border rounded-lg p-2" value={newTraining.time} onChange={e => setNewTraining(prev => ({ ...prev, time: e.target.value }))} />
-            <input type="time" className="border rounded-lg p-2" value={newTraining.endTime} onChange={e => setNewTraining(prev => ({ ...prev, endTime: e.target.value }))} />
+            <input type="time" className="border border-gray-200 rounded-lg p-2" value={newTraining.time} onChange={e => setNewTraining(prev => ({ ...prev, time: e.target.value }))} />
+            <input type="time" className="border border-gray-200 rounded-lg p-2" value={newTraining.endTime} onChange={e => setNewTraining(prev => ({ ...prev, endTime: e.target.value }))} />
           </div>
 
           {/* Save Button */}
