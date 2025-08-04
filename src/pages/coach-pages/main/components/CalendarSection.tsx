@@ -46,7 +46,8 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
       scheduleApi
         .getWeekSchedule(dateStr, token!)
         .then((res) => {
-          setCalendarData((prev) => ({ ...prev, [dateStr]: res.data.days }));
+          const daysArray = res.data.days;
+          setCalendarData((prev) => ({ ...prev, [dateStr]: daysArray }));
         })
         .catch(console.error);
     });
