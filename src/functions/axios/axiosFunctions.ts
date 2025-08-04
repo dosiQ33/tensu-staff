@@ -148,6 +148,6 @@ export const scheduleApi = {
   getDaySchedule: (date: string, token: string) =>
     axiosRequest<GetDayScheduleResponse>(ENDPOINTS.SCHEDULE.CALENDAR.DAY(date), 'GET', token),
 
-  getWeekSchedule: (date: string, token: string) =>
+  getWeekSchedule: (date: string, token: string | null) =>
     axiosRequest<GetWeekScheduleResponse>(ENDPOINTS.SCHEDULE.CALENDAR.WEEK(date), 'GET', token),
 };
