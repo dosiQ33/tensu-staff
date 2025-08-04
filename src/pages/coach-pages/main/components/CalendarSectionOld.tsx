@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import type { Training } from "@/types/types";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
-import { DayDetailsModal } from "./DayDetailsModal";
+// import { DayDetailsModal } from "./DayDetailsModal";
 
 const coaches = ['Иван Иванов', 'Мария Петрова', 'Сергей Смирнов'];
 const clubs = ['Bars Checkmat', 'Titan Fit', 'Tigers'];
@@ -10,7 +10,7 @@ export const CalendarSection: React.FC<{ trainings: Training[] }> = ({ trainings
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showFilters, setShowFilters] = useState(false);
   const [calendarFilters, setCalendarFilters] = useState({ coach: 'all', club: 'all', type: 'all' });
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  // const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   const filteredTrainings = useMemo(
     () =>
@@ -128,7 +128,7 @@ export const CalendarSection: React.FC<{ trainings: Training[] }> = ({ trainings
             {days.map((day, idx) => (
               <div
                 key={idx}
-                onClick={() => day && setSelectedDay(day.toISOString().split('T')[0])}
+                // onClick={() => day && setSelectedDay(day.toISOString().split('T')[0])}
                 className={`min-h-[60px] p-1 border border-gray-200 cursor-pointer transition-colors ${
                   !day
                     ? 'bg-gray-50'
@@ -157,7 +157,7 @@ export const CalendarSection: React.FC<{ trainings: Training[] }> = ({ trainings
           </div>
         </div>
 
-        {selectedDay && <DayDetailsModal day={selectedDay} onClose={() => setSelectedDay(null)} trainings={getTrainingsForDay(new Date(selectedDay))} />}
+        {/* {selectedDay && <DayDetailsModal day={selectedDay} onClose={() => setSelectedDay(null)} trainings={getTrainingsForDay(new Date(selectedDay))} />} */}
       </div>
     </section>
   );

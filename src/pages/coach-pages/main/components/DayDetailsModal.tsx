@@ -1,10 +1,10 @@
-import type { Training } from "@/types/types";
+import type { Lesson } from "@/functions/axios/responses";
 import { Clock, MapPin, Users, X } from "lucide-react";
 
 export const DayDetailsModal: React.FC<{
   day: string;
   onClose: () => void;
-  trainings: Training[];
+  trainings: Lesson[];
 }> = ({ day, onClose, trainings }) => {
 
   return (
@@ -37,23 +37,23 @@ export const DayDetailsModal: React.FC<{
                   <div className="flex items-center gap-2 mb-1">
                     <Clock size={14} className="text-gray-500" />
                     <span className="font-medium text-gray-900">
-                      {t.time} - {t.endTime}
+                      {t.planned_start_time} - {t.planned_start_time}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mb-1">
                     <MapPin size={14} className="text-gray-500" />
-                    <span className="text-sm text-gray-600">{t.club}</span>
+                    <span className="text-sm text-gray-600">{t.id}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={14} className="text-gray-500" />
                     <span className="text-sm text-gray-600">
-                      {t.coach} • {t.section}
+                      {t.coach.first_name} " " {t.coach.last_name} • {t.group.name}
                     </span>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-semibold text-gray-900">
-                    {t.attendedCount}/{t.totalCount}
+                    {/* {t.attendedCount}/{t.totalCount} */}
                   </div>
                   <div className="text-xs text-gray-500">участников</div>
                 </div>
@@ -62,7 +62,7 @@ export const DayDetailsModal: React.FC<{
                 <div
                   className="bg-green-500 h-full rounded-full transition-all"
                   style={{
-                    width: `${(t.attendedCount / t.totalCount) * 100}%`,
+                    // width: `${(t.attendedCount / t.totalCount) * 100}%`,
                   }}
                 />
               </div>
