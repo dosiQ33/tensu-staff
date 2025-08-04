@@ -34,7 +34,7 @@ const CoachMainPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 px-4 py-2">
-      <header className="bg-white border-b sticky top-0 z-10 px-4 py-3">
+      <header className="bg-white border border-gray-200 sticky top-0 z-10 px-4 py-3">
         <h1 className="text-xl font-semibold">Главная</h1>
       </header>
 
