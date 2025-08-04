@@ -61,30 +61,30 @@ export const ENDPOINTS = {
 
   SCHEDULE: {
     TEMPLATE: {
-      GET: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/template`,
-      PUT: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/template`,
-      PATCH: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/template`,
+      GET: (groupId: string | number) => `/schedule/groups/${groupId}/template`,
+      PUT: (groupId: string | number) => `/schedule/groups/${groupId}/template`,
+      PATCH: (groupId: string | number) => `/schedule/groups/${groupId}/template`,
     },
     LESSONS: {
-      GENERATE_FROM_TEMPLATE: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/generate-lessons`,
-      REGENERATE_FOR_PERIOD: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/regenerate-lessons`,
-      CREATE_MANUAL: '/api/v1/schedule/lessons',
-      LIST: '/api/v1/schedule/lessons',
-      GET_BY_ID: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}`,
-      UPDATE_BY_ID: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}`,
-      DELETE_BY_ID: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}`,
-      RESCHEDULE: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}/reschedule`,
-      CANCEL: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}/cancel`,
-      COMPLETE: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}/complete`,
-      BULK_UPDATE: (lessonIds: Array<number>) => `api/v1/schedule/lessons/bulk-update/?lesson_ids=${lessonIds}`
+      GENERATE_FROM_TEMPLATE: (groupId: string | number) => `/schedule/groups/${groupId}/generate-lessons`,
+      REGENERATE_FOR_PERIOD: (groupId: string | number) => `/schedule/groups/${groupId}/regenerate-lessons`,
+      CREATE_MANUAL: '/schedule/lessons',
+      LIST: '/schedule/lessons',
+      GET_BY_ID: (lessonId: string | number) => `/schedule/lessons/${lessonId}`,
+      UPDATE_BY_ID: (lessonId: string | number) => `/schedule/lessons/${lessonId}`,
+      DELETE_BY_ID: (lessonId: string | number) => `/schedule/lessons/${lessonId}`,
+      RESCHEDULE: (lessonId: string | number) => `/schedule/lessons/${lessonId}/reschedule`,
+      CANCEL: (lessonId: string | number) => `/schedule/lessons/${lessonId}/cancel`,
+      COMPLETE: (lessonId: string | number) => `/schedule/lessons/${lessonId}/complete`,
+      BULK_UPDATE: (lessonIds: Array<number>) => `schedule/lessons/bulk-update/?lesson_ids=${lessonIds}`
     },
     CALENDAR: {
-      DAY: (targetDate: string) => `/api/v1/schedule/calendar/day/${targetDate}`,
-      WEEK: (targetDate: string) => `/api/v1/schedule/calendar/week/${targetDate}`,
+      DAY: (targetDate: string) => `/schedule/calendar/day/${targetDate}`,
+      WEEK: (targetDate: string) => `/schedule/calendar/week/${targetDate}`,
     },
     STATS: {
-      BY_GROUP: (groupId: string | number) => `/api/v1/schedule/stats/group/${groupId}`,
-      BY_COACH: (coachId: string | number) => `/api/v1/schedule/stats/coach/${coachId}`,
+      BY_GROUP: (groupId: string | number) => `/schedule/stats/group/${groupId}`,
+      BY_COACH: (coachId: string | number) => `/schedule/stats/coach/${coachId}`,
     }
   }  
 } as const;
