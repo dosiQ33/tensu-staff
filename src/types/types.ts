@@ -63,7 +63,7 @@ export interface Filters {
 export interface NewStaff {
   role: string;
   phone: string;
-  clubId: string;   
+  clubId: string;
 }
 
 export interface NewSection {
@@ -107,6 +107,15 @@ export interface ScheduleEntry {
   valid_until: string;
 }
 
+export interface WeeklyPattern {
+  monday: ScheduleEntry[];
+  tuesday: ScheduleEntry[];
+  wednesday: ScheduleEntry[];
+  thursday: ScheduleEntry[];
+  friday: ScheduleEntry[];
+  saturday: ScheduleEntry[];
+  sunday: ScheduleEntry[];
+}
 
 export type TimeSlot = { time: string; duration: number };
 
@@ -121,4 +130,24 @@ export interface NewGroup {
   coach_id?: number | null;
   tags?: string[];
   active?: boolean;
+}
+
+export type Training = {
+  id: string;
+  date: string;
+  time: string;
+  endTime: string;
+  coach: string;
+  section: string;
+  club: string;
+  attendedCount: number;
+  totalCount: number;
+  color: string;
+};
+
+export interface StatRow {
+  club: string;
+  section: string;
+  slot?: string;
+  count: number;
 }

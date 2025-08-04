@@ -1,7 +1,7 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
-import type { CreateClubRequest, CreateGroupRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest, UpdateStaffRequest } from './requests';
-import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetClubsLimitCheckResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetSectionGroupsResponse, GetMySectionsResponse, GetTeamMembersResponse, CreateGroupResponse } from './responses';
+import type { CancelLessonRequest, CompleteLessonRequest, CreateClubRequest, CreateGroupRequest, CreateManualLessonRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest, GenerateLessonsRequest, RescheduleLessonRequest, UpdateGroupScheduleTemplateRequest, UpdateLessonRequest, UpdateStaffRequest } from './requests';
+import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetClubsLimitCheckResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetSectionGroupsResponse, GetMySectionsResponse, GetTeamMembersResponse, CreateGroupResponse, CreateManualLessonResponse, GetDayScheduleResponse, GetGroupScheduleTemplateResponse, GetLessonsResponse, GetWeekScheduleResponse, Lesson } from './responses';
 
 export const staffApi = {
     getList: (token: string) =>
@@ -61,6 +61,8 @@ export const groupsApi = {
         axiosRequest(ENDPOINTS.GROUPS.BASE, 'POST', token, data),
     getBySectionId: (id: number | undefined, token: string) =>
         axiosRequest<GetSectionGroupsResponse>(ENDPOINTS.GROUPS.BY_SECTION_ID(id), 'GET', token),
+    getMy: (token: string | null) =>
+        axiosRequest<GetSectionGroupsResponse>(ENDPOINTS.GROUPS.MY, 'GET', token),
     updateById: (data: CreateGroupRequest, id: number, token: string) =>
         axiosRequest<CreateGroupResponse>(ENDPOINTS.GROUPS.BY_ID(id), 'PUT', token, data),
     deleteById: (id: number | undefined, token: string) =>
@@ -102,3 +104,50 @@ export const teamApi = {
             token
         ),
 }
+
+export const scheduleApi = {
+  getGroupTemplate: (groupId: string | number, token: string) =>
+    axiosRequest<GetGroupScheduleTemplateResponse>(ENDPOINTS.SCHEDULE.TEMPLATE.GET(groupId), 'GET', token),
+
+  updateGroupTemplate: (groupId: string | number, data: UpdateGroupScheduleTemplateRequest, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.TEMPLATE.PUT(groupId), 'PUT', token, data),
+
+  generateLessons: (groupId: string | number, data: GenerateLessonsRequest, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.LESSONS.GENERATE_FROM_TEMPLATE(groupId), 'POST', token, data),
+
+  regenerateLessons: (groupId: string | number, data: GenerateLessonsRequest, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.LESSONS.REGENERATE_FOR_PERIOD(groupId), 'POST', token, data),
+
+  createManualLesson: (data: CreateManualLessonRequest, token: string | null) =>
+    axiosRequest<CreateManualLessonResponse>(ENDPOINTS.SCHEDULE.LESSONS.CREATE_MANUAL, 'POST', token, data),
+
+  getLessons: (token: string) =>
+    axiosRequest<GetLessonsResponse>(ENDPOINTS.SCHEDULE.LESSONS.LIST, 'GET', token),
+
+  getLessonById: (lessonId: number | string, token: string) =>
+    axiosRequest<Lesson>(ENDPOINTS.SCHEDULE.LESSONS.GET_BY_ID(lessonId), 'GET', token),
+
+  updateLesson: (lessonId: number | string, data: UpdateLessonRequest, token: string) =>
+    axiosRequest<Lesson>(ENDPOINTS.SCHEDULE.LESSONS.UPDATE_BY_ID(lessonId), 'PUT', token, data),
+
+  deleteLesson: (lessonId: number | string, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.LESSONS.DELETE_BY_ID(lessonId), 'DELETE', token),
+
+  rescheduleLesson: (lessonId: number | string, data: RescheduleLessonRequest, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.LESSONS.RESCHEDULE(lessonId), 'POST', token, data),
+
+  cancelLesson: (lessonId: number | string, data: CancelLessonRequest, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.LESSONS.CANCEL(lessonId), 'POST', token, data),
+
+  completeLesson: (lessonId: number | string, data: CompleteLessonRequest, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.LESSONS.COMPLETE(lessonId), 'POST', token, data),
+
+  bulkUpdateLessons: (lessonIds: Array<number>, data: UpdateLessonRequest, token: string) =>
+    axiosRequest<void>(ENDPOINTS.SCHEDULE.LESSONS.BULK_UPDATE(lessonIds), 'POST', token, data),
+
+  getDaySchedule: (date: string, token: string) =>
+    axiosRequest<GetDayScheduleResponse>(ENDPOINTS.SCHEDULE.CALENDAR.DAY(date), 'GET', token),
+
+  getWeekSchedule: (date: string, token: string) =>
+    axiosRequest<GetWeekScheduleResponse>(ENDPOINTS.SCHEDULE.CALENDAR.WEEK(date), 'GET', token),
+};

@@ -38,6 +38,7 @@ export const ENDPOINTS = {
 
   GROUPS: {
     BASE: '/groups/',
+    MY: '/groups/my',
     BY_SECTION_ID: (sId: number | undefined) => `/groups/section/${sId}`,
     BY_ID: (gId: number | undefined) => `/groups/${gId}`
   },
@@ -56,5 +57,34 @@ export const ENDPOINTS = {
 
   TEAM: {
     BASE: '/team/',
-  }
+  },
+
+  SCHEDULE: {
+    TEMPLATE: {
+      GET: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/template`,
+      PUT: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/template`,
+      PATCH: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/template`,
+    },
+    LESSONS: {
+      GENERATE_FROM_TEMPLATE: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/generate-lessons`,
+      REGENERATE_FOR_PERIOD: (groupId: string | number) => `/api/v1/schedule/groups/${groupId}/regenerate-lessons`,
+      CREATE_MANUAL: '/api/v1/schedule/lessons',
+      LIST: '/api/v1/schedule/lessons',
+      GET_BY_ID: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}`,
+      UPDATE_BY_ID: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}`,
+      DELETE_BY_ID: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}`,
+      RESCHEDULE: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}/reschedule`,
+      CANCEL: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}/cancel`,
+      COMPLETE: (lessonId: string | number) => `/api/v1/schedule/lessons/${lessonId}/complete`,
+      BULK_UPDATE: (lessonIds: Array<number>) => `api/v1/schedule/lessons/bulk-update/?lesson_ids=${lessonIds}`
+    },
+    CALENDAR: {
+      DAY: (targetDate: string) => `/api/v1/schedule/calendar/day/${targetDate}`,
+      WEEK: (targetDate: string) => `/api/v1/schedule/calendar/week/${targetDate}`,
+    },
+    STATS: {
+      BY_GROUP: (groupId: string | number) => `/api/v1/schedule/stats/group/${groupId}`,
+      BY_COACH: (coachId: string | number) => `/api/v1/schedule/stats/coach/${coachId}`,
+    }
+  }  
 } as const;

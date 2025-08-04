@@ -1,4 +1,4 @@
-import type { ScheduleEntry } from "@/types/types";
+import type { ScheduleEntry, WeeklyPattern } from "@/types/types";
 
 export interface StaffPreferences {
   [key: string]: Record<string, unknown>;
@@ -67,16 +67,16 @@ export interface CreateClubStuffInvitationResponse {
 }
 
 export interface SectionClub {
-  id:   number;
+  id: number;
   name: string;
   city: string;
 }
 
 export interface SectionCoach {
-  id:         number;
+  id: number;
   first_name: string;
-  last_name:  string;
-  username:   string;
+  last_name: string;
+  username: string;
 }
 
 export interface CreateSectionResponse {
@@ -137,7 +137,7 @@ export interface GetMyGroupResponse {
   description: string;
   schedule: {
     [key: string]: unknown;
-  };  price: number;
+  }; price: number;
   capacity: number;
   level: string;
   coach_id: number;
@@ -192,8 +192,8 @@ export interface GetClubsLimitCheckResponse {
 export interface ClubAndRole {
   club_id: number
   club_name: string
-  role: "owner" | "admin" | "coach" 
-  joined_at: string    
+  role: "owner" | "admin" | "coach"
+  joined_at: string
   is_active: boolean
   sections_count: number
 }
@@ -206,8 +206,8 @@ export interface TeamMember {
   username: string
   phone_number: string
   photo_url: string
-  created_at: string   
-  updated_at: string   
+  created_at: string
+  updated_at: string
   clubs_and_roles: ClubAndRole[]
 }
 
@@ -225,4 +225,112 @@ export interface GetTeamMembersResponse {
   pages: number
   applied_filters: Record<string, unknown> | null
   current_user_clubs: CurrentUserClub[]
+}
+
+export interface GetGroupScheduleTemplateResponse {
+  weekly_pattern: WeeklyPattern;
+  valid_from: string;
+  valid_until: string;
+  timezone: string;
+}
+
+export interface CreateManualLessonResponse {
+  group_id: number;
+  planned_date: string;           
+  planned_start_time: string;     
+  duration_minutes: number;
+  coach_id: number;
+  location: string;
+  notes: string;
+  id: number;
+
+  actual_date: string;
+  actual_start_time: string;
+  status: "scheduled" | "cancelled" | "completed"; 
+  created_from_template: boolean;
+
+  created_at: string;             
+  updated_at: string;
+
+  group: {
+    id: number;
+    name: string;
+    section_id: number;
+  };
+
+  coach: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+    phone_number: string;
+  };
+
+  effective_date: string;
+  effective_start_time: string;
+  is_rescheduled: boolean;
+}
+
+export interface LessonGroupInfo {
+  id: number;
+  name: string;
+  section_id: number;
+}
+
+export interface LessonCoachInfo {
+  id: number;
+  first_name: string;
+  last_name: string;
+  username: string;
+  phone_number: string;
+}
+
+export interface Lesson {
+  group_id: number;
+  planned_date: string;
+  planned_start_time: string;
+  duration_minutes: number;
+  coach_id: number;
+  location: string;
+  notes: string;
+  id: number;
+  actual_date: string;
+  actual_start_time: string;
+  status: "scheduled" | "cancelled" | "completed"; 
+  created_from_template: boolean;
+  created_at: string;
+  updated_at: string;
+  group: LessonGroupInfo;
+  coach: LessonCoachInfo;
+  effective_date: string;
+  effective_start_time: string;
+  is_rescheduled: boolean;
+}
+
+export interface GetLessonsResponse {
+  lessons: Lesson[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+  filters: Record<string, unknown>;
+}
+
+export interface GetDayScheduleResponse {
+  schedule_date: string;
+  lessons: Lesson[];     
+  total_lessons: number;
+}
+
+export interface GetWeekScheduleResponse {
+  week_start: string; 
+  week_end: string;  
+  days: DaySchedule[];
+  total_lessons: number;
+}
+
+export interface DaySchedule {
+  schedule_date: string; 
+  lessons: Lesson[];
+  total_lessons: number;
 }
