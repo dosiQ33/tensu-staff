@@ -33,7 +33,7 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
     const diff = (day + 6) % 7; // Monday=0
     current.setDate(current.getDate() - diff);
     while (current <= lastOfMonth) {
-      weeks.push(current.toISOString().split("T")[0]);
+      weeks.push(formatDate(current));
       current = new Date(current);
       current.setDate(current.getDate() + 7);
     }
@@ -66,8 +66,12 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
   };
 
   const days = useMemo(() => getDaysInMonth(currentDate), [currentDate]);
-  const formatDate = (d: Date) =>
-    d.toLocaleDateString("ru-RU", { month: "long", year: "numeric" });
+  const formatDate = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
   const navigateMonth = (dir: "prev" | "next") =>
     setCurrentDate((d) => {
       const nd = new Date(d);
@@ -83,7 +87,7 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
     const diff = (day + 6) % 7;
     const monday = new Date(d);
     monday.setDate(d.getDate() - diff);
-    const weekKey = monday.toISOString().split("T")[0];
+    const weekKey = formatDate(monday);
     const daysArr = calendarData[weekKey] || [];
     const dayEntry = daysArr.find((ws) => ws.schedule_date === dateStr);
     return dayEntry ? dayEntry.lessons : [];
@@ -207,7 +211,7 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
               <div
                 key={idx}
                 onClick={() =>
-                  day && setSelectedDay(day.toISOString().split("T")[0])
+                  day && setSelectedDay(formatDate(day))
                 }
                 className={`min-h-[60px] p-1 border border-gray-200 cursor-pointer transition-colors ${
                   !day
@@ -229,7 +233,7 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
                       {day.getDate()}
                     </div>
                     <div className="space-y-0.5">
-                      {getLessonsForDate(day.toISOString().split("T")[0])
+                      {getLessonsForDate(formatDate(day))
                         .slice(0, 2)
                         .map((les) => (
                           <div
@@ -239,11 +243,11 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
                             {les.planned_start_time.slice(0, 5)}
                           </div>
                         ))}
-                      {getLessonsForDate(day.toISOString().split("T")[0])
+                      {getLessonsForDate(formatDate(day))
                         .length > 2 && (
                         <p className="text-[10px] text-gray-500">
                           +
-                          {getLessonsForDate(day.toISOString().split("T")[0])
+                          {getLessonsForDate(formatDate(day))
                             .length - 2}
                         </p>
                       )}
