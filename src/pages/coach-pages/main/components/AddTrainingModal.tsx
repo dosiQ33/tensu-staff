@@ -40,7 +40,11 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
     if (!selectedGroupId || !selectedCoachId) return;
     const start = new Date(`1970-01-01T${newTraining.time}:00`);
     const end = new Date(`1970-01-01T${newTraining.endTime}:00`);
+    if (end <= start) {
+        end.setDate(end.getDate() + 1);
+    }
     const duration = (end.getTime() - start.getTime()) / 60000;
+
 
     const payload: CreateManualLessonRequest = {
       group_id: selectedGroupId,
@@ -63,7 +67,7 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
   return (
     <div className="fixed inset-0 bg-gray-50 border border-gray-200 bg-opacity-50 z-50 flex items-end">
       <div className="bg-white w-full max-h-[80vh] rounded-t-2xl overflow-hidden">
-        <div className="sticky top-0 bg-white border-b px-4 py-3 flex items-center justify-between">
+        <div className="sticky top-0 bg-white border border-gray-200 px-4 py-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Добавить тренировку</h2>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
             <X size={20} />
