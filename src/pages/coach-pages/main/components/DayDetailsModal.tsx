@@ -5,7 +5,8 @@ export const DayDetailsModal: React.FC<{
   day: string;
   onClose: () => void;
   trainings: Lesson[];
-}> = ({ day, onClose, trainings }) => {
+  onSelectLesson?: (lesson: Lesson) => void;
+}> = ({ day, onClose, trainings, onSelectLesson }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-end">
@@ -31,18 +32,25 @@ export const DayDetailsModal: React.FC<{
 
         <div className="overflow-y-auto p-4 space-y-3">
           {trainings.map((t) => (
-            <div key={t.id} className="bg-gray-50 rounded-lg p-4">
+            <div key={t.id} className="bg-gray-50 rounded-lg p-4 cursor-pointer" onClick={() => onSelectLesson?.(t)}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <Clock size={14} className="text-gray-500" />
                     <span className="font-medium text-gray-900">
-                      {t.planned_start_time} - {t.planned_start_time}
+                      {t.planned_start_time.slice(0,5)} - {(() => {
+                        const [h, m] = t.planned_start_time.split(":").map(Number);
+                        const start = new Date(1970, 0, 1, h, m || 0);
+                        const end = new Date(start.getTime() + t.duration_minutes * 60000);
+                        const hh = String(end.getHours()).padStart(2, '0');
+                        const mm = String(end.getMinutes()).padStart(2, '0');
+                        return `${hh}:${mm}`;
+                      })()}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mb-1">
                     <MapPin size={14} className="text-gray-500" />
-                    <span className="text-sm text-gray-600">{t.id}</span>
+                    <span className="text-sm text-gray-600">{t.location || '—'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users size={14} className="text-gray-500" />

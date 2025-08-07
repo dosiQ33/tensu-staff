@@ -29,6 +29,7 @@ export interface StatRow {
 const CoachMainPage: React.FC = () => {
   const sampleTrainings: Training[] = [];
   const [showAdd, setShowAdd] = useState(false);
+  const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
 
   const token = localStorage.getItem("telegramToken");
 
@@ -39,9 +40,15 @@ const CoachMainPage: React.FC = () => {
       </header>
 
       <StatsSection trainings={sampleTrainings} />
-      <CalendarSection token={token}/>
+      <CalendarSection token={token} refreshKey={calendarRefreshKey} />
 
-      {showAdd && <AddTrainingModal onClose={() => setShowAdd(false)} token={token}/>}
+      {showAdd && (
+        <AddTrainingModal
+          onClose={() => setShowAdd(false)}
+          token={token}
+          onSuccess={() => setCalendarRefreshKey((k) => k + 1)}
+        />
+      )}
       <FloatingAddButton onClick={() => setShowAdd(true)} />
 
       <BottomNav page="main" />

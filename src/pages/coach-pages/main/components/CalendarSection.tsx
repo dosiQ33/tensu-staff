@@ -2,13 +2,15 @@ import React, { useState, useMemo, useEffect } from "react";
 import { DayDetailsModal } from "./DayDetailsModal";
 import type { DaySchedule, Lesson } from "@/functions/axios/responses";
 import { scheduleApi } from "@/functions/axios/axiosFunctions";
+import { EditLessonModal } from "./EditLessonModal";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 
 const coaches = ["Иван Иванов", "Мария Петрова", "Сергей Смирнов"];
 const clubs = ["Bars Checkmat", "Titan Fit", "Tigers"];
 
-export const CalendarSection: React.FC<{ token: string | null }> = ({
+export const CalendarSection: React.FC<{ token: string | null; refreshKey?: number }> = ({
   token,
+  refreshKey,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -41,17 +43,22 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
   };
 
   useEffect(() => {
+    if (!token) return;
     const weeks = getWeeksInMonth(currentDate);
-    weeks.forEach((dateStr) => {
-      scheduleApi
-        .getWeekSchedule(dateStr, token!)
-        .then((res) => {
-          const daysArray = res.data.days;
-          setCalendarData((prev) => ({ ...prev, [dateStr]: daysArray }));
-        })
-        .catch(console.error);
-    });
-  }, [currentDate, token]);
+    Promise.all(
+      weeks.map((dateStr) =>
+        scheduleApi
+          .getWeekSchedule(dateStr, token)
+          .then((res) => ({ key: dateStr, days: res.data.days }))
+      )
+    )
+      .then((arr) => {
+        const next: Record<string, Array<DaySchedule>> = {};
+        arr.forEach(({ key, days }) => (next[key] = days));
+        setCalendarData(next);
+      })
+      .catch(console.error);
+  }, [currentDate, token, refreshKey]);
 
   // Calendar utilities
   const getDaysInMonth = (date: Date) => {
@@ -92,6 +99,8 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
     const dayEntry = daysArr.find((ws) => ws.schedule_date === dateStr);
     return dayEntry ? dayEntry.lessons : [];
   };
+
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
 
   return (
     <section className="bg-white rounded-lg border border-gray-200 mb-4">
@@ -210,9 +219,7 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
             {days.map((day, idx) => (
               <div
                 key={idx}
-                onClick={() =>
-                  day && setSelectedDay(formatDate(day))
-                }
+                onClick={() => day && setSelectedDay(formatDate(day))}
                 className={`min-h-[60px] p-1 border border-gray-200 cursor-pointer transition-colors ${
                   !day
                     ? "bg-gray-50"
@@ -264,7 +271,21 @@ export const CalendarSection: React.FC<{ token: string | null }> = ({
             day={selectedDay}
             onClose={() => setSelectedDay(null)}
             trainings={getLessonsForDate(selectedDay)}
-            // showEdit
+            onSelectLesson={(lesson) => setEditingLesson(lesson)}
+          />
+        )}
+
+        {editingLesson && token && (
+          <EditLessonModal
+            token={token}
+            lesson={editingLesson}
+            onClose={() => setEditingLesson(null)}
+            onSaved={() => {
+              setEditingLesson(null);
+              // trigger refresh
+              // rely on parent refreshKey or local reload by bumping currentDate to itself
+              setCurrentDate((d) => new Date(d));
+            }}
           />
         )}
       </div>

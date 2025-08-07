@@ -4,7 +4,7 @@ import type { CreateManualLessonRequest } from '@/functions/axios/requests';
 import type { GetMyGroupResponse } from '@/functions/axios/responses';
 import { X } from 'lucide-react';
 
-export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | null }> = ({ onClose, token }) => {
+export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | null; onSuccess?: () => void }> = ({ onClose, token, onSuccess }) => {
   const [newTraining, setNewTraining] = useState({ date: '', time: '', endTime: '' });
   const [userGroups, setUserGroups] = useState<GetMyGroupResponse[]>([]);
   const [selectedClubId, setSelectedClubId] = useState<number | ''>('');
@@ -58,6 +58,7 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
 
     try {
       await scheduleApi.createManualLesson(payload, token);
+      onSuccess?.();
       onClose();
     } catch (error) {
       console.error('Failed to create lesson', error);
