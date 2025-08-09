@@ -145,10 +145,21 @@ const CoachProfile: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "KZT",
-    }).format(amount);
+    try {
+      const formatted = new Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "KZT",
+        currencyDisplay: "symbol",
+        maximumFractionDigits: 0,
+      }).format(amount);
+      if (/KZT/i.test(formatted)) {
+        const numberPart = amount.toLocaleString("ru-RU", { maximumFractionDigits: 0 });
+        return `${numberPart} \u00A0₸`;
+      }
+      return formatted.replace(/KZT/gi, "₸");
+    } catch {
+      return `${amount.toLocaleString("ru-RU")} \u00A0₸`;
+    }
   };
 
   const formatDate = (dateString: string) => {
