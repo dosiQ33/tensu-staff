@@ -6,7 +6,8 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
+import { Select, Input } from "@/components/ui";
 
 // Constants
 const statsOptions = [
@@ -16,28 +17,88 @@ const statsOptions = [
   { id: "expiring", label: "Скоро истекают", icon: AlertTriangle },
 ];
 
-const clubs = ["Bars Checkmat", "Titan Fit", "Tigers"];
-const sections = ["BJJ", "Karate", "Boxing", "Fitness"];
+const fallbackClubs = ["Bars Checkmat", "Titan Fit", "Tigers"];
+const fallbackSections = ["BJJ", "Karate", "Boxing", "Fitness"];
 
 export const StatsSection: React.FC<{ trainings: Training[] }> = ({trainings}) => {
   const [showStatsFilters, setShowStatsFilters] = useState(false);
   const [clubFilter, setClubFilter] = useState<string>("all");
   const [selectedStat, setSelectedStat] = useState<string>("attendance");
   const [sectionFilter, setSectionFilter] = useState<string>("all");
+  type Period = "today" | "week" | "month" | "custom";
+  const [timeFilter, setTimeFilter] = useState<Period>("today");
+  const [customFrom, setCustomFrom] = useState<string>("");
+  const [customTo, setCustomTo] = useState<string>("");
   
   const todayKey = useMemo(() => new Date().toISOString().split('T')[0], []);
+
+  // Unique options derived from data (fallbacks if empty)
+  const clubOptions = useMemo(() => {
+    const unique = Array.from(new Set((trainings || []).map(t => t.club))).filter(Boolean);
+    const list = unique.length ? unique : fallbackClubs;
+    return [{ value: "all", label: "Все клубы" }, ...list.map(c => ({ value: c, label: c }))];
+  }, [trainings]);
+
+  const sectionOptions = useMemo(() => {
+    const unique = Array.from(new Set((trainings || []).map(t => t.section))).filter(Boolean);
+    const list = unique.length ? unique : fallbackSections;
+    return [{ value: "all", label: "Все секции" }, ...list.map(s => ({ value: s, label: s }))];
+  }, [trainings]);
+
+  const periodOptions = [
+    { value: "today", label: "Сегодня" },
+    { value: "week", label: "Эта неделя" },
+    { value: "month", label: "Этот месяц" },
+    { value: "custom", label: "Период…" },
+  ];
+
+  const getStartOfWeek = (date: Date) => {
+    const d = new Date(date);
+    const day = d.getDay();
+    // Make Monday first day of the week
+    const diff = (day === 0 ? -6 : 1) - day;
+    d.setDate(d.getDate() + diff);
+    return d;
+  };
+
+  const isWithinSelectedPeriod = useCallback((dateStr: string) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    const today = new Date();
+    if (timeFilter === "today") {
+      return dateStr === todayKey;
+    }
+    if (timeFilter === "week") {
+      const start = getStartOfWeek(today);
+      start.setHours(0,0,0,0);
+      const end = new Date();
+      end.setHours(23,59,59,999);
+      return d >= start && d <= end;
+    }
+    if (timeFilter === "month") {
+      const start = new Date(today.getFullYear(), today.getMonth(), 1);
+      const end = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
+      return d >= start && d <= end;
+    }
+    // custom
+    if (customFrom && customTo) {
+      const start = new Date(customFrom + 'T00:00:00');
+      const end = new Date(customTo + 'T23:59:59');
+      return d >= start && d <= end;
+    }
+    return true;
+  }, [timeFilter, customFrom, customTo, todayKey]);
 
   const attendanceRows = useMemo<StatRow[]>(
     () =>
       trainings
-        .filter(t => t.date === todayKey)
+        .filter(t => isWithinSelectedPeriod(t.date))
         .map(t => ({
           club: t.club,
           section: t.section,
           slot: `${t.time}-${t.endTime}`,
           count: Math.round((t.attendedCount / t.totalCount) * 100),
         })),
-    [trainings, todayKey]
+    [trainings, isWithinSelectedPeriod]
   );
 
   // Generate rows for each stat
@@ -94,67 +155,43 @@ export const StatsSection: React.FC<{ trainings: Training[] }> = ({trainings}) =
         {/* Expanded Filters */}
         {showStatsFilters && (
           <div className="space-y-3 p-3 bg-gray-50 rounded-lg mb-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Клубы
-              </label>
-              <div className="flex flex-wrap gap-1">
-                <button
-                  onClick={() => setClubFilter("all")}
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    clubFilter === "all"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-white text-gray-600 border border-gray-300"
-                  }`}
-                >
-                  Все клубы
-                </button>
-                {clubs.map((club) => (
-                  <button
-                    key={club}
-                    onClick={() => setClubFilter(club)}
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      clubFilter === club
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-white text-gray-600 border border-gray-300"
-                    }`}
-                  >
-                    {club}
-                  </button>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Select
+                label="Клуб"
+                value={clubFilter}
+                onChange={(e) => setClubFilter(e.target.value)}
+                options={clubOptions}
+              />
+              <Select
+                label="Секция"
+                value={sectionFilter}
+                onChange={(e) => setSectionFilter(e.target.value)}
+                options={sectionOptions}
+              />
+              <Select
+                label="Период"
+                value={timeFilter}
+                onChange={(e) => setTimeFilter(e.target.value as Period)}
+                options={periodOptions}
+              />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Секции
-              </label>
-              <div className="flex flex-wrap gap-1">
-                <button
-                  onClick={() => setSectionFilter("all")}
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    sectionFilter === "all"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-white text-gray-600 border border-gray-300"
-                  }`}
-                >
-                  Все секции
-                </button>
-                {sections.map((section) => (
-                  <button
-                    key={section}
-                    onClick={() => setSectionFilter(section)}
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      sectionFilter === section
-                        ? "bg-green-100 text-green-800"
-                        : "bg-white text-gray-600 border border-gray-300"
-                    }`}
-                  >
-                    {section}
-                  </button>
-                ))}
+            {timeFilter === 'custom' && (
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  label="С"
+                  type="date"
+                  value={customFrom}
+                  onChange={(e) => setCustomFrom(e.target.value)}
+                />
+                <Input
+                  label="По"
+                  type="date"
+                  value={customTo}
+                  onChange={(e) => setCustomTo(e.target.value)}
+                />
               </div>
-            </div>
+            )}
           </div>
         )}
 
