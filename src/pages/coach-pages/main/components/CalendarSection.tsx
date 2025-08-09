@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { DayDetailsModal } from "./DayDetailsModal";
 import type { DaySchedule, Lesson } from "@/functions/axios/responses";
 import { scheduleApi } from "@/functions/axios/axiosFunctions";
 import { EditLessonModal } from "./EditLessonModal";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { AddTrainingModal } from "./AddTrainingModal";
 
 const coaches = ["Иван Иванов", "Мария Петрова", "Сергей Смирнов"];
 const clubs = ["Bars Checkmat", "Titan Fit", "Tigers"];
@@ -24,8 +25,15 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
     type: "all",
   });
 
+  const formatDate = useCallback((d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }, []);
+
   // Compute all week-start dates in the current month
-  const getWeeksInMonth = (date: Date) => {
+  const getWeeksInMonth = useCallback((date: Date) => {
     const weeks: string[] = [];
     const firstOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
     const lastOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -40,7 +48,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
       current.setDate(current.getDate() + 7);
     }
     return weeks;
-  };
+  }, [formatDate]);
 
   useEffect(() => {
     if (!token) return;
@@ -58,7 +66,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
         setCalendarData(next);
       })
       .catch(console.error);
-  }, [currentDate, token, refreshKey]);
+  }, [currentDate, token, refreshKey, getWeeksInMonth]);
 
   // Calendar utilities
   const getDaysInMonth = (date: Date) => {
@@ -73,12 +81,6 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
   };
 
   const days = useMemo(() => getDaysInMonth(currentDate), [currentDate]);
-  const formatDate = (d: Date) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
-  };
   const navigateMonth = (dir: "prev" | "next") =>
     setCurrentDate((d) => {
       const nd = new Date(d);
@@ -101,6 +103,8 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
   };
 
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [defaultDate, setDefaultDate] = useState<string | null>(null);
 
   return (
     <section className="bg-white rounded-lg border border-gray-200 mb-4">
@@ -272,6 +276,10 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
             onClose={() => setSelectedDay(null)}
             trainings={getLessonsForDate(selectedDay)}
             onSelectLesson={(lesson) => setEditingLesson(lesson)}
+            onCreateForDay={(dayStr) => {
+              setDefaultDate(dayStr);
+              setShowAdd(true);
+            }}
           />
         )}
 
@@ -286,6 +294,19 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
               // rely on parent refreshKey or local reload by bumping currentDate to itself
               setCurrentDate((d) => new Date(d));
             }}
+          />
+        )}
+
+        {showAdd && (
+          <AddTrainingModal
+            token={token}
+            onClose={() => { setShowAdd(false); setDefaultDate(null); }}
+            onSuccess={() => {
+              setShowAdd(false);
+              setDefaultDate(null);
+              setCurrentDate((d) => new Date(d));
+            }}
+            defaultDate={defaultDate || undefined}
           />
         )}
       </div>

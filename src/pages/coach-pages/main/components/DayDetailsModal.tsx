@@ -6,7 +6,8 @@ export const DayDetailsModal: React.FC<{
   onClose: () => void;
   trainings: Lesson[];
   onSelectLesson?: (lesson: Lesson) => void;
-}> = ({ day, onClose, trainings, onSelectLesson }) => {
+  onCreateForDay?: (day: string) => void;
+}> = ({ day, onClose, trainings, onSelectLesson, onCreateForDay }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-800/30 z-50 flex items-end">
@@ -78,7 +79,16 @@ export const DayDetailsModal: React.FC<{
             </div>
           ))}
           {trainings.length === 0 && (
-            <div className="py-8 text-center text-sm text-gray-500">Тренировок нет</div>
+            <div className="py-8 text-center">
+              <div className="text-sm text-gray-500 mb-3">Тренировок нет</div>
+              <button
+                onClick={() => onCreateForDay?.(day)
+                }
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 active:scale-[0.99] transition"
+              >
+                Создать тренировку
+              </button>
+            </div>
           )}
         </div>
       </div>

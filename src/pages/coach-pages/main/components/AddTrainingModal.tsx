@@ -4,7 +4,7 @@ import type { CreateManualLessonRequest } from '@/functions/axios/requests';
 import type { GetMyGroupResponse } from '@/functions/axios/responses';
 import { X } from 'lucide-react';
 
-export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | null; onSuccess?: () => void }> = ({ onClose, token, onSuccess }) => {
+export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | null; onSuccess?: () => void; defaultDate?: string }> = ({ onClose, token, onSuccess, defaultDate }) => {
   const [newTraining, setNewTraining] = useState({ date: '', time: '', endTime: '' });
   const [userGroups, setUserGroups] = useState<GetMyGroupResponse[]>([]);
   const [selectedClubId, setSelectedClubId] = useState<number | ''>('');
@@ -16,6 +16,12 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
     if (!token) return;
     groupsApi.getMy(token).then(res => setUserGroups(res.data)).catch(console.error);
   }, [token]);
+
+  useEffect(() => {
+    if (defaultDate) {
+      setNewTraining(prev => ({ ...prev, date: defaultDate }));
+    }
+  }, [defaultDate]);
 
   // Derive dropdown options
   const clubOptions = Array.from(new Set(userGroups.map(g => g.section.club_id)));
