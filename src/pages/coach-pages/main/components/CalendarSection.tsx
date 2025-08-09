@@ -6,8 +6,6 @@ import { EditLessonModal } from "./EditLessonModal";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddTrainingModal } from "./AddTrainingModal";
 
-const clubs = ["Bars Checkmat", "Titan Fit", "Tigers"];
-
 export const CalendarSection: React.FC<{ token: string | null; refreshKey?: number }> = ({
   token,
   refreshKey,
@@ -107,6 +105,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
 
   const [coaches, setCoaches] = useState<string[]>([]);
   const [isLoadingCoaches, setIsLoadingCoaches] = useState<boolean>(false);
+  const [clubNames, setClubNames] = useState<string[]>([]);
 
   useEffect(() => {
     if (!token) return;
@@ -139,6 +138,12 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
         }
 
         setCoaches(Array.from(uniqueNames.values()));
+
+        // Clubs: list all clubs the user is in (owner/admin/coach)
+        const names = Array.from(
+          new Set((currentClubs || []).map((c) => c.club_name).filter(Boolean))
+        );
+        setClubNames(names);
       })
       .catch(console.error)
       .finally(() => setIsLoadingCoaches(false));
@@ -211,7 +216,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
                 >
                   Все клубы
                 </button>
-                {clubs.map((club) => (
+                {(isLoadingCoaches ? ["Загрузка…"] : clubNames).map((club) => (
                   <button
                     key={club}
                     onClick={() =>
