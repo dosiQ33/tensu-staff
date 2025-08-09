@@ -1,12 +1,11 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { DayDetailsModal } from "./DayDetailsModal";
 import type { DaySchedule, Lesson } from "@/functions/axios/responses";
-import { scheduleApi } from "@/functions/axios/axiosFunctions";
+import { scheduleApi, teamApi } from "@/functions/axios/axiosFunctions";
 import { EditLessonModal } from "./EditLessonModal";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddTrainingModal } from "./AddTrainingModal";
 
-const coaches = ["Иван Иванов", "Мария Петрова", "Сергей Смирнов"];
 const clubs = ["Bars Checkmat", "Titan Fit", "Tigers"];
 
 export const CalendarSection: React.FC<{ token: string | null; refreshKey?: number }> = ({
@@ -106,6 +105,37 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
   const [showAdd, setShowAdd] = useState(false);
   const [defaultDate, setDefaultDate] = useState<string | null>(null);
 
+  const [coaches, setCoaches] = useState<string[]>([]);
+  const [isLoadingCoaches, setIsLoadingCoaches] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!token) return;
+    setIsLoadingCoaches(true);
+    teamApi
+      .get(token)
+      .then((res) => {
+        const allowedClubIds = (res.data.current_user_clubs || [])
+          .filter((c) => c.user_role === "owner" || c.user_role === "admin")
+          .map((c) => c.club_id);
+        const coachMembers = (res.data.staff_members || []).filter((m) =>
+          (m.clubs_and_roles || []).some(
+            (cr) => allowedClubIds.includes(cr.club_id) && cr.role === "coach"
+          )
+        );
+        const uniqueNames = Array.from(
+          new Map(
+            coachMembers.map((m) => [
+              m.id,
+              `${m.first_name}${m.last_name ? " " + m.last_name : ""}`.trim(),
+            ])
+          ).values()
+        );
+        setCoaches(uniqueNames);
+      })
+      .catch(console.error)
+      .finally(() => setIsLoadingCoaches(false));
+  }, [token]);
+
   return (
     <section className="bg-white rounded-lg border border-gray-200 mb-4">
       <div className="p-4">
@@ -138,7 +168,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
                 >
                   Все тренеры
                 </button>
-                {coaches.map((coach) => (
+                {(isLoadingCoaches ? ["Загрузка…"] : coaches).map((coach) => (
                   <button
                     key={coach}
                     onClick={() =>
