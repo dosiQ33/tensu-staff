@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { DayDetailsModal } from "./DayDetailsModal";
 import type { DaySchedule, Lesson } from "@/functions/axios/responses";
-import { scheduleApi, teamApi } from "@/functions/axios/axiosFunctions";
+import { scheduleApi, teamApi, staffApi } from "@/functions/axios/axiosFunctions";
 import { EditLessonModal } from "./EditLessonModal";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddTrainingModal } from "./AddTrainingModal";
@@ -111,26 +111,34 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
   useEffect(() => {
     if (!token) return;
     setIsLoadingCoaches(true);
-    teamApi
-      .get(token)
-      .then((res) => {
-        const allowedClubIds = (res.data.current_user_clubs || [])
+    Promise.all([teamApi.get(token), staffApi.getMe(token)])
+      .then(([teamRes, meRes]) => {
+        const currentClubs = teamRes.data.current_user_clubs || [];
+        const allowedClubIds = currentClubs
           .filter((c) => c.user_role === "owner" || c.user_role === "admin")
           .map((c) => c.club_id);
-        const coachMembers = (res.data.staff_members || []).filter((m) =>
+
+        const coachMembers = (teamRes.data.staff_members || []).filter((m) =>
           (m.clubs_and_roles || []).some(
             (cr) => allowedClubIds.includes(cr.club_id) && cr.role === "coach"
           )
         );
-        const uniqueNames = Array.from(
-          new Map(
-            coachMembers.map((m) => [
-              m.id,
-              `${m.first_name}${m.last_name ? " " + m.last_name : ""}`.trim(),
-            ])
-          ).values()
+
+        const uniqueNames = new Map<number, string>(
+          coachMembers.map((m) => [
+            m.id,
+            `${m.first_name}${m.last_name ? " " + m.last_name : ""}`.trim(),
+          ])
         );
-        setCoaches(uniqueNames);
+
+        const isCurrentUserCoach = currentClubs.some((c) => c.user_role === "coach");
+        if (isCurrentUserCoach) {
+          const myName = `${meRes.data.first_name}${meRes.data.last_name ? " " + meRes.data.last_name : ""}`.trim() || "Я (тренер)";
+          // Use a synthetic key to ensure inclusion without clashing with numeric IDs
+          uniqueNames.set(-1, myName);
+        }
+
+        setCoaches(Array.from(uniqueNames.values()));
       })
       .catch(console.error)
       .finally(() => setIsLoadingCoaches(false));
