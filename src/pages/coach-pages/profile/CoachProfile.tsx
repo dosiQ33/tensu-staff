@@ -187,8 +187,10 @@ const CoachProfile: React.FC = () => {
       await staffApi.updateMe({ first_name, last_name }, token);
       console.log("First name updated successfully:", first_name, last_name);
       // после успешного ответа
-      setName(nameInput);
-      localStorage.setItem("telegramFullName", nameInput);
+      const me = await staffApi.getMe(token);
+      const apiName = `${me.data.first_name}${me.data.last_name ? " " + me.data.last_name : ""}`.trim();
+      setName(apiName || nameInput);
+      localStorage.setItem("telegramFullName", apiName || nameInput);
       setEditingName(false);
     } catch (err) {
       console.error("Не удалось сохранить имя:", err);
@@ -253,6 +255,23 @@ const CoachProfile: React.FC = () => {
       .then((res) => {
         if (res.data.invitations.length > 0) {
           setMyInvitations(res.data.invitations);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  // Always hydrate profile name from API on mount so it persists across app reloads
+  useEffect(() => {
+    const token = localStorage.getItem("telegramToken");
+    if (!token) return;
+    staffApi
+      .getMe(token)
+      .then((res) => {
+        const apiName = `${res.data.first_name}${res.data.last_name ? " " + res.data.last_name : ""}`.trim();
+        if (apiName) {
+          setName(apiName);
+          setNameInput(apiName);
+          localStorage.setItem("telegramFullName", apiName);
         }
       })
       .catch(console.error);
