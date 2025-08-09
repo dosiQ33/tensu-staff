@@ -52,15 +52,15 @@ export const EditLessonModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-end">
-      <div className="bg-white w-full max-h-[80vh] rounded-t-2xl overflow-hidden">
+    <div className="fixed inset-0 bg-gray-800/30 z-50 flex items-end">
+      <div className="bg-white w-full max-h-[85vh] rounded-t-2xl overflow-hidden shadow-xl">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Редактировать тренировку</h2>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600">
+          <h2 className="text-base font-semibold text-gray-900">Редактировать тренировку</h2>
+          <button onClick={onClose} className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg">
             <X size={20} />
           </button>
         </div>
-        <div className="p-4 space-y-4 overflow-y-auto">
+        <div className="p-3 space-y-3 overflow-y-auto">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Дата</label>
@@ -139,13 +139,15 @@ export const EditLessonModal: React.FC<{
             />
           </div>
 
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-300"
-          >
-            Сохранить изменения
-          </button>
+          <div className="sticky bottom-0 bg-white pt-2 pb-3">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 active:scale-[0.99] disabled:bg-gray-300"
+            >
+              Сохранить изменения
+            </button>
+          </div>
         </div>
       </div>
     </div>
