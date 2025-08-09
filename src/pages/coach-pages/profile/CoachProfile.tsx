@@ -9,7 +9,6 @@ import {
   CreditCard,
   Eye,
   X,
-  DollarSign,
   Activity,
   Clock,
   BarChart3,
@@ -148,7 +147,7 @@ const CoachProfile: React.FC = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "KZT",
     }).format(amount);
   };
 
@@ -441,7 +440,7 @@ const CoachProfile: React.FC = () => {
                       <div className="flex items-center gap-2 mb-1">
                         <Users className="text-blue-600" size={16} />
                         <span className="text-sm font-medium text-blue-700">
-                          Students
+                          Студенты
                         </span>
                       </div>
                       <div className="text-xl font-bold text-blue-800">
@@ -469,9 +468,9 @@ const CoachProfile: React.FC = () => {
                     {club.userRole === "owner" && (
                       <div className="bg-green-50 rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-1">
-                          <DollarSign className="text-green-600" size={16} />
+                          <span className="text-green-600 text-[16px] leading-none">₸</span>
                           <span className="text-sm font-medium text-green-700">
-                            Revenue
+                            Доход
                           </span>
                         </div>
                         <div className="text-xl font-bold text-green-800">
@@ -632,7 +631,7 @@ const CoachProfile: React.FC = () => {
 
                   <div className="bg-green-50 rounded-lg p-3 border border-green-200">
                     <div className="flex items-center gap-2 mb-1">
-                      <DollarSign className="text-green-600" size={16} />
+                      <span className="text-green-600 text-[16px] leading-none">₸</span>
                       <span className="text-sm font-medium text-green-700">
                         Недельный Доход
                       </span>
