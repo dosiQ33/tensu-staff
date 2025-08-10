@@ -22,6 +22,7 @@ declare global {
         initDataUnsafe: { user: TelegramUser };
         ready: () => void;
         sendData: (data: string) => void;
+        openLink?: (url: string, options?: { try_instant_view?: boolean }) => void;
       };
     };
   }
