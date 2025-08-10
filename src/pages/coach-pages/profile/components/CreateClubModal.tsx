@@ -62,8 +62,8 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
   const handleSubmit = () => onSubmit(form);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 pt-20">
-      <div className="bg-white w-full h-full max-w-md shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+      <div className="bg-white w-full h-full max-w-md shadow-2xl overflow-hidden pt-20">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-2">
           <h2 className="text-lg font-semibold text-gray-800">Создать Клуб</h2>
