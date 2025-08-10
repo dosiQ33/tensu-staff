@@ -11,7 +11,7 @@ export const DayDetailsModal: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-gray-800/30 z-50 flex items-end">
-      <div className="bg-white w-full max-h-[85vh] rounded-t-2xl overflow-hidden shadow-xl">
+      <div className="bg-white w-full max-h-[85vh] rounded-t-2xl overflow-hidden shadow-xl pb-2">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-gray-900">
