@@ -1,5 +1,6 @@
 // src/components/Layout.tsx
 import React from "react";
+import { useI18n } from "@/i18n/i18n";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Home,
@@ -31,12 +32,13 @@ export const Layout: React.FC<LayoutProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useI18n();
 
   const navItems: NavItem[] = [
-    { icon: Home, label: "Главная", path: "/coach/main" },
-    { icon: Users, label: "Студенты", path: "/coach/students" },
-    { icon: BarChart2, label: "Управление", path: "/coach/management" },
-    { icon: User, label: "Профиль", path: "/coach/profile" },
+    { icon: Home, label: t('nav.home'), path: "/coach/main" },
+    { icon: Users, label: t('nav.students'), path: "/coach/students" },
+    { icon: BarChart2, label: t('nav.management'), path: "/coach/management" },
+    { icon: User, label: t('nav.profile'), path: "/coach/profile" },
   ];
 
   return (
@@ -147,28 +149,29 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
 export const BottomNav: React.FC<BottomNavProps> = ({ page }) => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const items = [
     {
       icon: <Home size={20} />,
-      label: "Главная",
+      label: t('nav.home'),
       path: "/coach/main",
       active: page === "main",
     },
     {
       icon: <Users size={20} />,
-      label: "Мои студенты",
+      label: t('nav.students'),
       path: "/coach/students",
       active: page === "students",
     },
     {
       icon: <BarChart2 size={20} />,
-      label: "Управление",
+      label: t('nav.management'),
       path: "/coach/management",
       active: page === "management",
     },
     {
       icon: <User size={20} />,
-      label: "Профиль",
+      label: t('nav.profile'),
       path: "/coach/profile",
       active: page === "profile",
     },

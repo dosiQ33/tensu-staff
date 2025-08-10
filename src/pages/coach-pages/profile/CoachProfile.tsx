@@ -34,8 +34,11 @@ import type {
 import { BottomNav } from "@/components/Layout";
 import type { Club } from "@/types/types";
 import { Spinner, Skeleton, SkeletonLine } from "@/components/ui";
+import { useI18n } from "@/i18n/i18n";
 
 const CoachProfile: React.FC = () => {
+  const { t, lang, setLang } = useI18n();
+  const [showLangSheet, setShowLangSheet] = useState(false);
   const refresh = () => window.location.reload();
   const mapClub = ({ club: c, role }: ClubWithRole): Club => ({
     id: c.id.toString(),
@@ -905,25 +908,19 @@ const CoachProfile: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-md relative mt-2 overflow-visible">
           {[
             {
-              label: "Сменить язык",
+              label: t('language.change'),
               icon: Globe,
-              onClick: () => {
-                /*…*/
-              },
+              onClick: () => setShowLangSheet(true),
             },
             {
               label: "Политика конфиденциальности",
               icon: FileText,
-              onClick: () => {
-                /*…*/
-              },
+              onClick: () => {},
             },
             {
               label: "Напишите нам",
               icon: Mail,
-              onClick: () => {
-                /*…*/
-              },
+              onClick: () => {},
             },
           ].map(({ label, icon: Icon, onClick }, i, arr) => (
             <button
@@ -946,6 +943,30 @@ const CoachProfile: React.FC = () => {
             </button>
           ))}
         </div>
+
+        {/* Language Action Sheet */}
+        {showLangSheet && (
+          <div className="fixed inset-0 z-50 flex items-end">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setShowLangSheet(false)} />
+            <div className="bg-white w-full rounded-t-2xl p-4">
+              <h3 className="text-lg font-semibold mb-3">{t('language.change')}</h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => { setLang('ru'); setShowLangSheet(false); }}
+                  className={`w-full text-left px-4 py-3 rounded-lg border ${lang === 'ru' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200'}`}
+                >
+                  {t('language.russian')}
+                </button>
+                <button
+                  onClick={() => { setLang('kk'); setShowLangSheet(false); }}
+                  className={`w-full text-left px-4 py-3 rounded-lg border ${lang === 'kk' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200'}`}
+                >
+                  {t('language.kazakh')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <BottomNav page="profile" />
