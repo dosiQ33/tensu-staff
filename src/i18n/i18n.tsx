@@ -65,6 +65,12 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [lang]);
 
+  // Reflect current language on the <html> tag to influence native pickers (Android/Chrome) and a11y
+  useEffect(() => {
+    const html = document.documentElement;
+    html.setAttribute('lang', lang === 'kk' ? 'kk-KZ' : 'ru-RU');
+  }, [lang]);
+
   const value = useMemo(() => ({ lang, setLang, t }), [lang, t]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
