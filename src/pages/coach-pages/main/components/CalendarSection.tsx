@@ -333,8 +333,6 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
             onClose={() => setEditingLesson(null)}
             onSaved={() => {
               setEditingLesson(null);
-              // trigger refresh
-              // rely on parent refreshKey or local reload by bumping currentDate to itself
               setCurrentDate((d) => new Date(d));
             }}
           />

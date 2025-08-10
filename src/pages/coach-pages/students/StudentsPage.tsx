@@ -24,7 +24,6 @@ interface StudentUI {
   surname: string;
   telegramUsername?: string;
   phone?: string;
-  // Placeholders for future enrichment when API supports it
   coaches: string[];
   groups: string[];
   type: string;

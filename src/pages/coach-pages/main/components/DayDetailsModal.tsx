@@ -13,7 +13,7 @@ export const DayDetailsModal: React.FC<{
     <div className="fixed inset-0 bg-gray-800/30 z-50 flex items-end">
       <div className="bg-white w-full max-h-[85vh] rounded-t-2xl overflow-hidden shadow-xl">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-gray-900">
               Тренировки{" "}
               {new Date(day).toLocaleDateString("ru-RU", {
@@ -22,12 +22,22 @@ export const DayDetailsModal: React.FC<{
                 day: "numeric",
               })}
             </h2>
-            <button
-              onClick={onClose}
-              className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
-            >
-              <X size={20} />
-            </button>
+            <div className="flex items-center gap-2">
+              {onCreateForDay && (
+                <button
+                  onClick={() => onCreateForDay(day)}
+                  className="px-3 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 active:scale-[0.99] transition"
+                >
+                  Добавить тренировку
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -86,7 +96,7 @@ export const DayDetailsModal: React.FC<{
                 }
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 active:scale-[0.99] transition"
               >
-                Создать тренировку
+                Добавить тренировку
               </button>
             </div>
           )}
