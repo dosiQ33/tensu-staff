@@ -80,7 +80,7 @@ export const EditLessonModal: React.FC<{
         <div className="p-3 space-y-3 overflow-y-auto">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Дата</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{lang === 'kk' ? 'Күні' : 'Дата'}</label>
               <input
                 type="date"
                 className="w-full border border-gray-200 rounded-lg p-2"
@@ -89,7 +89,7 @@ export const EditLessonModal: React.FC<{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Время</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{lang === 'kk' ? 'Уақыты' : 'Время'}</label>
               <input
                 type="time"
                 className="w-full border border-gray-200 rounded-lg p-2"

@@ -1,5 +1,6 @@
 import type { Lesson } from "@/functions/axios/responses";
 import { Clock, MapPin, Users, X, Pencil, BadgeCheck } from "lucide-react";
+import { useI18n } from "@/i18n/i18n";
 
 export const DayDetailsModal: React.FC<{
   day: string;
@@ -8,6 +9,7 @@ export const DayDetailsModal: React.FC<{
   onSelectLesson?: (lesson: Lesson) => void;
   onCreateForDay?: (day: string) => void;
 }> = ({ day, onClose, trainings, onSelectLesson, onCreateForDay }) => {
+  const { t } = useI18n();
   const getTemporalStatus = (t: Lesson) => {
     if (t.status === 'cancelled') {
       return { key: 'cancelled', label: 'Отменено', color: 'bg-red-100 text-red-700' } as const;
@@ -30,7 +32,7 @@ export const DayDetailsModal: React.FC<{
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-gray-900">
-              Тренировки{" "}
+              {t('day.modal.title')} {" "}
               {new Date(day).toLocaleDateString("ru-RU", {
                 weekday: "long",
                 month: "long",
@@ -98,7 +100,7 @@ export const DayDetailsModal: React.FC<{
           ))}
           {trainings.length === 0 && (
             <div className="py-8 text-center">
-              <div className="text-sm text-gray-500 mb-3">Тренировок нет</div>
+              <div className="text-sm text-gray-500 mb-3">{t('day.modal.empty')}</div>
             </div>
           )}
         </div>
@@ -109,7 +111,7 @@ export const DayDetailsModal: React.FC<{
               onClick={() => onCreateForDay(day)}
               className="w-full bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 active:scale-[0.99] transition"
             >
-              Добавить тренировку
+              {t('day.modal.add')}
             </button>
           </div>
         )}

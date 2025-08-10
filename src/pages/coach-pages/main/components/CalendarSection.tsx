@@ -6,6 +6,7 @@ import { EditLessonModal } from "./EditLessonModal";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddTrainingModal } from "./AddTrainingModal";
 import { Skeleton } from "@/components/ui";
+import { useI18n } from "@/i18n/i18n";
 
 export const CalendarSection: React.FC<{ token: string | null; refreshKey?: number }> = ({
   token,
@@ -117,6 +118,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
   const [coaches, setCoaches] = useState<string[]>([]);
   const [isLoadingCoaches, setIsLoadingCoaches] = useState<boolean>(false);
   const [clubNames, setClubNames] = useState<string[]>([]);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!token) return;
@@ -186,7 +188,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
           <div className="space-y-3 p-3 bg-gray-50 rounded-lg mb-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Тренеры
+                {t('filters.coaches')}
               </label>
               <div className="flex flex-wrap gap-1">
                 <button
@@ -199,7 +201,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
                       : "bg-white text-gray-600 border"
                   }`}
                 >
-                  Все тренеры
+                  {t('filters.allCoaches')}
                 </button>
                 {(isLoadingCoaches ? ["Загрузка…"] : coaches).map((coach) => (
                   <button
@@ -221,7 +223,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Клубы
+                {t('filters.clubs')}
               </label>
               <div className="flex flex-wrap gap-1">
                 <button
@@ -234,7 +236,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
                       : "bg-white text-gray-600 border"
                   }`}
                 >
-                  Все клубы
+                  {t('filters.allClubs')}
                 </button>
                 {(isLoadingCoaches ? ["Загрузка…"] : clubNames).map((club) => (
                   <button
@@ -276,7 +278,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
         {/* calendar grid */}
         <div className="bg-gray-50 rounded-lg overflow-hidden">
           <div className="grid grid-cols-7 bg-gray-100 text-gray-500 text-xs font-medium">
-            {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].map((d) => (
+            {(t('calendar.weekdays').split(',')).map((d) => (
               <div key={d} className="py-2 text-center">
                 {d}
               </div>
