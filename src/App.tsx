@@ -13,6 +13,7 @@ import CoachProfile from "./pages/coach-pages/profile/CoachProfile";
 import CoachMainPage from "./pages/coach-pages/main/CoachMainPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
+import { useI18n } from "@/i18n/i18n";
 
 function AppRoutes() {
   const location = useLocation();
@@ -34,6 +35,7 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const { lang } = useI18n();
   React.useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -46,7 +48,7 @@ export default function App() {
 
   return (
     <Router>
-      <AppRoutes />
+      <AppRoutes key={lang} />
     </Router>
   );
 }

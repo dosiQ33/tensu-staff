@@ -10,6 +10,7 @@ const RU: Dict = {
   'nav.management': 'Управление',
   'nav.profile': 'Профиль',
   'management.title': 'Панель Управления',
+  'students.search': 'Найти студентов...',
 
   'language.change': 'Сменить язык',
   'language.russian': 'Русский',

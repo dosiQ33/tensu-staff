@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { BottomNav } from "@/components/Layout";
 import { SkeletonLine, SkeletonAvatar } from "@/components/ui";
+import { useI18n } from "@/i18n/i18n";
 
 import { studentsApi } from "@/functions/axios/axiosFunctions";
 // import types if needed for stricter typing
@@ -43,6 +44,7 @@ interface Filters {
 }
 
 const StudentsPage: React.FC = () => {
+  const { t } = useI18n();
   const [allStudents, setAllStudents] = useState<StudentUI[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -190,7 +192,7 @@ const StudentsPage: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Найти студентов..."
+                placeholder={t('students.search')}
                 value={filters.search}
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, search: e.target.value }))
