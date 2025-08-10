@@ -33,7 +33,7 @@ import type {
 } from "@/functions/axios/responses";
 import { BottomNav } from "@/components/Layout";
 import type { Club } from "@/types/types";
-import { Spinner } from "@/components/ui";
+import { Spinner, Skeleton, SkeletonLine } from "@/components/ui";
 
 const CoachProfile: React.FC = () => {
   const refresh = () => window.location.reload();
@@ -87,6 +87,7 @@ const CoachProfile: React.FC = () => {
   const [isSavingName, setIsSavingName] = useState(false);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [loadingClubs, setLoadingClubs] = useState<boolean>(false);
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -244,12 +245,14 @@ const CoachProfile: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("telegramToken")!;
+    setLoadingClubs(true);
     clubsApi
       .getMy(token)
       .then((res) => {
         setClubs(res.data.clubs.map(mapClub));
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoadingClubs(false));
     invitationsApi
       .getMyPending(token)
       .then((res) => {
@@ -430,7 +433,27 @@ const CoachProfile: React.FC = () => {
               Мои Клубы ({clubs.length + myInvitations.length})
             </h3>
 
-            {clubs.map((club) => (
+            {loadingClubs && (
+              <>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="p-4 border-b border-gray-100">
+                      <div className="flex items-start gap-3">
+                        <Skeleton className="w-10 h-10 rounded" />
+                        <div className="flex-1">
+                          <SkeletonLine width="w-1/3" />
+                          <SkeletonLine width="w-1/4" className="mt-2" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <Skeleton className="h-20 w-full rounded" />
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {!loadingClubs && clubs.map((club) => (
               <div
                 key={club.id}
                 className="bg-white rounded-lg border border-gray-200 overflow-hidden"

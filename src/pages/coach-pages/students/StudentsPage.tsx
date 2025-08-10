@@ -14,6 +14,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { BottomNav } from "@/components/Layout";
+import { SkeletonLine, SkeletonAvatar } from "@/components/ui";
 
 import { studentsApi } from "@/functions/axios/axiosFunctions";
 // import types if needed for stricter typing
@@ -316,7 +317,23 @@ const StudentsPage: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            {filteredStudents.map((student) => (
+            {isLoading && (
+              <>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-start gap-3">
+                      <SkeletonAvatar />
+                      <div className="flex-1 space-y-2">
+                        <SkeletonLine width="w-1/2" />
+                        <SkeletonLine width="w-1/3" />
+                        <SkeletonLine width="w-2/3" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {!isLoading && filteredStudents.map((student) => (
               <div
                 key={student.id}
                 onClick={() => setSelectedStudent(student)}

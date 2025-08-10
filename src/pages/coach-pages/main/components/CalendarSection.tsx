@@ -5,6 +5,7 @@ import { scheduleApi, teamApi, staffApi } from "@/functions/axios/axiosFunctions
 import { EditLessonModal } from "./EditLessonModal";
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddTrainingModal } from "./AddTrainingModal";
+import { Skeleton } from "@/components/ui";
 
 export const CalendarSection: React.FC<{ token: string | null; refreshKey?: number }> = ({
   token,
@@ -263,6 +264,14 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
             ))}
           </div>
           <div className="grid grid-cols-7">
+            {Object.keys(calendarData).length === 0 && (
+              Array.from({ length: 28 }).map((_, i) => (
+                <div key={i} className="min-h-[60px] p-1 border border-gray-200">
+                  <Skeleton className="h-4 w-6 mb-1" />
+                  <Skeleton className="h-3 w-10" />
+                </div>
+              ))
+            )}
             {days.map((day, idx) => (
               <div
                 key={idx}

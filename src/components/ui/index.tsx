@@ -387,3 +387,20 @@ export const Spinner: React.FC<{ size?: 'sm' | 'md' | 'lg' }> = ({ size = 'md' }
     <div className={`${sizes[size]} border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin`} />
   );
 };
+
+// Skeletons
+interface SkeletonProps {
+  className?: string;
+}
+
+export const Skeleton: React.FC<SkeletonProps> = ({ className = '' }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+);
+
+export const SkeletonLine: React.FC<{ width?: string; className?: string }> = ({ width = 'w-full', className = '' }) => (
+  <Skeleton className={`${width} h-3 ${className}`} />
+);
+
+export const SkeletonAvatar: React.FC<{ size?: number; className?: string }> = ({ size = 40, className = '' }) => (
+  <div className={`animate-pulse bg-gray-200 rounded-full ${className}`} style={{ width: size, height: size }} />
+);
