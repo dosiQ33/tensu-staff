@@ -150,6 +150,15 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
       .finally(() => setIsLoadingCoaches(false));
   }, [token]);
 
+  const isPastDate = useCallback((dateStr: string) => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${y}-${m}-${d}`;
+    return dateStr < todayStr;
+  }, []);
+
   return (
     <section className="bg-white rounded-lg border border-gray-200 mb-4">
       <div className="p-4">
@@ -328,7 +337,8 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
             onClose={() => setSelectedDay(null)}
             trainings={getLessonsForDate(selectedDay)}
             onSelectLesson={(lesson) => setEditingLesson(lesson)}
-            onCreateForDay={(dayStr) => {
+            onCreateForDay={isPastDate(selectedDay) ? undefined : (dayStr) => {
+              if (isPastDate(dayStr)) return;
               setDefaultDate(dayStr);
               setShowAdd(true);
             }}

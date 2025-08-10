@@ -23,6 +23,36 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
     }
   }, [defaultDate]);
 
+  const todayStr = (() => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  })();
+
+  const isPastDate = (date: string) => date !== '' && date < todayStr;
+  const isToday = (date: string) => date === todayStr;
+  const isPastTimeToday = (time: string) => {
+    if (!isToday(newTraining.date) || !time) return false;
+    const [hh, mm] = time.split(':').map(Number);
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const targetMinutes = (hh || 0) * 60 + (mm || 0);
+    return targetMinutes <= currentMinutes; // must be strictly ahead
+  };
+
+  const invalidDate = isPastDate(newTraining.date);
+  const invalidStartTime = isPastTimeToday(newTraining.time);
+  const invalidEndTime = (() => {
+    if (!newTraining.time || !newTraining.endTime) return false;
+    const [sh, sm] = newTraining.time.split(':').map(Number);
+    const [eh, em] = newTraining.endTime.split(':').map(Number);
+    const startMin = (sh || 0) * 60 + (sm || 0);
+    const endMin = (eh || 0) * 60 + (em || 0);
+    return endMin <= startMin;
+  })();
+
   // Derive dropdown options
   const clubOptions = Array.from(new Set(userGroups.map(g => g.section.club_id)));
   const sectionOptions = selectedClubId === '' ? [] :
@@ -149,19 +179,32 @@ export const AddTrainingModal: React.FC<{ onClose: () => void; token: string | n
               type="date"
               value={newTraining.date}
               onChange={e => setNewTraining(prev => ({ ...prev, date: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg p-2"
+              min={todayStr}
+              className={`w-full border rounded-lg p-2 ${invalidDate ? 'border-red-500' : 'border-gray-200'}`}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <input type="time" className="border border-gray-200 rounded-lg p-2" value={newTraining.time} onChange={e => setNewTraining(prev => ({ ...prev, time: e.target.value }))} />
-            <input type="time" className="border border-gray-200 rounded-lg p-2" value={newTraining.endTime} onChange={e => setNewTraining(prev => ({ ...prev, endTime: e.target.value }))} />
+            <input
+              type="time"
+              className={`border rounded-lg p-2 ${invalidStartTime ? 'border-red-500' : 'border-gray-200'}`}
+              value={newTraining.time}
+              onChange={e => setNewTraining(prev => ({ ...prev, time: e.target.value }))}
+              disabled={invalidDate}
+            />
+            <input
+              type="time"
+              className={`border rounded-lg p-2 ${invalidEndTime ? 'border-red-500' : 'border-gray-200'}`}
+              value={newTraining.endTime}
+              onChange={e => setNewTraining(prev => ({ ...prev, endTime: e.target.value }))}
+              disabled={invalidDate}
+            />
           </div>
 
           {/* Save Button */}
           <button
             onClick={handleSave}
             disabled={
-              !selectedClubId || !selectedSectionId || !selectedGroupId || !selectedCoachId || !newTraining.date || !newTraining.time || !newTraining.endTime
+              !selectedClubId || !selectedSectionId || !selectedGroupId || !selectedCoachId || !newTraining.date || !newTraining.time || !newTraining.endTime || invalidDate || invalidStartTime || invalidEndTime
             }
             className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-300 transition-colors"
           >
