@@ -920,7 +920,7 @@ const CoachProfile: React.FC = () => {
             {
               label: "Напишите нам",
               icon: Mail,
-              onClick: () => {},
+              onClick: () => { window.location.href = 'mailto:support@tensu.kz'; },
             },
           ].map(({ label, icon: Icon, onClick }, i, arr) => (
             <button
