@@ -14,6 +14,7 @@ import CoachMainPage from "./pages/coach-pages/main/CoachMainPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
 import { useI18n } from "@/i18n/i18n";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function AppRoutes() {
   const location = useLocation();
@@ -26,6 +27,7 @@ function AppRoutes() {
         <Route path="/coach/students" element={<StudentsPage />} />
         <Route path="/coach/management" element={<ManagementPage />} />
         <Route path="/coach/profile" element={<CoachProfile />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="*" element={<Navigate to="/onboarding" replace />} />
       </Routes>

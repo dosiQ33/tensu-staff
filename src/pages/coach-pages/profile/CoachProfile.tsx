@@ -915,7 +915,7 @@ const CoachProfile: React.FC = () => {
             {
               label: "Политика конфиденциальности",
               icon: FileText,
-              onClick: () => {},
+              onClick: () => { window.location.href = '/privacy'; },
             },
             {
               label: "Напишите нам",
