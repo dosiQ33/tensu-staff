@@ -960,13 +960,13 @@ const CoachProfile: React.FC = () => {
               <h3 className="text-lg font-semibold mb-3">{t('language.change')}</h3>
               <div className="space-y-2">
                 <button
-                  onClick={() => { setLang('ru'); setShowLangSheet(false); setTimeout(() => window.location.reload(), 10); }}
+                  onClick={() => { setLang('ru'); setShowLangSheet(false); }}
                   className={`w-full text-left px-4 py-3 rounded-lg border ${lang === 'ru' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200'}`}
                 >
                   {t('language.russian')}
                 </button>
                 <button
-                  onClick={() => { setLang('kk'); setShowLangSheet(false); setTimeout(() => window.location.reload(), 10); }}
+                  onClick={() => { setLang('kk'); setShowLangSheet(false); }}
                   className={`w-full text-left px-4 py-3 rounded-lg border ${lang === 'kk' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200'}`}
                 >
                   {t('language.kazakh')}
