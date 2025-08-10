@@ -50,6 +50,13 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const stored = localStorage.getItem('appLang') as Lang | null;
     if (stored === 'ru' || stored === 'kk') {
       setLangState(stored);
+    } else {
+      // Initialize from Telegram or browser language
+      const tg = window.Telegram?.WebApp;
+      const browserLang = navigator.language?.toLowerCase();
+      const tgLang = (tg && tg.initDataUnsafe && (tg.initDataUnsafe as { user?: { language_code?: string } }).user?.language_code) || undefined;
+      const effective = (tgLang || browserLang || 'ru').toLowerCase();
+      setLangState(effective.startsWith('kk') ? 'kk' : 'ru');
     }
   }, []);
 
