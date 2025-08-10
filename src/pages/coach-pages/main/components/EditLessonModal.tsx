@@ -160,7 +160,7 @@ export const EditLessonModal: React.FC<{
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 active:scale-[0.99] disabled:bg-gray-300"
+              className="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold hover:bg-blue-600 active:scale-[0.99] disabled:bg-gray-300"
             >
               {lang === 'kk' ? 'Өзгерістерді сақтау' : 'Сохранить изменения'}
             </button>
