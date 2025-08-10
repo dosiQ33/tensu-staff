@@ -289,7 +289,7 @@ const CoachProfile: React.FC = () => {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-4 py-4">
-            <h1 className="text-xl font-semibold text-gray-900">Профиль</h1>
+            <h1 className="text-xl font-semibold text-gray-900">{t('profile.title')}</h1>
           </div>
         </div>
 
@@ -379,7 +379,7 @@ const CoachProfile: React.FC = () => {
               onClick={handleCreateClick}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
             >
-              + Создать клуб
+              + {t('club.create')}
             </button>
           </div>
 
@@ -433,7 +433,7 @@ const CoachProfile: React.FC = () => {
           {/* Clubs Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">
-              Мои Клубы ({clubs.length + myInvitations.length})
+              {t('clubs.mine')} ({clubs.length + myInvitations.length})
             </h3>
 
             {loadingClubs && (
@@ -495,8 +495,8 @@ const CoachProfile: React.FC = () => {
                     <div className="bg-blue-50 rounded-lg p-3">
                       <div className="flex items-center gap-2 mb-1">
                         <Users className="text-blue-600" size={16} />
-                        <span className="text-sm font-medium text-blue-700">
-                          Студенты
+                          <span className="text-sm font-medium text-blue-700">
+                            {t('stats.students')}
                         </span>
                       </div>
                       <div className="text-xl font-bold text-blue-800">
@@ -526,13 +526,13 @@ const CoachProfile: React.FC = () => {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-green-600 text-[16px] leading-none">₸</span>
                           <span className="text-sm font-medium text-green-700">
-                            Доход
+                            {t('stats.revenue')}
                           </span>
                         </div>
                         <div className="text-xl font-bold text-green-800">
                           {formatCurrency(club.monthlyRevenue)}
                         </div>
-                        <div className="text-sm text-green-600">Помесячно</div>
+                        <div className="text-sm text-green-600">{t('stats.perMonth')}</div>
                       </div>
                     )}
                   </div>
@@ -549,7 +549,7 @@ const CoachProfile: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <CreditCard className="text-gray-600" size={16} />
                           <span className="text-sm font-medium text-gray-700">
-                            {club.plan} План
+                            {club.plan} {t('plan.title')}
                           </span>
                         </div>
                         <span
@@ -564,14 +564,14 @@ const CoachProfile: React.FC = () => {
 
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-600">
-                          Следующая оплата: {formatDate(club.nextPayment)}
+                          {t('payment.next')}: {formatDate(club.nextPayment)}
                         </div>
                         <div className="flex gap-2">
                           <button
                             onClick={() => setShowPaymentHistory(club.id)}
                             className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors"
                           >
-                            История
+                            {t('payment.history')}
                           </button>
                           <button
                             onClick={() => handlePayment(club.id)}
@@ -583,7 +583,7 @@ const CoachProfile: React.FC = () => {
                                 : "bg-red-500 text-white hover:bg-red-600"
                             }`}
                           >
-                            {getPaymentAction(club.paymentStatus)}
+                            {t(`payment.action.${getPaymentAction(club.paymentStatus).toLowerCase().replace(' ', '')}`)}
                           </button>
                         </div>
                       </div>
@@ -595,7 +595,7 @@ const CoachProfile: React.FC = () => {
             {myInvitations.length > 0 && (
               <div className="bg-white rounded-lg border border-gray-200 p-4">
                 <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                  Приглашения ({myInvitations.length})
+                  {t('invite.title')} ({myInvitations.length})
                 </h4>
                 <ul className="space-y-3">
                   {myInvitations.map((invitation) => (
@@ -608,7 +608,7 @@ const CoachProfile: React.FC = () => {
                           {invitation.phone_number}
                         </div>
                         <div className="text-xs text-gray-600">
-                          Роль:{" "}
+                          {t('invite.role')}: {" "}
                           <span className="font-bold text-blue-500">
                             {getRoleLabel(invitation.role)}
                           </span>{" "}
@@ -628,7 +628,7 @@ const CoachProfile: React.FC = () => {
                             }}
                             className="px-3 ml-2 mr-2 py-1 text-xs font-bold pt-2 pb-2 pl-4 pr-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                           >
-                            Принять
+                            {t('action.accept')}
                           </button>
                           <button
                             onClick={() => {
@@ -636,7 +636,7 @@ const CoachProfile: React.FC = () => {
                             }}
                             className="px-3 py-1 text-xs bg-transparent-500 font-bold pt-2 pb-2 pl-4 pr-4 text-red-700 rounded hover:bg-blue-600 transition-colors "
                           >
-                            Отклонить
+                            {t('action.decline')}
                           </button>
                         </>
                       )}
