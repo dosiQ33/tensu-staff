@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Phone,
@@ -15,17 +15,21 @@ import {
 } from "lucide-react";
 import { BottomNav } from "@/components/Layout";
 
-interface Student {
+import { studentsApi } from "@/functions/axios/axiosFunctions";
+// import types if needed for stricter typing
+
+interface StudentUI {
   id: string;
   name: string;
   surname: string;
   telegramUsername?: string;
+  phone?: string;
+  // Placeholders for future enrichment when API supports it
   coaches: string[];
   groups: string[];
   type: string;
   status: "active" | "frozen" | "inactive";
   membershipUntil: string;
-  phone?: string;
   visitHistory: { date: string; attended: boolean }[];
   paymentHistory: { date: string; amount: number; description: string }[];
 }
@@ -39,99 +43,37 @@ interface Filters {
 }
 
 const StudentsPage: React.FC = () => {
-  // Sample data
-  const allStudents: Student[] = [
-    {
-      id: "1",
-      name: "Alex",
-      surname: "Johnson",
-      telegramUsername: "@alexj",
-      coaches: ["Mike Smith", "Sarah Connor"],
-      groups: ["Advanced Karate", "Competition"],
-      type: "Karate",
-      status: "active",
-      membershipUntil: "2025-07-15",
-      phone: "+1234567890",
-      visitHistory: [
-        { date: "2025-05-20", attended: true },
-        { date: "2025-05-18", attended: true },
-        { date: "2025-05-15", attended: false },
-      ],
-      paymentHistory: [
-        { date: "2025-05-01", amount: 120, description: "Monthly membership" },
-        { date: "2025-04-01", amount: 120, description: "Monthly membership" },
-      ],
-    },
-    {
-      id: "2",
-      name: "Maria",
-      surname: "Rodriguez",
-      telegramUsername: "@maria_r",
-      coaches: ["Carlos Lopez"],
-      groups: ["Beginner Boxing"],
-      type: "Boxing",
-      status: "frozen",
-      membershipUntil: "2025-06-10",
-      visitHistory: [
-        { date: "2025-05-10", attended: true },
-        { date: "2025-05-08", attended: true },
-      ],
-      paymentHistory: [
-        { date: "2025-05-01", amount: 100, description: "Monthly membership" },
-      ],
-    },
-    {
-      id: "3",
-      name: "David",
-      surname: "Chen",
-      coaches: ["Mike Smith"],
-      groups: ["Intermediate Karate"],
-      type: "Karate",
-      status: "active",
-      membershipUntil: "2025-05-30",
-      phone: "+9876543210",
-      visitHistory: [
-        { date: "2025-05-22", attended: true },
-        { date: "2025-05-20", attended: true },
-      ],
-      paymentHistory: [
-        { date: "2025-05-01", amount: 110, description: "Monthly membership" },
-      ],
-    },
-    {
-      id: "4",
-      name: "Emma",
-      surname: "Wilson",
-      telegramUsername: "@emma_w",
-      coaches: ["Sarah Connor", "Carlos Lopez"],
-      groups: ["Advanced Boxing", "Fitness"],
-      type: "Boxing",
-      status: "inactive",
-      membershipUntil: "2025-04-15",
-      visitHistory: [{ date: "2025-04-10", attended: true }],
-      paymentHistory: [
-        { date: "2025-04-01", amount: 130, description: "Monthly membership" },
-      ],
-    },
-    {
-      id: "5",
-      name: "James",
-      surname: "Brown",
-      coaches: ["Mike Smith"],
-      groups: ["Beginner Karate"],
-      type: "Karate",
-      status: "active",
-      membershipUntil: "2025-08-20",
-      phone: "+5555555555",
-      visitHistory: [
-        { date: "2025-05-21", attended: true },
-        { date: "2025-05-19", attended: false },
-      ],
-      paymentHistory: [
-        { date: "2025-05-01", amount: 90, description: "Monthly membership" },
-      ],
-    },
-  ];
+  const [allStudents, setAllStudents] = useState<StudentUI[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("telegramToken");
+    if (!token) return;
+    setIsLoading(true);
+    setError(null);
+    studentsApi
+      .getList(token)
+      .then((res) => {
+        const mapped: StudentUI[] = (res.data.users || []).map((u) => ({
+          id: u.id.toString(),
+          name: u.first_name || "",
+          surname: u.last_name || "",
+          telegramUsername: u.username ? `@${u.username}` : undefined,
+          phone: u.phone_number || undefined,
+          coaches: [],
+          groups: [],
+          type: "—",
+          status: "active",
+          membershipUntil: new Date().toISOString().slice(0, 10),
+          visitHistory: [],
+          paymentHistory: [],
+        }));
+        setAllStudents(mapped);
+      })
+      .catch(() => setError("Не удалось загрузить студентов"))
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const [filters, setFilters] = useState<Filters>({
     search: "",
@@ -141,7 +83,7 @@ const StudentsPage: React.FC = () => {
     status: "all",
   });
 
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<StudentUI | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
   // Extract unique values for filter options
@@ -371,8 +313,7 @@ const StudentsPage: React.FC = () => {
         {/* Students List */}
         <div className="px-4 py-2">
           <div className="text-sm text-gray-600 mb-3">
-            {filteredStudents.length} студент
-            {filteredStudents.length !== 1 ? "s" : ""}
+            {isLoading ? "Загрузка…" : error ? error : `${filteredStudents.length} студентов`}
           </div>
 
           <div className="space-y-2">

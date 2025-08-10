@@ -56,6 +56,57 @@ export interface GetMyClubsResponse {
   user_id: number;
 }
 
+export interface CreateStudentResponse {
+  id: number;
+  telegram_id: number;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  username: string;
+  photo_url: string;
+  preferences: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GetStudentsListResponse {
+  users: Array<{
+    id: number;
+    telegram_id: number;
+    first_name: string;
+    last_name: string;
+    phone_number: string;
+    username: string;
+    photo_url: string;
+    preferences: Record<string, unknown>;
+    created_at: string;
+    updated_at: string;
+  }>;
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+  filters: {
+    first_name: string;
+    last_name: string;
+    phone_number: string;
+    username: string;
+  };
+}
+
+export interface GetStudentInfoResponse {
+  id: number;
+  telegram_id: number;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  username: string;
+  photo_url: string;
+  preferences: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CreateClubStuffInvitationResponse {
   phone_number: string,
   role: string,

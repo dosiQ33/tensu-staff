@@ -1,7 +1,7 @@
 import { axiosRequest } from './axiosApis';
 import { ENDPOINTS } from './endpoints';
 import type { CancelLessonRequest, CompleteLessonRequest, CreateClubRequest, CreateGroupRequest, CreateManualLessonRequest, CreateSectionRequest, CreateStaffRequest, CreateStuffInvitationRequest, GenerateLessonsRequest, RescheduleLessonRequest, UpdateGroupScheduleTemplateRequest, UpdateLessonRequest, UpdateStaffRequest } from './requests';
-import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetClubsLimitCheckResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetSectionGroupsResponse, GetMySectionsResponse, GetTeamMembersResponse, CreateGroupResponse, CreateManualLessonResponse, GetDayScheduleResponse, GetGroupScheduleTemplateResponse, GetLessonsResponse, GetWeekScheduleResponse, Lesson } from './responses';
+import type { CreateClubResponse, CreateSectionResponse, CreateStaffResponse, GetClubsLimitCheckResponse, GetMyClubsResponse, GetMyInvitationsResponse, GetSectionGroupsResponse, GetMySectionsResponse, GetTeamMembersResponse, CreateGroupResponse, CreateManualLessonResponse, GetDayScheduleResponse, GetGroupScheduleTemplateResponse, GetLessonsResponse, GetWeekScheduleResponse, Lesson, GetStudentsListResponse } from './responses';
 
 export const staffApi = {
     getList: (token: string) =>
@@ -25,6 +25,11 @@ export const staffApi = {
     getPref: (tgId: string, key: string, token: string) =>
         axiosRequest<unknown>(ENDPOINTS.STUFF.PREFERENCE(tgId, key), 'GET', token),
 };
+
+export const studentsApi = {
+    getList: (token: string) =>
+        axiosRequest<GetStudentsListResponse>(ENDPOINTS.STUDENTS.BASE, 'GET', token),
+}
 
 export const clubsApi = {
     getLimitsCheck: (token: string) =>
