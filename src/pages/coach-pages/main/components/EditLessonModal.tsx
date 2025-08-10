@@ -167,16 +167,16 @@ export const EditLessonModal: React.FC<{
           </div>
 
           {/* Danger zone */}
-          <div className="mt-2">
+          <div className="mt-1">
             {!confirmDelete ? (
               <button
                 onClick={() => setConfirmDelete(true)}
-                className="w-full py-3 rounded-xl border border-red-300 text-red-700 hover:bg-red-50 active:scale-[0.99]"
+                className="w-full py-3 rounded-xl text-red-700 font-semibold active:scale-[0.99]"
               >
                 {lang === 'kk' ? 'Жаттығуды жою' : 'Удалить тренировку'}
               </button>
             ) : (
-              <div className="border border-red-200 bg-red-50 rounded-xl p-3 space-y-3">
+              <div className="border bg-red-50 rounded-xl p-3 space-y-3">
                 <p className="text-sm text-red-700">
                   {lang === 'kk'
                     ? 'Жаттығуды жою қайтарылмайды. Бұл әрекетті болдырмау мүмкін емес.'
@@ -194,7 +194,7 @@ export const EditLessonModal: React.FC<{
                     disabled={deleting}
                     className="py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300"
                   >
-                    {lang === 'kk' ? 'Толық жою' : 'Удалить навсегда'}
+                    {lang === 'kk' ? 'Толық жою' : 'Удалить'}
                   </button>
                 </div>
               </div>
