@@ -100,6 +100,16 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
     return dayEntry ? dayEntry.lessons : [];
   };
 
+  const getLessonChipClass = (lesson: Lesson) => {
+    const start = new Date(`${lesson.planned_date}T${lesson.planned_start_time.slice(0,5)}:00`);
+    const end = new Date(start.getTime() + (lesson.duration_minutes || 0) * 60000);
+    const now = new Date();
+    if (lesson.status === 'cancelled') return 'bg-red-500';
+    if (now < start) return 'bg-blue-500'; // upcoming
+    if (now >= start && now <= end) return 'bg-orange-500'; // live
+    return 'bg-gray-400'; // past
+  };
+
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [defaultDate, setDefaultDate] = useState<string | null>(null);
@@ -310,7 +320,7 @@ export const CalendarSection: React.FC<{ token: string | null; refreshKey?: numb
                         .map((les) => (
                           <div
                             key={les.id}
-                            className="text-[10px] text-white rounded px-1 py-0.5 truncate bg-green-500"
+                            className={`text-[10px] text-white rounded px-1 py-0.5 truncate ${getLessonChipClass(les)}`}
                           >
                             {les.planned_start_time.slice(0, 5)}
                           </div>

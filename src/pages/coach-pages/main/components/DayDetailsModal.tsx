@@ -8,6 +8,21 @@ export const DayDetailsModal: React.FC<{
   onSelectLesson?: (lesson: Lesson) => void;
   onCreateForDay?: (day: string) => void;
 }> = ({ day, onClose, trainings, onSelectLesson, onCreateForDay }) => {
+  const getTemporalStatus = (t: Lesson) => {
+    if (t.status === 'cancelled') {
+      return { key: 'cancelled', label: 'Отменено', color: 'bg-red-100 text-red-700' } as const;
+    }
+    const start = new Date(`${t.planned_date}T${t.planned_start_time.slice(0,5)}:00`);
+    const end = new Date(start.getTime() + (t.duration_minutes || 0) * 60000);
+    const now = new Date();
+    if (now < start) {
+      return { key: 'upcoming', label: 'Запланировано', color: 'bg-blue-100 text-blue-700' } as const;
+    }
+    if (now >= start && now <= end) {
+      return { key: 'live', label: 'Идет сейчас', color: 'bg-orange-100 text-orange-700' } as const;
+    }
+    return { key: 'past', label: 'Завершено', color: 'bg-gray-100 text-gray-700' } as const;
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-800/30 z-50 flex items-end">
@@ -48,11 +63,14 @@ export const DayDetailsModal: React.FC<{
                         return `${hh}:${mm}`;
                       })()}
                     </span>
-                    <span className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                      t.status === 'scheduled' ? 'bg-blue-100 text-blue-700' : t.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                    }`}>
-                      <BadgeCheck size={12} /> {t.status === 'scheduled' ? 'Запланировано' : t.status === 'completed' ? 'Проведено' : 'Отменено'}
-                    </span>
+                    {(() => {
+                      const s = getTemporalStatus(t);
+                      return (
+                        <span className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${s.color}`}>
+                          <BadgeCheck size={12} /> {s.label}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="flex items-center gap-2 mb-1">
                     <MapPin size={14} className="text-gray-500" />
