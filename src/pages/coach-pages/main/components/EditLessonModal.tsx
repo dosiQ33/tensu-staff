@@ -167,7 +167,7 @@ export const EditLessonModal: React.FC<{
           </div>
 
           {/* Danger zone */}
-          <div className="mt-1">
+          <div className="mt-1 mb-4">
             {!confirmDelete ? (
               <button
                 onClick={() => setConfirmDelete(true)}
