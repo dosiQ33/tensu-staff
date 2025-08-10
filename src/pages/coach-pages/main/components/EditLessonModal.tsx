@@ -3,6 +3,7 @@ import type { Lesson } from "@/functions/axios/responses";
 import { scheduleApi } from "@/functions/axios/axiosFunctions";
 import type { UpdateLessonRequest } from "@/functions/axios/requests";
 import { X } from "lucide-react";
+import { useI18n } from "@/i18n/i18n";
 
 export const EditLessonModal: React.FC<{
   lesson: Lesson;
@@ -10,6 +11,7 @@ export const EditLessonModal: React.FC<{
   onClose: () => void;
   onSaved?: () => void;
 }> = ({ lesson, token, onClose, onSaved }) => {
+  const { lang } = useI18n();
   const [plannedDate, setPlannedDate] = useState(lesson.planned_date);
   const [plannedStartTime, setPlannedStartTime] = useState(
     lesson.planned_start_time.slice(0, 5)
@@ -22,6 +24,8 @@ export const EditLessonModal: React.FC<{
   );
   const [coachId, setCoachId] = useState<number>(lesson.coach_id);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const payload: UpdateLessonRequest = useMemo(
     () => ({
@@ -48,6 +52,19 @@ export const EditLessonModal: React.FC<{
       console.error(e);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+      await scheduleApi.deleteLesson(lesson.id, token);
+      onSaved?.();
+      onClose();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -139,13 +156,48 @@ export const EditLessonModal: React.FC<{
             />
           </div>
 
+          {/* Danger zone */}
+          <div className="mt-2">
+            {!confirmDelete ? (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="w-full py-3 rounded-xl border border-red-300 text-red-700 hover:bg-red-50 active:scale-[0.99]"
+              >
+                {lang === 'kk' ? 'Жаттығуды жою' : 'Удалить тренировку'}
+              </button>
+            ) : (
+              <div className="border border-red-200 bg-red-50 rounded-xl p-3 space-y-3">
+                <p className="text-sm text-red-700">
+                  {lang === 'kk'
+                    ? 'Жаттығуды жою қайтарылмайды. Бұл әрекетті болдырмау мүмкін емес.'
+                    : 'Удаление тренировки необратимо. Это действие нельзя отменить.'}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="py-2 rounded-lg border border-gray-300 hover:bg-gray-50"
+                  >
+                    {lang === 'kk' ? 'Бас тарту' : 'Отмена'}
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300"
+                  >
+                    {lang === 'kk' ? 'Толық жою' : 'Удалить навсегда'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="sticky bottom-0 bg-white pt-2 pb-3">
             <button
               onClick={handleSave}
               disabled={saving}
               className="w-full bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 active:scale-[0.99] disabled:bg-gray-300"
             >
-              Сохранить изменения
+              {lang === 'kk' ? 'Өзгерістерді сақтау' : 'Сохранить изменения'}
             </button>
           </div>
         </div>
