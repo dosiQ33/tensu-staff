@@ -22,22 +22,12 @@ export const DayDetailsModal: React.FC<{
                 day: "numeric",
               })}
             </h2>
-            <div className="flex items-center gap-2">
-              {onCreateForDay && (
-                <button
-                  onClick={() => onCreateForDay(day)}
-                  className="px-3 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 active:scale-[0.99] transition"
-                >
-                  Добавить тренировку
-                </button>
-              )}
-              <button
-                onClick={onClose}
-                className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
-              >
-                <X size={20} />
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg transition"
+            >
+              <X size={20} />
+            </button>
           </div>
         </div>
 
@@ -91,16 +81,20 @@ export const DayDetailsModal: React.FC<{
           {trainings.length === 0 && (
             <div className="py-8 text-center">
               <div className="text-sm text-gray-500 mb-3">Тренировок нет</div>
-              <button
-                onClick={() => onCreateForDay?.(day)
-                }
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 active:scale-[0.99] transition"
-              >
-                Добавить тренировку
-              </button>
             </div>
           )}
         </div>
+
+        {onCreateForDay && (
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3">
+            <button
+              onClick={() => onCreateForDay(day)}
+              className="w-full bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 active:scale-[0.99] transition"
+            >
+              Добавить тренировку
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
