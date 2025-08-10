@@ -40,17 +40,7 @@ export const EditLessonModal: React.FC<{
       location,
       notes,
     }),
-    [
-      plannedDate,
-      plannedStartTime,
-      lesson.actual_date,
-      lesson.actual_start_time,
-      duration,
-      status,
-      coachId,
-      location,
-      notes,
-    ]
+    [plannedDate, plannedStartTime, lesson.actual_date, lesson.actual_start_time, duration, status, coachId, location, notes]
   );
 
   const handleSave = async () => {
@@ -82,22 +72,15 @@ export const EditLessonModal: React.FC<{
     <div className="fixed inset-0 bg-gray-800/30 z-50 flex items-end">
       <div className="bg-white w-full max-h-[85vh] rounded-t-2xl overflow-hidden shadow-xl">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-900">
-            Редактировать тренировку
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg"
-          >
+          <h2 className="text-base font-semibold text-gray-900">Редактировать тренировку</h2>
+          <button onClick={onClose} className="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-lg">
             <X size={20} />
           </button>
         </div>
         <div className="p-3 space-y-3 overflow-y-auto">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Дата
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Дата</label>
               <input
                 type="date"
                 className="w-full border border-gray-200 rounded-lg p-2"
@@ -106,9 +89,7 @@ export const EditLessonModal: React.FC<{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Время
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Время</label>
               <input
                 type="time"
                 className="w-full border border-gray-200 rounded-lg p-2"
@@ -120,9 +101,7 @@ export const EditLessonModal: React.FC<{
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Длительность (мин)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Длительность (мин)</label>
               <input
                 type="number"
                 className="w-full border border-gray-200 rounded-lg p-2"
@@ -133,15 +112,11 @@ export const EditLessonModal: React.FC<{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Статус
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Статус</label>
               <select
                 className="w-full border border-gray-200 rounded-lg p-2"
                 value={status}
-                onChange={(e) =>
-                  setStatus(e.target.value as UpdateLessonRequest["status"])
-                }
+                onChange={(e) => setStatus(e.target.value as UpdateLessonRequest["status"])}
               >
                 <option value="scheduled">Запланировано</option>
                 <option value="cancelled">Отменено</option>
@@ -152,9 +127,7 @@ export const EditLessonModal: React.FC<{
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Тренер ID
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Тренер ID</label>
               <input
                 type="number"
                 className="w-full border border-gray-200 rounded-lg p-2"
@@ -163,9 +136,7 @@ export const EditLessonModal: React.FC<{
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Локация
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Локация</label>
               <input
                 type="text"
                 className="w-full border border-gray-200 rounded-lg p-2"
@@ -176,9 +147,7 @@ export const EditLessonModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Заметки
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Заметки</label>
             <textarea
               className="w-full border border-gray-200 rounded-lg p-2"
               rows={3}
@@ -187,52 +156,54 @@ export const EditLessonModal: React.FC<{
             />
           </div>
 
-          {/* Danger zone */}
-          <div className="mt-2">
-            {!confirmDelete ? (
-              <div className="border bg-red-50 rounded-xl p-3 space-y-3">
-                <p className="text-sm text-red-700 font-semibold">
-                  {lang === "kk"
-                    ? "Жаттығуды жою қайтарылмайды. Бұл әрекетті болдырмау мүмкін емес."
-                    : "Удаление тренировки необратимо. Это действие нельзя отменить."}
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setConfirmDelete(false)}
-                    className="py-2 rounded-lg border border-gray-300 hover:bg-gray-50"
-                  >
-                    {lang === "kk" ? "Бас тарту" : "Отмена"}
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300"
-                  >
-                    {lang === "kk" ? "Толық жою" : "Удалить"}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => setConfirmDelete(true)}
-                className="w-full py-3 rounded-xl border border-red-300 text-red-700 hover:bg-red-50 active:scale-[0.99]"
-              >
-                {lang === "kk" ? "Жаттығуды жою" : "Удалить тренировку"}
-              </button>
-            )}
-          </div>
-
           <div className="sticky bottom-0 bg-white pt-2 pb-3">
             <button
               onClick={handleSave}
               disabled={saving}
               className="w-full bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 active:scale-[0.99] disabled:bg-gray-300"
             >
-              {lang === "kk" ? "Өзгерістерді сақтау" : "Сохранить изменения"}
+              {lang === 'kk' ? 'Өзгерістерді сақтау' : 'Сохранить изменения'}
             </button>
+          </div>
+
+          {/* Danger zone */}
+          <div className="mt-2">
+            {!confirmDelete ? (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="w-full py-3 rounded-xl border border-red-300 text-red-700 hover:bg-red-50 active:scale-[0.99]"
+              >
+                {lang === 'kk' ? 'Жаттығуды жою' : 'Удалить тренировку'}
+              </button>
+            ) : (
+              <div className="border border-red-200 bg-red-50 rounded-xl p-3 space-y-3">
+                <p className="text-sm text-red-700">
+                  {lang === 'kk'
+                    ? 'Жаттығуды жою қайтарылмайды. Бұл әрекетті болдырмау мүмкін емес.'
+                    : 'Удаление тренировки необратимо. Это действие нельзя отменить.'}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="py-2 rounded-lg border border-gray-300 hover:bg-gray-50"
+                  >
+                    {lang === 'kk' ? 'Бас тарту' : 'Отмена'}
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300"
+                  >
+                    {lang === 'kk' ? 'Толық жою' : 'Удалить навсегда'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+
