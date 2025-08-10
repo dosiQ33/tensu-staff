@@ -20,9 +20,11 @@ import type {
   Invitation,
 } from "@/functions/axios/responses";
 import { SectionsPanel } from "./components/SectionPanel";
+import { useI18n } from "@/i18n/i18n";
 import { StaffPanel } from "./components/StaffPanel";
 
 const ManagementPage: React.FC = () => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState(
     localStorage.getItem("activeManagementTab") || "staff"
   );
@@ -262,9 +264,7 @@ const ManagementPage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 pb-50">
         <div className="bg-white sticky top-0 z-10 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
           <div className="px-4 py-3">
-            <h1 className="text-xl font-semibold text-gray-900 mb-4">
-              Панель Управления
-            </h1>
+            <h1 className="text-xl font-semibold text-gray-900 mb-4">{t('management.title')}</h1>
             <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
             {activeTab === "staff" && (
               <StaffFilter

@@ -9,6 +9,7 @@ const RU: Dict = {
   'nav.students': 'Мои студенты',
   'nav.management': 'Управление',
   'nav.profile': 'Профиль',
+  'management.title': 'Панель Управления',
 
   'language.change': 'Сменить язык',
   'language.russian': 'Русский',
@@ -22,6 +23,7 @@ const KK: Dict = {
   'nav.students': 'Менің оқушыларым',
   'nav.management': 'Басқару',
   'nav.profile': 'Профиль',
+  'management.title': 'Басқару панелі',
 
   'language.change': 'Тілді өзгерту',
   'language.russian': 'Орысша',
