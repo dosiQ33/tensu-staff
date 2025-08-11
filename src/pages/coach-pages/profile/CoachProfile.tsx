@@ -955,7 +955,7 @@ const CoachProfile: React.FC = () => {
         {/* Language Action Sheet */}
         {showLangSheet && (
           <div className="fixed inset-0 z-50 flex items-end">
-            <div className="absolute inset-0 bg-black/40" onClick={() => setShowLangSheet(false)} />
+            <div className="absolute inset-0" onClick={() => setShowLangSheet(false)} />
             <div className="bg-white w-full rounded-t-2xl p-4" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-3">{t('language.change')}</h3>
               <div className="space-y-2">
