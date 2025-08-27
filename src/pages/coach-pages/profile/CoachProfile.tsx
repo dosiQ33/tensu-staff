@@ -465,6 +465,19 @@ const CoachProfile: React.FC = () => {
                   paymentHistory: [],
                 };
                 setClubs((prev) => [...prev, uiClub]);
+                // Migrate pending membership config to the new club's storage key
+                try {
+                  const pending = localStorage.getItem("pendingMembershipConfig");
+                  if (pending) {
+                    localStorage.setItem(
+                      `membershipConfig:${uiClub.id}`,
+                      pending
+                    );
+                    localStorage.removeItem("pendingMembershipConfig");
+                  }
+                } catch (err) {
+                  console.warn("Не удалось перенести настройки membership", err);
+                }
                 setShowCreate(false);
               } catch (e) {
                 console.error("Ошибка создания клуба", e);

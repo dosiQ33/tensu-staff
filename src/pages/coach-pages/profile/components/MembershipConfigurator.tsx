@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Info, Lock, CheckCircle2 } from "lucide-react";
 
 type Period = "monthly" | "yearly";
@@ -80,15 +80,15 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
 
   const hasSections = (sections?.length || 0) > 0;
 
-  const groupIndex: Record<string, { label: string }> = useMemo(() => {
-    const map: Record<string, { label: string }> = {};
-    (sections || []).forEach((s) => {
-      s.groups.forEach((g) => {
-        map[String(g.id)] = { label: `${s.sectionName} • ${g.name}` };
-      });
-    });
-    return map;
-  }, [sections]);
+  // const groupIndex: Record<string, { label: string }> = useMemo(() => {
+  //   const map: Record<string, { label: string }> = {};
+  //   (sections || []).forEach((s) => {
+  //     s.groups.forEach((g) => {
+  //       map[String(g.id)] = { label: `${s.sectionName} • ${g.name}` };
+  //     });
+  //   });
+  //   return map;
+  // }, [sections]);
 
   const setGroupConfig = (
     groupId: number,
@@ -99,9 +99,12 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
       perGroup: {
         ...prev.perGroup,
         [String(groupId)]: {
-          model: prev.perGroup[String(groupId)]?.model || "monthly_pay",
           ...prev.perGroup[String(groupId)],
           ...partial,
+          model:
+            (partial as { model?: GroupPricingModel }).model ??
+            prev.perGroup[String(groupId)]?.model ??
+            ("monthly_pay" as GroupPricingModel),
         },
       },
     }));
@@ -157,7 +160,8 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
                     value={config.allAccessPrice}
                     onChange={(e) => {
                       const onlyDigits = e.target.value.replace(/\D/g, "");
-                      setConfig((c) => ({ ...c, allAccessPrice: onlyDigits }));
+                      const numericValue = onlyDigits === "" ? "" : Number(onlyDigits);
+                      setConfig((c) => ({ ...c, allAccessPrice: numericValue }));
                     }}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10"
                   />
@@ -247,22 +251,24 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
                                   placeholder="Кол-во визитов"
                                   inputMode="numeric"
                                   value={groupCfg.packVisits ?? ""}
-                                  onChange={(e) =>
+                                  onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, "");
                                     setGroupConfig(g.id, {
-                                      packVisits: e.target.value.replace(/\D/g, ""),
-                                    })
-                                  }
+                                      packVisits: value ? Number(value) : undefined,
+                                    });
+                                  }}
                                   className="border border-gray-300 rounded-lg px-3 py-2"
                                 />
                                 <input
                                   placeholder="Цена (₸)"
                                   inputMode="numeric"
                                   value={groupCfg.packPrice ?? ""}
-                                  onChange={(e) =>
+                                  onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, "");
                                     setGroupConfig(g.id, {
-                                      packPrice: e.target.value.replace(/\D/g, ""),
-                                    })
-                                  }
+                                      packPrice: value === "" ? "" : Number(value),
+                                    });
+                                  }}
                                   className="border border-gray-300 rounded-lg px-3 py-2"
                                 />
                               </div>
@@ -273,11 +279,12 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
                                 placeholder="Цена в месяц (₸)"
                                 inputMode="numeric"
                                 value={groupCfg.monthlyPrice ?? ""}
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                  const value = e.target.value.replace(/\D/g, "");
                                   setGroupConfig(g.id, {
-                                    monthlyPrice: e.target.value.replace(/\D/g, ""),
-                                  })
-                                }
+                                    monthlyPrice: value === "" ? "" : Number(value),
+                                  });
+                                }}
                                 className="border border-gray-300 rounded-lg px-3 py-2"
                               />
                             )}
@@ -288,22 +295,24 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
                                   placeholder="Тренировок/мес"
                                   inputMode="numeric"
                                   value={groupCfg.monthlyCount ?? ""}
-                                  onChange={(e) =>
+                                  onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, "");
                                     setGroupConfig(g.id, {
-                                      monthlyCount: e.target.value.replace(/\D/g, ""),
-                                    })
-                                  }
+                                      monthlyCount: value === "" ? "" : Number(value),
+                                    });
+                                  }}
                                   className="border border-gray-300 rounded-lg px-3 py-2"
                                 />
                                 <input
                                   placeholder="Цена (₸)"
                                   inputMode="numeric"
                                   value={groupCfg.monthlyCountPrice ?? ""}
-                                  onChange={(e) =>
+                                  onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, "");
                                     setGroupConfig(g.id, {
-                                      monthlyCountPrice: e.target.value.replace(/\D/g, ""),
-                                    })
-                                  }
+                                      monthlyCountPrice: value === "" ? "" : Number(value),
+                                    });
+                                  }}
                                   className="border border-gray-300 rounded-lg px-3 py-2"
                                 />
                               </div>
@@ -314,11 +323,12 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
                                 placeholder="Цена в год (₸)"
                                 inputMode="numeric"
                                 value={groupCfg.yearlyPrice ?? ""}
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                  const value = e.target.value.replace(/\D/g, "");
                                   setGroupConfig(g.id, {
-                                    yearlyPrice: e.target.value.replace(/\D/g, ""),
-                                  })
-                                }
+                                    yearlyPrice: value === "" ? "" : Number(value),
+                                  });
+                                }}
                                 className="border border-gray-300 rounded-lg px-3 py-2"
                               />
                             )}
