@@ -418,15 +418,6 @@ const CoachProfile: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={handleCreateClick}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
-            >
-              + {t('club.create')}
-            </button>
-          </div>
-
           <CreateClubModal
             show={showCreate}
             loading={isCreating}
@@ -489,9 +480,18 @@ const CoachProfile: React.FC = () => {
 
           {/* Clubs Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              {t('clubs.mine')} ({clubs.length + myInvitations.length})
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {t('clubs.mine')} ({clubs.length + myInvitations.length})
+              </h3>
+              <button
+                onClick={handleCreateClick}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
+              >
+                + {t('club.create')}
+              </button>
+            </div>
+
 
             {loadingClubs && (
               <>
