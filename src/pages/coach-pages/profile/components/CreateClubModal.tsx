@@ -198,7 +198,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end px-6 py-4 bg-gray-100 h-full">
+        <div className="fixed bottom-0 left-0 right-0 flex justify-end px-6 py-4 bg-gray-100 h-full">
           <button
             onClick={handleSubmit}
             disabled={loading || !form.name}
