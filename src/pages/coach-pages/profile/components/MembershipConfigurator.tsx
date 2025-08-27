@@ -10,26 +10,26 @@ export type ClubSectionsOverview = Array<{
   groups: Array<{ id: number; name: string }>;
 }>;
 
+interface GroupModelConfig {
+  model: GroupPricingModel;
+  // visit_pack
+  packVisits?: number | "";
+  packPrice?: number | "";
+  // monthly_pay
+  monthlyPrice?: number | "";
+  // count_per_month
+  monthlyCount?: number | "";
+  monthlyCountPrice?: number | "";
+  // yearly_membership
+  yearlyPrice?: number | "";
+}
+
 export interface MembershipConfig {
   allAccessEnabled: boolean;
   allAccessPeriod: Period;
   allAccessPrice: number | "";
-  perGroup: Record<
-    string,
-    {
-      model: GroupPricingModel;
-      // visit_pack
-      packVisits?: number | "";
-      packPrice?: number | "";
-      // monthly_pay
-      monthlyPrice?: number | "";
-      // count_per_month
-      monthlyCount?: number | "";
-      monthlyCountPrice?: number | "";
-      // yearly_membership
-      yearlyPrice?: number | "";
-    }
-  >;
+  // Multiple models per group, up to 4
+  perGroup: Record<string, GroupModelConfig[]>;
 }
 
 const defaultConfig: MembershipConfig = {
@@ -46,12 +46,24 @@ const readConfig = (clubId?: string): MembershipConfig => {
   try {
     const raw = localStorage.getItem(clubId ? keyForClub(clubId) : pendingKey);
     if (!raw) return defaultConfig;
-    const parsed = JSON.parse(raw) as MembershipConfig;
+    const parsed = JSON.parse(raw) as Partial<MembershipConfig> & Record<string, unknown>;
+    const perGroup: Record<string, GroupModelConfig[]> = {};
+    const rawPerGroup = parsed.perGroup as unknown;
+    if (rawPerGroup && typeof rawPerGroup === "object") {
+      Object.entries(rawPerGroup as Record<string, unknown>).forEach(([gid, val]) => {
+        if (Array.isArray(val)) {
+          perGroup[gid] = val as GroupModelConfig[];
+        } else if (val && typeof val === "object" && ("model" in (val as Record<string, unknown>))) {
+          // migrate old single-model shape to array
+          perGroup[gid] = [val as GroupModelConfig];
+        }
+      });
+    }
     return {
       allAccessEnabled: !!parsed.allAccessEnabled,
-      allAccessPeriod: parsed.allAccessPeriod || "monthly",
-      allAccessPrice: parsed.allAccessPrice ?? "",
-      perGroup: parsed.perGroup || {},
+      allAccessPeriod: (parsed.allAccessPeriod as Period) || "monthly",
+      allAccessPrice: (parsed.allAccessPrice as number | "") ?? "",
+      perGroup,
     };
   } catch {
     return defaultConfig;
@@ -90,24 +102,48 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
   //   return map;
   // }, [sections]);
 
-  const setGroupConfig = (
+  const setGroupModel = (
     groupId: number,
-    partial: Partial<MembershipConfig["perGroup"][string]>
+    modelIndex: number,
+    partial: Partial<GroupModelConfig>
   ) => {
-    setConfig((prev) => ({
-      ...prev,
-      perGroup: {
-        ...prev.perGroup,
-        [String(groupId)]: {
-          ...prev.perGroup[String(groupId)],
-          ...partial,
-          model:
-            (partial as { model?: GroupPricingModel }).model ??
-            prev.perGroup[String(groupId)]?.model ??
-            ("monthly_pay" as GroupPricingModel),
-        },
-      },
-    }));
+    setConfig((prev) => {
+      const key = String(groupId);
+      const models = (prev.perGroup[key] || [{ model: "monthly_pay" }]) as GroupModelConfig[];
+      const next: GroupModelConfig[] = models.map((m, i) =>
+        i === modelIndex ? { ...m, ...partial, model: partial.model ?? m.model } : m
+      );
+      return {
+        ...prev,
+        perGroup: { ...prev.perGroup, [key]: next },
+      };
+    });
+  };
+
+  const addGroupModel = (groupId: number) => {
+    setConfig((prev) => {
+      const key = String(groupId);
+      const current = (prev.perGroup[key] || []) as GroupModelConfig[];
+      const used = new Set(current.map((m) => m.model));
+      const order: GroupPricingModel[] = [
+        "visit_pack",
+        "monthly_pay",
+        "count_per_month",
+        "yearly_membership",
+      ];
+      const firstAvailable = order.find((m) => !used.has(m)) || "monthly_pay";
+      const next = [...current, { model: firstAvailable }];
+      return { ...prev, perGroup: { ...prev.perGroup, [key]: next.slice(0, 4) } };
+    });
+  };
+
+  const removeGroupModel = (groupId: number, modelIndex: number) => {
+    setConfig((prev) => {
+      const key = String(groupId);
+      const current = (prev.perGroup[key] || []) as GroupModelConfig[];
+      const next = current.filter((_, i) => i !== modelIndex);
+      return { ...prev, perGroup: { ...prev.perGroup, [key]: next.length ? next : [{ model: "monthly_pay" }] } };
+    });
   };
 
   return (
@@ -215,123 +251,166 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
                   </div>
                   <div className="space-y-3">
                     {s.groups.map((g) => {
-                      const groupCfg = config.perGroup[String(g.id)] || {
-                        model: "monthly_pay" as GroupPricingModel,
-                      };
+                      const key = String(g.id);
+                      const models = (config.perGroup[key] && config.perGroup[key].length
+                        ? config.perGroup[key]
+                        : [{ model: "monthly_pay" as GroupPricingModel }]) as GroupModelConfig[];
+                      const used = new Set(models.map((m) => m.model));
+                      const options: { value: GroupPricingModel; label: string }[] = [
+                        { value: "visit_pack", label: "Visit pack" },
+                        { value: "monthly_pay", label: "Ежемесячно" },
+                        { value: "count_per_month", label: "Кол-во тренировок/мес" },
+                        { value: "yearly_membership", label: "Годовая" },
+                      ];
+                      const canAdd = models.length < 4 && used.size < options.length;
                       return (
-                        <div
-                          key={g.id}
-                          className="p-3 rounded-lg border border-gray-200"
-                        >
-                          <div className="text-sm font-medium text-gray-900 mb-2">
-                            {g.name}
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <select
-                              value={groupCfg.model}
-                              onChange={(e) =>
-                                setGroupConfig(g.id, {
-                                  model: e.target
-                                    .value as GroupPricingModel,
-                                })
-                              }
-                              className="border border-gray-300 rounded-lg px-3 py-2"
+                        <div key={g.id} className="p-3 rounded-lg border border-gray-200">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="text-sm font-medium text-gray-900">{g.name}</div>
+                            <button
+                              onClick={() => addGroupModel(g.id)}
+                              disabled={!canAdd}
+                              className={`text-sm px-3 py-1 rounded-md border ${canAdd ? "text-blue-600 border-blue-200 hover:bg-blue-50" : "text-gray-400 border-gray-200 cursor-not-allowed"}`}
                             >
-                              <option value="visit_pack">Visit pack</option>
-                              <option value="monthly_pay">Ежемесячно</option>
-                              <option value="count_per_month">
-                                Кол-во тренировок/мес
-                              </option>
-                              <option value="yearly_membership">Годовая</option>
-                            </select>
+                              + Добавить модель
+                            </button>
+                          </div>
 
-                            {groupCfg.model === "visit_pack" && (
-                              <div className="grid grid-cols-2 gap-2">
-                                <input
-                                  placeholder="Кол-во визитов"
-                                  inputMode="numeric"
-                                  value={groupCfg.packVisits ?? ""}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setGroupConfig(g.id, {
-                                      packVisits: value ? Number(value) : undefined,
-                                    });
-                                  }}
-                                  className="border border-gray-300 rounded-lg px-3 py-2"
-                                />
-                                <input
-                                  placeholder="Цена (₸)"
-                                  inputMode="numeric"
-                                  value={groupCfg.packPrice ?? ""}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setGroupConfig(g.id, {
-                                      packPrice: value === "" ? "" : Number(value),
-                                    });
-                                  }}
-                                  className="border border-gray-300 rounded-lg px-3 py-2"
-                                />
-                              </div>
-                            )}
+                          <div className="space-y-3">
+                            {models.map((m, mIdx) => {
+                              const available = new Set< GroupPricingModel | "locked" >();
+                              options.forEach((opt) => {
+                                if (opt.value === m.model) {
+                                  available.add(opt.value);
+                                } else if (!used.has(opt.value)) {
+                                  available.add(opt.value);
+                                } else {
+                                  available.add("locked");
+                                }
+                              });
+                              return (
+                                <div key={`${g.id}-${mIdx}`} className="rounded-lg border border-gray-200">
+                                  <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+                                    <div className="text-xs font-semibold text-gray-700">Модель оплаты {mIdx + 1}</div>
+                                    {models.length > 1 && (
+                                      <button
+                                        onClick={() => removeGroupModel(g.id, mIdx)}
+                                        className="text-xs text-red-600 hover:underline"
+                                      >
+                                        Удалить
+                                      </button>
+                                    )}
+                                  </div>
+                                  <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <select
+                                      value={m.model}
+                                      onChange={(e) =>
+                                        setGroupModel(g.id, mIdx, { model: e.target.value as GroupPricingModel })
+                                      }
+                                      className="border border-gray-300 rounded-lg px-3 py-2"
+                                    >
+                                      {options.map((opt) => (
+                                        <option
+                                          key={opt.value}
+                                          value={opt.value}
+                                          disabled={opt.value !== m.model && used.has(opt.value)}
+                                        >
+                                          {opt.label}
+                                        </option>
+                                      ))}
+                                    </select>
 
-                            {groupCfg.model === "monthly_pay" && (
-                              <input
-                                placeholder="Цена в месяц (₸)"
-                                inputMode="numeric"
-                                value={groupCfg.monthlyPrice ?? ""}
-                                onChange={(e) => {
-                                  const value = e.target.value.replace(/\D/g, "");
-                                  setGroupConfig(g.id, {
-                                    monthlyPrice: value === "" ? "" : Number(value),
-                                  });
-                                }}
-                                className="border border-gray-300 rounded-lg px-3 py-2"
-                              />
-                            )}
+                                    {m.model === "visit_pack" && (
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <input
+                                          placeholder="Кол-во визитов"
+                                          inputMode="numeric"
+                                          value={m.packVisits ?? ""}
+                                          onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, "");
+                                            setGroupModel(g.id, mIdx, {
+                                              packVisits: value ? Number(value) : undefined,
+                                            });
+                                          }}
+                                          className="border border-gray-300 rounded-lg px-3 py-2"
+                                        />
+                                        <input
+                                          placeholder="Цена (₸)"
+                                          inputMode="numeric"
+                                          value={m.packPrice ?? ""}
+                                          onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, "");
+                                            setGroupModel(g.id, mIdx, {
+                                              packPrice: value === "" ? "" : Number(value),
+                                            });
+                                          }}
+                                          className="border border-gray-300 rounded-lg px-3 py-2"
+                                        />
+                                      </div>
+                                    )}
 
-                            {groupCfg.model === "count_per_month" && (
-                              <div className="grid grid-cols-2 gap-2">
-                                <input
-                                  placeholder="Тренировок/мес"
-                                  inputMode="numeric"
-                                  value={groupCfg.monthlyCount ?? ""}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setGroupConfig(g.id, {
-                                      monthlyCount: value === "" ? "" : Number(value),
-                                    });
-                                  }}
-                                  className="border border-gray-300 rounded-lg px-3 py-2"
-                                />
-                                <input
-                                  placeholder="Цена (₸)"
-                                  inputMode="numeric"
-                                  value={groupCfg.monthlyCountPrice ?? ""}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setGroupConfig(g.id, {
-                                      monthlyCountPrice: value === "" ? "" : Number(value),
-                                    });
-                                  }}
-                                  className="border border-gray-300 rounded-lg px-3 py-2"
-                                />
-                              </div>
-                            )}
+                                    {m.model === "monthly_pay" && (
+                                      <input
+                                        placeholder="Цена в месяц (₸)"
+                                        inputMode="numeric"
+                                        value={m.monthlyPrice ?? ""}
+                                        onChange={(e) => {
+                                          const value = e.target.value.replace(/\D/g, "");
+                                          setGroupModel(g.id, mIdx, {
+                                            monthlyPrice: value === "" ? "" : Number(value),
+                                          });
+                                        }}
+                                        className="border border-gray-300 rounded-lg px-3 py-2"
+                                      />
+                                    )}
 
-                            {groupCfg.model === "yearly_membership" && (
-                              <input
-                                placeholder="Цена в год (₸)"
-                                inputMode="numeric"
-                                value={groupCfg.yearlyPrice ?? ""}
-                                onChange={(e) => {
-                                  const value = e.target.value.replace(/\D/g, "");
-                                  setGroupConfig(g.id, {
-                                    yearlyPrice: value === "" ? "" : Number(value),
-                                  });
-                                }}
-                                className="border border-gray-300 rounded-lg px-3 py-2"
-                              />
-                            )}
+                                    {m.model === "count_per_month" && (
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <input
+                                          placeholder="Тренировок/мес"
+                                          inputMode="numeric"
+                                          value={m.monthlyCount ?? ""}
+                                          onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, "");
+                                            setGroupModel(g.id, mIdx, {
+                                              monthlyCount: value === "" ? "" : Number(value),
+                                            });
+                                          }}
+                                          className="border border-gray-300 rounded-lg px-3 py-2"
+                                        />
+                                        <input
+                                          placeholder="Цена (₸)"
+                                          inputMode="numeric"
+                                          value={m.monthlyCountPrice ?? ""}
+                                          onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, "");
+                                            setGroupModel(g.id, mIdx, {
+                                              monthlyCountPrice: value === "" ? "" : Number(value),
+                                            });
+                                          }}
+                                          className="border border-gray-300 rounded-lg px-3 py-2"
+                                        />
+                                      </div>
+                                    )}
+
+                                    {m.model === "yearly_membership" && (
+                                      <input
+                                        placeholder="Цена в год (₸)"
+                                        inputMode="numeric"
+                                        value={m.yearlyPrice ?? ""}
+                                        onChange={(e) => {
+                                          const value = e.target.value.replace(/\D/g, "");
+                                          setGroupModel(g.id, mIdx, {
+                                            yearlyPrice: value === "" ? "" : Number(value),
+                                          });
+                                        }}
+                                        className="border border-gray-300 rounded-lg px-3 py-2"
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       );
