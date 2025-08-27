@@ -37,25 +37,25 @@ const dayMap: Record<string, string> = {
   Воскресенье: "sunday",
 };
 
+type GroupPricingModel = "visit_pack" | "monthly_pay" | "count_per_month" | "yearly";
+
+interface GroupModelConfig {
+  model: GroupPricingModel;
+  pack_visits?: number | "";
+  pack_price?: number | "";
+  monthly_price?: number | "";
+  monthly_count?: number | "";
+  monthly_count_price?: number | "";
+  yearly_price?: number | "";
+}
+
 interface GroupForm {
   id?: number;
   section_id: number;
   name: string;
   level: string;
   capacity: number | "";
-  // Replace single price with flexible pricing model
-  price?: number | "";
-  pricing_model?: "visit_pack" | "monthly_pay" | "count_per_month" | "yearly";
-  // visit pack
-  pack_visits?: number | "";
-  pack_price?: number | "";
-  // monthly pay
-  monthly_price?: number | "";
-  // count per month
-  monthly_count?: number | "";
-  monthly_count_price?: number | "";
-  // yearly
-  yearly_price?: number | "";
+  models?: GroupModelConfig[];
   description: string;
   active: boolean;
   coach_id: number;
@@ -119,7 +119,9 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
             name: g.name,
             level: g.level,
             capacity: g.capacity,
-            price: g.price,
+            models: [
+              { model: "monthly_pay", monthly_price: typeof g.price === "number" ? g.price : 0 },
+            ],
             description: g.description,
             active: g.active,
             coach_id: g.coach_id,
@@ -163,8 +165,7 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         name: "",
         level: "",
         capacity: "",
-        pricing_model: "monthly_pay",
-        monthly_price: "",
+        models: [{ model: "monthly_pay" }],
         description: "",
         active: true,
         coach_id: newSection.coach_id!,
@@ -177,6 +178,53 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
   const updateGroup = (idx: number, field: keyof GroupForm, value: any) => {
     setGroups((g) =>
       g.map((grp, i) => (i === idx ? { ...grp, [field]: value } : grp))
+    );
+  };
+
+  const setGroupModel = (
+    groupIdx: number,
+    modelIdx: number,
+    partial: Partial<GroupModelConfig>
+  ) => {
+    setGroups((prev) =>
+      prev.map((grp, gi) => {
+        if (gi !== groupIdx) return grp;
+        const models: GroupModelConfig[] = grp.models && grp.models.length
+          ? (grp.models as GroupModelConfig[])
+          : ([{ model: "monthly_pay" as GroupPricingModel }] as GroupModelConfig[]);
+        const next = models.map((m, mi) => (mi === modelIdx ? { ...m, ...partial, model: (partial.model ?? m.model) as GroupPricingModel } : m));
+        return { ...grp, models: next };
+      })
+    );
+  };
+
+  const addGroupModel = (groupIdx: number) => {
+    setGroups((prev) =>
+      prev.map((grp, gi) => {
+        if (gi !== groupIdx) return grp;
+        const current: GroupModelConfig[] = (grp.models as GroupModelConfig[]) || [];
+        const used = new Set(current.map((m) => m.model));
+        const order: GroupPricingModel[] = [
+          "visit_pack",
+          "monthly_pay",
+          "count_per_month",
+          "yearly",
+        ];
+        const firstAvailable: GroupPricingModel = (order.find((m) => !used.has(m)) || "monthly_pay") as GroupPricingModel;
+        const next: GroupModelConfig[] = [...current, { model: firstAvailable }].slice(0, 4);
+        return { ...grp, models: next };
+      })
+    );
+  };
+
+  const removeGroupModel = (groupIdx: number, modelIdx: number) => {
+    setGroups((prev) =>
+      prev.map((grp, gi) => {
+        if (gi !== groupIdx) return grp;
+        const current: GroupModelConfig[] = (grp.models as GroupModelConfig[]) || [];
+        const next = current.filter((_, i) => i !== modelIdx);
+        return { ...grp, models: next.length ? next : ([{ model: "monthly_pay" as GroupPricingModel }] as GroupModelConfig[]) };
+      })
     );
   };
 
@@ -279,22 +327,24 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
 
     try {
       for (const grp of groups) {
+        const primaryModel = (grp.models && grp.models[0]) || { model: "monthly_pay", monthly_price: 0 };
+        const derivedPrice =
+          primaryModel.model === "visit_pack"
+            ? Number(primaryModel.pack_price) || 0
+            : primaryModel.model === "monthly_pay"
+            ? Number(primaryModel.monthly_price) || 0
+            : primaryModel.model === "count_per_month"
+            ? Number(primaryModel.monthly_count_price) || 0
+            : primaryModel.model === "yearly"
+            ? Number(primaryModel.yearly_price) || 0
+            : 0;
+
         const payload = {
           section_id: sectionId,
           name: grp.name,
           description: grp.description,
           schedule: buildScheduleEntry(grp.schedule),
-          // Backward compatible: if pricing_model absent, fallback to price
-          price:
-            grp.pricing_model === "visit_pack"
-              ? Number(grp.pack_price) || 0
-              : grp.pricing_model === "monthly_pay"
-              ? Number(grp.monthly_price) || 0
-              : grp.pricing_model === "count_per_month"
-              ? Number(grp.monthly_count_price) || 0
-              : grp.pricing_model === "yearly"
-              ? Number(grp.yearly_price) || 0
-              : Number(grp.price) || 0,
+          price: derivedPrice,
           capacity: Number(grp.capacity) || 0,
           level: grp.level,
           coach_id: grp.coach_id,
@@ -546,136 +596,149 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                       />
                     </div>
                     {/* Pricing model selection */}
-                    <div className="space-y-1">
-                      <label className="block text-sm font-medium text-gray-800 mb-2">
-                        Модель оплаты
-                      </label>
-                      <select
-                        value={group.pricing_model || "monthly_pay"}
-                        onChange={(e) => updateGroup(gIdx, "pricing_model", e.target.value)}
-                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
-                      >
-                        <option value="visit_pack">Visit pack</option>
-                        <option value="monthly_pay">Ежемесячно</option>
-                        <option value="count_per_month">Кол-во тренировок/мес</option>
-                        <option value="yearly">Годовая</option>
-                      </select>
+                    <div className="space-y-2 sm:col-span-2">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-sm font-medium text-gray-800">
+                          Модели оплаты (до 4)
+                        </label>
+                        <button
+                          onClick={() => addGroupModel(gIdx)}
+                          className="text-sm px-3 py-1 rounded-md border text-blue-600 border-blue-200 hover:bg-blue-50"
+                          disabled={(group.models?.length || 0) >= 4}
+                        >
+                          + Добавить модель
+                        </button>
+                      </div>
+
+                      <div className="space-y-3">
+                        {(((group.models as GroupModelConfig[]) && (group.models as GroupModelConfig[]).length ? (group.models as GroupModelConfig[]) : ([{ model: "monthly_pay" as GroupPricingModel }] as GroupModelConfig[]))).map((m, mIdx) => {
+                          const used = new Set(((group.models as GroupModelConfig[]) || []).map((x) => x.model));
+                          const options: { value: GroupPricingModel; label: string }[] = [
+                            { value: "visit_pack", label: "Visit pack" },
+                            { value: "monthly_pay", label: "Ежемесячно" },
+                            { value: "count_per_month", label: "Кол-во тренировок/мес" },
+                            { value: "yearly", label: "Годовая" },
+                          ];
+                          return (
+                            <div key={`${gIdx}-${mIdx}`} className="rounded-lg border border-gray-200">
+                              <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+                                <div className="text-xs font-semibold text-gray-700">Модель оплаты {mIdx + 1}</div>
+                                {(group.models?.length || 0) > 1 && (
+                                  <button
+                                    onClick={() => removeGroupModel(gIdx, mIdx)}
+                                    className="text-xs text-red-600 hover:underline"
+                                  >
+                                    Удалить
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <select
+                                  value={m.model}
+                                  onChange={(e) => setGroupModel(gIdx, mIdx, { model: e.target.value as GroupPricingModel })}
+                                  className="border border-gray-300 rounded-xl py-2.5 px-4"
+                                >
+                                  {options.map((opt) => (
+                                    <option key={opt.value} value={opt.value} disabled={opt.value !== m.model && used.has(opt.value)}>
+                                      {opt.label}
+                                    </option>
+                                  ))}
+                                </select>
+
+                                {m.model === "visit_pack" && (
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                      type="text"
+                                      inputMode="numeric"
+                                      pattern="\\d*"
+                                      placeholder="Кол-во визитов"
+                                      value={m.pack_visits ?? ""}
+                                      onChange={(e) => {
+                                        const val = e.target.value.replace(/\\D/g, '');
+                                        setGroupModel(gIdx, mIdx, { pack_visits: val === '' ? '' : Number(val) });
+                                      }}
+                                      className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                                    />
+                                    <input
+                                      type="text"
+                                      inputMode="numeric"
+                                      pattern="\\d*"
+                                      placeholder="Цена (₸)"
+                                      value={m.pack_price ?? ""}
+                                      onChange={(e) => {
+                                        const val = e.target.value.replace(/\\D/g, '');
+                                        setGroupModel(gIdx, mIdx, { pack_price: val === '' ? '' : Number(val) });
+                                      }}
+                                      className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                                    />
+                                  </div>
+                                )}
+
+                                {m.model === "monthly_pay" && (
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="\\d*"
+                                    placeholder="Цена в месяц (₸)"
+                                    value={m.monthly_price ?? ""}
+                                    onChange={(e) => {
+                                      const val = e.target.value.replace(/\\D/g, '');
+                                      setGroupModel(gIdx, mIdx, { monthly_price: val === '' ? '' : Number(val) });
+                                    }}
+                                    className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                                  />
+                                )}
+
+                                {m.model === "count_per_month" && (
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <input
+                                      type="text"
+                                      inputMode="numeric"
+                                      pattern="\\d*"
+                                      placeholder="Тренировок/мес"
+                                      value={m.monthly_count ?? ""}
+                                      onChange={(e) => {
+                                        const val = e.target.value.replace(/\\D/g, '');
+                                        setGroupModel(gIdx, mIdx, { monthly_count: val === '' ? '' : Number(val) });
+                                      }}
+                                      className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                                    />
+                                    <input
+                                      type="text"
+                                      inputMode="numeric"
+                                      pattern="\\d*"
+                                      placeholder="Цена (₸)"
+                                      value={m.monthly_count_price ?? ""}
+                                      onChange={(e) => {
+                                        const val = e.target.value.replace(/\\D/g, '');
+                                        setGroupModel(gIdx, mIdx, { monthly_count_price: val === '' ? '' : Number(val) });
+                                      }}
+                                      className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                                    />
+                                  </div>
+                                )}
+
+                                {m.model === "yearly" && (
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    pattern="\\d*"
+                                    placeholder="Цена в год (₸)"
+                                    value={m.yearly_price ?? ""}
+                                    onChange={(e) => {
+                                      const val = e.target.value.replace(/\\D/g, '');
+                                      setGroupModel(gIdx, mIdx, { yearly_price: val === '' ? '' : Number(val) });
+                                    }}
+                                    className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Pricing model inputs */}
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {group.pricing_model === "visit_pack" && (
-                      <>
-                        <div className="space-y-1">
-                          <label className="block text-sm font-medium text-gray-800 mb-2">
-                            Кол-во визитов
-                          </label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="\d*"
-                            value={group.pack_visits ?? ""}
-                            onChange={(e) => {
-                              const onlyDigits = e.target.value.replace(/\D/g, '');
-                              updateGroup(gIdx, 'pack_visits', onlyDigits);
-                            }}
-                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="block text-sm font-medium text-gray-800 mb-2">
-                            Цена (₸)
-                          </label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="\d*"
-                            value={group.pack_price ?? ""}
-                            onChange={(e) => {
-                              const onlyDigits = e.target.value.replace(/\D/g, '');
-                              updateGroup(gIdx, 'pack_price', onlyDigits);
-                            }}
-                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    {group.pricing_model === "monthly_pay" && (
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Цена в месяц (₸)
-                        </label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="\d*"
-                          value={group.monthly_price ?? ""}
-                          onChange={(e) => {
-                            const onlyDigits = e.target.value.replace(/\D/g, '');
-                            updateGroup(gIdx, 'monthly_price', onlyDigits);
-                          }}
-                          className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
-                        />
-                      </div>
-                    )}
-
-                    {group.pricing_model === "count_per_month" && (
-                      <>
-                        <div className="space-y-1">
-                          <label className="block text-sm font-medium text-gray-800 mb-2">
-                            Тренировок/мес
-                          </label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="\d*"
-                            value={group.monthly_count ?? ""}
-                            onChange={(e) => {
-                              const onlyDigits = e.target.value.replace(/\D/g, '');
-                              updateGroup(gIdx, 'monthly_count', onlyDigits);
-                            }}
-                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="block text-sm font-medium text-gray-800 mb-2">
-                            Цена (₸)
-                          </label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="\d*"
-                            value={group.monthly_count_price ?? ""}
-                            onChange={(e) => {
-                              const onlyDigits = e.target.value.replace(/\D/g, '');
-                              updateGroup(gIdx, 'monthly_count_price', onlyDigits);
-                            }}
-                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    {group.pricing_model === "yearly" && (
-                      <div className="space-y-1">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Цена в год (₸)
-                        </label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="\d*"
-                          value={group.yearly_price ?? ""}
-                          onChange={(e) => {
-                            const onlyDigits = e.target.value.replace(/\D/g, '');
-                            updateGroup(gIdx, 'yearly_price', onlyDigits);
-                          }}
-                          className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
-                        />
-                      </div>
-                    )}
                   </div>
 
                   {/* Расписание */}
