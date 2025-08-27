@@ -222,7 +222,7 @@ export const MembershipConfigurator: React.FC<MembershipConfiguratorProps> = ({
             <span className="font-medium text-gray-900">Тарифы по группам</span>
           </div>
           {!hasSections && (
-            <span className="text-xs text-gray-500">Создайте секции и группы</span>
+            <span className="text-xs text-gray-500">Можно добавить после добавления секций и групп</span>
           )}
         </div>
         <div className="p-4 space-y-4">
