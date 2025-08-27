@@ -189,7 +189,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
           ))}
 
           {/* Membership */}
-          <div className="pt-2">
+          <div className="pt-2 pb-10">
             <div className="mb-2 text-sm text-gray-600">
               Настройте membership сейчас. Эти параметры можно изменить позже в деталях клуба.
             </div>
