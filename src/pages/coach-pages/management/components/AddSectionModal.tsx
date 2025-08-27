@@ -43,7 +43,19 @@ interface GroupForm {
   name: string;
   level: string;
   capacity: number | "";
-  price: number | "";
+  // Replace single price with flexible pricing model
+  price?: number | "";
+  pricing_model?: "visit_pack" | "monthly_pay" | "count_per_month" | "yearly";
+  // visit pack
+  pack_visits?: number | "";
+  pack_price?: number | "";
+  // monthly pay
+  monthly_price?: number | "";
+  // count per month
+  monthly_count?: number | "";
+  monthly_count_price?: number | "";
+  // yearly
+  yearly_price?: number | "";
   description: string;
   active: boolean;
   coach_id: number;
@@ -151,7 +163,8 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
         name: "",
         level: "",
         capacity: "",
-        price: "",
+        pricing_model: "monthly_pay",
+        monthly_price: "",
         description: "",
         active: true,
         coach_id: newSection.coach_id!,
@@ -271,7 +284,17 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
           name: grp.name,
           description: grp.description,
           schedule: buildScheduleEntry(grp.schedule),
-          price: Number(grp.price) || 0,
+          // Backward compatible: if pricing_model absent, fallback to price
+          price:
+            grp.pricing_model === "visit_pack"
+              ? Number(grp.pack_price) || 0
+              : grp.pricing_model === "monthly_pay"
+              ? Number(grp.monthly_price) || 0
+              : grp.pricing_model === "count_per_month"
+              ? Number(grp.monthly_count_price) || 0
+              : grp.pricing_model === "yearly"
+              ? Number(grp.yearly_price) || 0
+              : Number(grp.price) || 0,
           capacity: Number(grp.capacity) || 0,
           level: grp.level,
           coach_id: grp.coach_id,
@@ -522,22 +545,137 @@ export const AddSectionModal: React.FC<AddSectionModalProps> = ({
                         className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
                       />
                     </div>
+                    {/* Pricing model selection */}
                     <div className="space-y-1">
                       <label className="block text-sm font-medium text-gray-800 mb-2">
-                        Цена (₸)
+                        Модель оплаты
                       </label>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="\d*"
-                        value={group.price}
-                        onChange={(e) => {
-                          const onlyDigits = e.target.value.replace(/\D/g, '');
-                          updateGroup(gIdx, 'price', onlyDigits);
-                        }}
-                        className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
-                      />
+                      <select
+                        value={group.pricing_model || "monthly_pay"}
+                        onChange={(e) => updateGroup(gIdx, "pricing_model", e.target.value)}
+                        className="block w-full border border-gray-300 rounded-xl py-2.5 px-4"
+                      >
+                        <option value="visit_pack">Visit pack</option>
+                        <option value="monthly_pay">Ежемесячно</option>
+                        <option value="count_per_month">Кол-во тренировок/мес</option>
+                        <option value="yearly">Годовая</option>
+                      </select>
                     </div>
+                  </div>
+
+                  {/* Pricing model inputs */}
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {group.pricing_model === "visit_pack" && (
+                      <>
+                        <div className="space-y-1">
+                          <label className="block text-sm font-medium text-gray-800 mb-2">
+                            Кол-во визитов
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="\d*"
+                            value={group.pack_visits ?? ""}
+                            onChange={(e) => {
+                              const onlyDigits = e.target.value.replace(/\D/g, '');
+                              updateGroup(gIdx, 'pack_visits', onlyDigits);
+                            }}
+                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="block text-sm font-medium text-gray-800 mb-2">
+                            Цена (₸)
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="\d*"
+                            value={group.pack_price ?? ""}
+                            onChange={(e) => {
+                              const onlyDigits = e.target.value.replace(/\D/g, '');
+                              updateGroup(gIdx, 'pack_price', onlyDigits);
+                            }}
+                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {group.pricing_model === "monthly_pay" && (
+                      <div className="space-y-1">
+                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                          Цена в месяц (₸)
+                        </label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="\d*"
+                          value={group.monthly_price ?? ""}
+                          onChange={(e) => {
+                            const onlyDigits = e.target.value.replace(/\D/g, '');
+                            updateGroup(gIdx, 'monthly_price', onlyDigits);
+                          }}
+                          className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                        />
+                      </div>
+                    )}
+
+                    {group.pricing_model === "count_per_month" && (
+                      <>
+                        <div className="space-y-1">
+                          <label className="block text-sm font-medium text-gray-800 mb-2">
+                            Тренировок/мес
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="\d*"
+                            value={group.monthly_count ?? ""}
+                            onChange={(e) => {
+                              const onlyDigits = e.target.value.replace(/\D/g, '');
+                              updateGroup(gIdx, 'monthly_count', onlyDigits);
+                            }}
+                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="block text-sm font-medium text-gray-800 mb-2">
+                            Цена (₸)
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="\d*"
+                            value={group.monthly_count_price ?? ""}
+                            onChange={(e) => {
+                              const onlyDigits = e.target.value.replace(/\D/g, '');
+                              updateGroup(gIdx, 'monthly_count_price', onlyDigits);
+                            }}
+                            className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {group.pricing_model === "yearly" && (
+                      <div className="space-y-1">
+                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                          Цена в год (₸)
+                        </label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="\d*"
+                          value={group.yearly_price ?? ""}
+                          onChange={(e) => {
+                            const onlyDigits = e.target.value.replace(/\D/g, '');
+                            updateGroup(gIdx, 'yearly_price', onlyDigits);
+                          }}
+                          className="block w-full appearance-none border border-gray-300 rounded-xl py-2.5 px-4 no-spinner"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Расписание */}

@@ -24,6 +24,8 @@ import {
   clubsApi,
   invitationsApi,
   staffApi,
+  sectionsApi,
+  groupsApi,
 } from "@/functions/axios/axiosFunctions";
 import { CreateClubModal } from "./components/CreateClubModal";
 import type {
@@ -35,6 +37,7 @@ import { BottomNav } from "@/components/Layout";
 import type { Club } from "@/types/types";
 import { Spinner, Skeleton, SkeletonLine } from "@/components/ui";
 import { useI18n } from "@/i18n/i18n";
+import { MembershipConfigurator } from "./components/MembershipConfigurator";
 
 const CoachProfile: React.FC = () => {
   const { t, lang, setLang } = useI18n();
@@ -71,6 +74,11 @@ const CoachProfile: React.FC = () => {
   const [acceptDeclineLoading, setAcceptDeclineLoading] = useState(false);
 
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
+  const [selectedClubTab, setSelectedClubTab] = useState<"analytics" | "membership">("analytics");
+  const [membershipLoading, setMembershipLoading] = useState(false);
+  const [clubSectionsOverview, setClubSectionsOverview] = useState<
+    Array<{ sectionId: number; sectionName: string; groups: Array<{ id: number; name: string }> }>
+  >([]);
   const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
     null
   );
@@ -178,6 +186,42 @@ const CoachProfile: React.FC = () => {
     console.log("Processing payment for club:", clubId);
     // In real app, this would open payment flow
   };
+
+  // Load sections and groups when opening club details for Membership tab
+  useEffect(() => {
+    const load = async () => {
+      if (!selectedClub) return;
+      setMembershipLoading(true);
+      setClubSectionsOverview([]);
+      try {
+        const token = localStorage.getItem("telegramToken") || "";
+        const clubIdNum = Number(selectedClub.id);
+        if (!token || Number.isNaN(clubIdNum)) {
+          setMembershipLoading(false);
+          return;
+        }
+        const secRes = await sectionsApi.getByClubId(clubIdNum, token);
+        const sections: Array<{ id: number; name: string }> = (secRes.data as unknown as Array<{
+          id: number;
+          name: string;
+        }>) ?? [];
+        const groupsLists = await Promise.all(
+          sections.map((s) => groupsApi.getBySectionId(s.id, token).then((r) => ({ s, groups: r.data })))
+        );
+        const overview = groupsLists.map(({ s, groups }) => ({
+          sectionId: s.id,
+          sectionName: (s && typeof s.name === 'string') ? s.name : "Секция",
+          groups: ((groups as unknown as Array<{ id: number; name: string }>) ?? []).map((g) => ({ id: g.id, name: g.name })),
+        }));
+        setClubSectionsOverview(overview);
+      } catch (e) {
+        console.warn("Не удалось загрузить секции/группы, покажем мок/пусто", e);
+      } finally {
+        setMembershipLoading(false);
+      }
+    };
+    load();
+  }, [selectedClub]);
 
   const handleSaveName = async () => {
     if (!nameInput.trim()) return;
@@ -654,9 +698,33 @@ const CoachProfile: React.FC = () => {
             <div className="bg-white w-full max-h-[90vh] rounded-t-2xl overflow-hidden">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {selectedClub.name} Аналитика
-                  </h2>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {selectedClub.name}
+                    </h2>
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        onClick={() => setSelectedClubTab("analytics")}
+                        className={`px-3 py-1 text-sm rounded-full border ${
+                          selectedClubTab === "analytics"
+                            ? "bg-blue-600 text-white border-blue-600"
+                            : "bg-white text-gray-700 border-gray-300"
+                        }`}
+                      >
+                        Аналитика
+                      </button>
+                      <button
+                        onClick={() => setSelectedClubTab("membership")}
+                        className={`px-3 py-1 text-sm rounded-full border ${
+                          selectedClubTab === "membership"
+                            ? "bg-blue-600 text-white border-blue-600"
+                            : "bg-white text-gray-700 border-gray-300"
+                        }`}
+                      >
+                        Membership
+                      </button>
+                    </div>
+                  </div>
                   <button
                     onClick={() => setSelectedClub(null)}
                     className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -667,6 +735,8 @@ const CoachProfile: React.FC = () => {
               </div>
 
               <div className="overflow-y-auto p-4 space-y-6">
+                {selectedClubTab === "analytics" && (
+                <>
                 {/* Key Metrics */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
@@ -850,6 +920,21 @@ const CoachProfile: React.FC = () => {
                     )}
                   </div>
                 </div>
+                </>
+                )}
+
+                {selectedClubTab === "membership" && (
+                  <div className="space-y-4">
+                    {membershipLoading ? (
+                      <div className="text-sm text-gray-600">Загрузка секций и групп...</div>
+                    ) : (
+                      <MembershipConfigurator
+                        clubId={selectedClub.id}
+                        sections={clubSectionsOverview}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

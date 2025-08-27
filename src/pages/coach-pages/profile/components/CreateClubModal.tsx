@@ -4,6 +4,7 @@ import type { CreateClubRequest } from "@/functions/axios/requests";
 import PhoneInput from "react-phone-number-input";
 import ReactCountryFlag from "react-country-flag";
 import "react-phone-number-input/style.css";
+import { MembershipConfigurator } from "./MembershipConfigurator";
 
 interface CreateClubModalProps {
   show: boolean;
@@ -76,7 +77,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-5 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+        <div className="px-6 py-5 space-y-6 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
           {[
             {
               label: "Название",
@@ -186,6 +187,14 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
               )}
             </div>
           ))}
+
+          {/* Membership */}
+          <div className="pt-2">
+            <div className="mb-2 text-sm text-gray-600">
+              Настройте membership сейчас. Эти параметры можно изменить позже в деталях клуба.
+            </div>
+            <MembershipConfigurator />
+          </div>
         </div>
 
         {/* Actions */}
