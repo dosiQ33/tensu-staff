@@ -13,12 +13,14 @@ import {
   Clock,
   BarChart3,
   PieChart,
-  Check,
   Edit2,
   ChevronRight,
   FileText,
   Globe,
   Mail,
+  Check,
+  MapPin,
+  Building2,
 } from "lucide-react";
 import {
   clubsApi,
@@ -43,6 +45,7 @@ const CoachProfile: React.FC = () => {
   const { t, lang, setLang } = useI18n();
   const [showLangSheet, setShowLangSheet] = useState(false);
   const refresh = () => window.location.reload();
+  
   const mapClub = ({ club: c, role }: ClubWithRole): Club => ({
     id: c.id.toString(),
     name: c.name,
@@ -69,6 +72,7 @@ const CoachProfile: React.FC = () => {
     },
     paymentHistory: [],
   });
+
   const [clubs, setClubs] = useState<Club[]>([]);
   const [myInvitations, setMyInvitations] = useState<Invitation[]>([]);
   const [acceptDeclineLoading, setAcceptDeclineLoading] = useState(false);
@@ -76,18 +80,14 @@ const CoachProfile: React.FC = () => {
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [selectedClubTab, setSelectedClubTab] = useState<"analytics" | "membership">("analytics");
   const [membershipLoading, setMembershipLoading] = useState(false);
-  const [clubSectionsOverview, setClubSectionsOverview] = useState<
+  const [clubSectionsOverview, setClubSectionsOverview] = useState
     Array<{ sectionId: number; sectionName: string; groups: Array<{ id: number; name: string }> }>
   >([]);
-  const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(
-    null
-  );
+  const [showPaymentHistory, setShowPaymentHistory] = useState<string | null>(null);
 
   const [showCreate, setShowCreate] = useState(false);
   const [showLimitPopup, setShowLimitPopup] = useState(false);
-  const [limitInfo, setLimitInfo] = useState<GetClubsLimitCheckResponse | null>(
-    null
-  );
+  const [limitInfo, setLimitInfo] = useState<GetClubsLimitCheckResponse | null>(null);
 
   const initialName = localStorage.getItem("telegramFullName") || "";
   const [name, setName] = useState(initialName);
@@ -184,10 +184,8 @@ const CoachProfile: React.FC = () => {
 
   const handlePayment = (clubId: string) => {
     console.log("Processing payment for club:", clubId);
-    // In real app, this would open payment flow
   };
 
-  // Load sections and groups when opening club details for Membership tab
   useEffect(() => {
     const load = async () => {
       if (!selectedClub) return;
@@ -215,7 +213,7 @@ const CoachProfile: React.FC = () => {
         }));
         setClubSectionsOverview(overview);
       } catch (e) {
-        console.warn("Не удалось загрузить секции/группы, покажем мок/пусто", e);
+        console.warn("Не удалось загрузить секции/группы", e);
       } finally {
         setMembershipLoading(false);
       }
@@ -233,8 +231,6 @@ const CoachProfile: React.FC = () => {
     try {
       const token = localStorage.getItem("telegramToken")!;
       await staffApi.updateMe({ first_name, last_name }, token);
-      console.log("First name updated successfully:", first_name, last_name);
-      // после успешного ответа
       const me = await staffApi.getMe(token);
       const apiName = `${me.data.first_name}${me.data.last_name ? " " + me.data.last_name : ""}`.trim();
       setName(apiName || nameInput);
@@ -242,7 +238,6 @@ const CoachProfile: React.FC = () => {
       setEditingName(false);
     } catch (err) {
       console.error("Не удалось сохранить имя:", err);
-      // можно показать toast или ошибку пользователю
     } finally {
       setIsSavingName(false);
     }
@@ -269,7 +264,6 @@ const CoachProfile: React.FC = () => {
       const token = localStorage.getItem("telegramToken")!;
       await invitationsApi.accept(invitationId, token);
       setAcceptDeclineLoading(false);
-
       refresh();
     } catch (e) {
       setAcceptDeclineLoading(false);
@@ -310,7 +304,6 @@ const CoachProfile: React.FC = () => {
       .catch(console.error);
   }, []);
 
-  // Always hydrate profile name from API on mount so it persists across app reloads
   useEffect(() => {
     const token = localStorage.getItem("telegramToken");
     if (!token) return;
@@ -337,36 +330,41 @@ const CoachProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* Personal Info */}
+        {/* Content */}
         <div className="px-4 py-4">
-          {/* попап о превышении лимита */}
+          {/* Limit Popup */}
           {showLimitPopup && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
               <div className="bg-white rounded-xl p-6 max-w-sm mx-4 shadow-lg text-center">
-                <h3 className="text-lg font-semibold mb-2 text-red-600">
+                <div className="w-16 h-16 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
+                  <Clock className="text-orange-600" size={32} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900">
                   Лимит клубов достигнут
                 </h3>
                 <p className="text-sm text-gray-700 mb-4">
-                  Вы уже создали {limitInfo?.current_clubs} из{" "}
-                  {limitInfo?.max_clubs}.<br />
-                  {limitInfo?.reason ||
-                    "Обратитесь в поддержку для расширения лимита."}
+                  Вы уже создали {limitInfo?.current_clubs} из {limitInfo?.max_clubs}.<br />
+                  {limitInfo?.reason || "Обратитесь в поддержку для расширения лимита."}
                 </p>
                 <button
                   onClick={() => setShowLimitPopup(false)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                 >
-                  Закрыть
+                  Понятно
                 </button>
               </div>
             </div>
           )}
-          <div className="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+
+          {/* Personal Info Card */}
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm mb-4">
             <div className="flex items-center gap-4">
               {avatar ? (
-                <img className="w-10 h-10 rounded-full" src={avatar} />
+                <img className="w-16 h-16 rounded-full object-cover" src={avatar} alt="Avatar" />
               ) : (
-                <div className="text-4xl">👤</div>
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-semibold">
+                  {name.charAt(0).toUpperCase()}
+                </div>
               )}
 
               <div className="flex-1">
@@ -377,14 +375,14 @@ const CoachProfile: React.FC = () => {
                       value={nameInput}
                       onChange={(e) => setNameInput(e.target.value)}
                       disabled={isSavingName}
-                      className="border-b border-gray-300 focus:border-blue-500 focus:outline-none text-lg font-semibold text-gray-900 mb-1 transition-colors"
+                      className="flex-1 border-b-2 border-blue-500 focus:outline-none text-lg font-semibold text-gray-900 bg-transparent transition-colors"
                     />
                     <button
                       onClick={handleSaveName}
                       disabled={isSavingName}
-                      className="p-1 hover:bg-green-100 rounded-full"
+                      className="p-2 hover:bg-green-100 rounded-full transition-colors"
                     >
-                      <Check size={16} className="text-green-600" />
+                      <Check size={18} className="text-green-600" />
                     </button>
                     <button
                       onClick={() => {
@@ -392,32 +390,30 @@ const CoachProfile: React.FC = () => {
                         setEditingName(false);
                       }}
                       disabled={isSavingName}
-                      className="p-1 hover:bg-red-100 rounded-full"
+                      className="p-2 hover:bg-red-100 rounded-full transition-colors"
                     >
-                      <X size={16} className="text-red-600" />
+                      <X size={18} className="text-red-600" />
                     </button>
                   </div>
                 ) : (
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h2 className="text-lg font-semibold text-gray-900">
                       {name}
                     </h2>
                     <button
                       onClick={() => setEditingName(true)}
-                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors rounded-full"
+                      className="p-2 -mr-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
                     >
                       <Edit2 size={16} />
                     </button>
                   </div>
                 )}
-
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-600">+{phone}</span>
-                </div>
+                <div className="text-sm text-gray-600 mt-1">+{phone}</div>
               </div>
             </div>
           </div>
 
+          {/* Create Club Modal */}
           <CreateClubModal
             show={showCreate}
             loading={isCreating}
@@ -456,19 +452,6 @@ const CoachProfile: React.FC = () => {
                   paymentHistory: [],
                 };
                 setClubs((prev) => [...prev, uiClub]);
-                // Migrate pending membership config to the new club's storage key
-                try {
-                  const pending = localStorage.getItem("pendingMembershipConfig");
-                  if (pending) {
-                    localStorage.setItem(
-                      `membershipConfig:${uiClub.id}`,
-                      pending
-                    );
-                    localStorage.removeItem("pendingMembershipConfig");
-                  }
-                } catch (err) {
-                  console.warn("Не удалось перенести настройки membership", err);
-                }
                 setShowCreate(false);
               } catch (e) {
                 console.error("Ошибка создания клуба", e);
@@ -486,50 +469,55 @@ const CoachProfile: React.FC = () => {
               </h3>
               <button
                 onClick={handleCreateClick}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-sm flex items-center gap-2"
               >
-                + {t('club.create')}
+                <Building2 size={18} />
+                {t('club.create')}
               </button>
             </div>
 
-
+            {/* Loading State */}
             {loadingClubs && (
               <>
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                     <div className="p-4 border-b border-gray-100">
                       <div className="flex items-start gap-3">
-                        <Skeleton className="w-10 h-10 rounded" />
+                        <Skeleton className="w-12 h-12 rounded-lg" />
                         <div className="flex-1">
-                          <SkeletonLine width="w-1/3" />
-                          <SkeletonLine width="w-1/4" className="mt-2" />
+                          <SkeletonLine width="w-2/3" className="mb-2" />
+                          <SkeletonLine width="w-1/2" />
                         </div>
                       </div>
                     </div>
                     <div className="p-4">
-                      <Skeleton className="h-20 w-full rounded" />
+                      <Skeleton className="h-24 w-full rounded-lg" />
                     </div>
                   </div>
                 ))}
               </>
             )}
+
+            {/* Clubs List */}
             {!loadingClubs && clubs.map((club) => (
               <div
                 key={club.id}
-                className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
                 {/* Club Header */}
-                <div className="p-4 border-b border-gray-100">
+                <div className="p-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3 flex-1">
-                      <div className="text-2xl">{club.logo}</div>
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-2xl shadow-sm">
+                        {club.logo || "🏢"}
+                      </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">
+                        <h4 className="font-semibold text-gray-900 text-lg">
                           {club.name}
                         </h4>
-                        <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2 mt-1">
                           {getRoleIcon(club.userRole)}
-                          <span className="text-gray-600">
+                          <span className="text-sm text-gray-600 font-medium">
                             {getRoleLabel(club.userRole)}
                           </span>
                         </div>
@@ -538,9 +526,9 @@ const CoachProfile: React.FC = () => {
 
                     <button
                       onClick={() => setSelectedClub(club)}
-                      className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1"
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 shadow-sm font-medium"
                     >
-                      <Eye size={14} />
+                      <Eye size={16} />
                       Детали
                     </button>
                   </div>
@@ -548,60 +536,56 @@ const CoachProfile: React.FC = () => {
 
                 {/* Club Stats */}
                 <div className="p-4">
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="bg-blue-50 rounded-lg p-3">
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
                       <div className="flex items-center gap-2 mb-1">
                         <Users className="text-blue-600" size={16} />
-                          <span className="text-sm font-medium text-blue-700">
-                            {t('stats.students')}
+                        <span className="text-sm font-medium text-blue-700">
+                          {t('stats.students')}
                         </span>
                       </div>
-                      <div className="text-xl font-bold text-blue-800">
+                      <div className="text-2xl font-bold text-blue-800">
                         {club.students}
                       </div>
-                      <div className="flex items-center gap-1 text-sm">
-                        {club.studentGrowth > 0 ? (
+                      <div className="flex items-center gap-1 text-xs mt-1">
+                        {club.studentGrowth >= 0 ? (
                           <TrendingUp className="text-green-600" size={12} />
                         ) : (
                           <TrendingDown className="text-red-600" size={12} />
                         )}
-                        <span
-                          className={
-                            club.studentGrowth > 0
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }
-                        >
-                          {club.studentGrowth > 0 ? "+" : ""}
-                          {club.studentGrowth} этот месяц
+                        <span className={club.studentGrowth >= 0 ? "text-green-600" : "text-red-600"}>
+                          {club.studentGrowth > 0 ? "+" : ""}{club.studentGrowth} этот месяц
                         </span>
                       </div>
                     </div>
 
                     {club.userRole === "owner" && (
-                      <div className="bg-green-50 rounded-lg p-3">
+                      <div className="bg-green-50 rounded-lg p-3 border border-green-100">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-green-600 text-[16px] leading-none">₸</span>
+                          <span className="text-green-600 text-[16px] leading-none font-bold">₸</span>
                           <span className="text-sm font-medium text-green-700">
                             {t('stats.revenue')}
                           </span>
                         </div>
-                        <div className="text-xl font-bold text-green-800">
+                        <div className="text-2xl font-bold text-green-800">
                           {formatCurrency(club.monthlyRevenue)}
                         </div>
-                        <div className="text-sm text-green-600">{t('stats.perMonth')}</div>
+                        <div className="text-xs text-green-600 mt-1">{t('stats.perMonth')}</div>
                       </div>
                     )}
                   </div>
 
-                  <div className="text-sm text-gray-600 mb-3">
-                    {club.sections} секции • Пик часов:{" "}
-                    {club.analytics.peakHours}
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+                    <Activity size={14} />
+                    <span>{club.sections} секции</span>
+                    <span>•</span>
+                    <Clock size={14} />
+                    <span>Пик: {club.analytics.peakHours}</span>
                   </div>
 
                   {/* Payment Info */}
                   {club.userRole === "owner" && (
-                    <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <CreditCard className="text-gray-600" size={16} />
@@ -614,8 +598,7 @@ const CoachProfile: React.FC = () => {
                             club.paymentStatus
                           )}`}
                         >
-                          {club.paymentStatus.charAt(0).toUpperCase() +
-                            club.paymentStatus.slice(1)}
+                          {club.paymentStatus.charAt(0).toUpperCase() + club.paymentStatus.slice(1)}
                         </span>
                       </div>
 
@@ -626,13 +609,13 @@ const CoachProfile: React.FC = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setShowPaymentHistory(club.id)}
-                            className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors"
+                            className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
                           >
                             {t('payment.history')}
                           </button>
                           <button
                             onClick={() => handlePayment(club.id)}
-                            className={`px-3 py-1 text-xs rounded font-medium transition-colors ${
+                            className={`px-3 py-1 text-xs rounded-lg font-medium transition-colors ${
                               club.paymentStatus === "paid"
                                 ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
                                 : club.paymentStatus === "pending"
@@ -649,297 +632,358 @@ const CoachProfile: React.FC = () => {
                 </div>
               </div>
             ))}
+
+            {/* Invitations */}
             {myInvitations.length > 0 && (
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                  {t('invite.title')} ({myInvitations.length})
-                </h4>
+              <div className="bg-white rounded-xl border border-orange-200 p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="text-orange-600" size={20} />
+                  <h4 className="text-lg font-semibold text-gray-900">
+                    {t('invite.title')} ({myInvitations.length})
+                  </h4>
+                </div>
                 <ul className="space-y-3">
                   {myInvitations.map((invitation) => (
                     <li
                       key={invitation.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className="p-4 bg-orange-50 rounded-lg border border-orange-100"
                     >
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {invitation.phone_number}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            {getRoleIcon(invitation.role)}
+                            <span className="font-semibold text-gray-900">
+                              {getRoleLabel(invitation.role)}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-700">
+                            в клубе{" "}
+                            <span className="font-semibold text-blue-600">
+                              {invitation.club.name}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {invitation.phone_number}
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-600">
-                          {t('invite.role')}: {" "}
-                          <span className="font-bold text-blue-500">
-                            {getRoleLabel(invitation.role)}
-                          </span>{" "}
-                          в клубе{" "}
-                          <span className="font-bold text-blue-500">
-                            {getRoleLabel(invitation.club.name)}
-                          </span>
-                        </div>
+
+                        {acceptDeclineLoading ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => acceptInvitation(invitation.id)}
+                              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-sm shadow-sm"
+                            >
+                              {t('action.accept')}
+                            </button>
+                            <button
+                              onClick={() => declineInvitation(invitation.id)}
+                              className="px-4 py-2 bg-white text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors font-medium text-sm"
+                            >
+                              {t('action.decline')}
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      {acceptDeclineLoading ? (
-                        <Spinner size="sm" />
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => {
-                              acceptInvitation(invitation.id);
-                            }}
-                            className="px-3 ml-2 mr-2 py-1 text-xs font-bold pt-2 pb-2 pl-4 pr-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                          >
-                            {t('action.accept')}
-                          </button>
-                          <button
-                            onClick={() => {
-                              declineInvitation(invitation.id);
-                            }}
-                            className="px-3 py-1 text-xs bg-transparent-500 font-bold pt-2 pb-2 pl-4 pr-4 text-red-700 rounded hover:bg-blue-600 transition-colors "
-                          >
-                            {t('action.decline')}
-                          </button>
-                        </>
-                      )}
                     </li>
                   ))}
                 </ul>
               </div>
             )}
+
+            {/* Empty State */}
+            {!loadingClubs && clubs.length === 0 && myInvitations.length === 0 && (
+              <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
+                <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Building2 className="text-gray-400" size={40} />
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2 text-lg">Нет клубов</h4>
+                <p className="text-sm text-gray-600 mb-6">
+                  Создайте свой первый клуб для начала работы
+                </p>
+                <button
+                  onClick={handleCreateClick}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-sm"
+                >
+                  Создать первый клуб
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Settings Section */}
+          <div className="bg-white rounded-xl shadow-sm mt-6 overflow-hidden border border-gray-200">
+            {[
+              {
+                label: t('language.change'),
+                icon: Globe,
+                onClick: () => setShowLangSheet(true),
+              },
+              {
+                label: "Политика конфиденциальности",
+                icon: FileText,
+                onClick: () => { window.location.href = '/privacy'; },
+              },
+              {
+                label: "Напишите нам",
+                icon: Mail,
+                onClick: () => {
+                  const tg = window.Telegram?.WebApp;
+                  const mailto = 'mailto:support@tensu.kz';
+                  if (tg && typeof tg.openLink === 'function') {
+                    tg.openLink(mailto);
+                  } else {
+                    window.location.href = mailto;
+                  }
+                },
+              },
+            ].map(({ label, icon: Icon, onClick }, i, arr) => (
+              <button
+                key={label}
+                onClick={onClick}
+                className={`
+                  w-full flex items-center justify-between p-4 
+                  hover:bg-gray-50 transition-colors
+                  ${i !== arr.length - 1 ? "border-b border-gray-100" : ""}
+                `}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon className="text-blue-500" size={20} />
+                  <span className="text-base font-medium text-gray-800">
+                    {label}
+                  </span>
+                </div>
+                <ChevronRight className="text-gray-400" size={20} />
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Club Analytics Modal */}
+        {/* Club Details Modal */}
         {selectedClub && (
-          <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-end">
-            <div className="bg-white w-full max-h-[90vh] rounded-t-2xl overflow-hidden">
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
-                <div className="flex items-center justify-between">
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+            <div className="bg-white w-full max-h-[90vh] rounded-t-2xl overflow-hidden shadow-2xl">
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 z-10">
+                <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-xl font-semibold text-gray-900">
                       {selectedClub.name}
                     </h2>
-                    <div className="mt-2 flex gap-2">
-                      <button
-                        onClick={() => setSelectedClubTab("analytics")}
-                        className={`px-3 py-1 text-sm rounded-full border ${
-                          selectedClubTab === "analytics"
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-white text-gray-700 border-gray-300"
-                        }`}
-                      >
-                        Аналитика
-                      </button>
-                      <button
-                        onClick={() => setSelectedClubTab("membership")}
-                        className={`px-3 py-1 text-sm rounded-full border ${
-                          selectedClubTab === "membership"
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-white text-gray-700 border-gray-300"
-                        }`}
-                      >
-                        Membership
-                      </button>
+                    <div className="flex items-center gap-2 mt-1">
+                      {getRoleIcon(selectedClub.userRole)}
+                      <span className="text-sm text-gray-600">
+                        {getRoleLabel(selectedClub.userRole)}
+                      </span>
                     </div>
                   </div>
                   <button
                     onClick={() => setSelectedClub(null)}
-                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   >
-                    <X size={20} />
+                    <X size={24} />
+                  </button>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSelectedClubTab("analytics")}
+                    className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
+                      selectedClubTab === "analytics"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    Аналитика
+                  </button>
+                  <button
+                    onClick={() => setSelectedClubTab("membership")}
+                    className={`flex-1 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
+                      selectedClubTab === "membership"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    Membership
                   </button>
                 </div>
               </div>
 
-              <div className="overflow-y-auto p-4 space-y-6">
+              <div className="overflow-y-auto p-4 space-y-6" style={{ maxHeight: 'calc(90vh - 160px)' }}>
                 {selectedClubTab === "analytics" && (
-                <>
-                {/* Key Metrics */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Users className="text-blue-600" size={16} />
-                      <span className="text-sm font-medium text-blue-700">
-                        Общее количество студентов
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-blue-800">
-                      {selectedClub.analytics.totalStudents}
-                    </div>
-                    <div className="text-xs text-blue-600">
-                      +{selectedClub.analytics.newStudents} новые, -
-                      {selectedClub.analytics.lostStudents} ушли
-                    </div>
-                  </div>
+                  <>
+                    {/* Key Metrics */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Users className="text-blue-600" size={18} />
+                          <span className="text-sm font-medium text-blue-700">
+                            Студенты
+                          </span>
+                        </div>
+                        <div className="text-3xl font-bold text-blue-800 mb-1">
+                          {selectedClub.analytics.totalStudents}
+                        </div>
+                        <div className="text-xs text-blue-600">
+                          +{selectedClub.analytics.newStudents} новые • -
+                          {selectedClub.analytics.lostStudents} ушли
+                        </div>
+                      </div>
 
-                  <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-green-600 text-[16px] leading-none">₸</span>
-                      <span className="text-sm font-medium text-green-700">
-                        Недельный Доход
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-green-800">
-                      {formatCurrency(selectedClub.analytics.weeklyRevenue)}
-                    </div>
-                    <div className="text-xs text-green-600">
-                      Средний чек:{" "}
-                      {formatCurrency(selectedClub.analytics.averageTicket)}
-                    </div>
-                  </div>
+                      <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-green-600 text-[18px] leading-none font-bold">₸</span>
+                          <span className="text-sm font-medium text-green-700">
+                            Доход
+                          </span>
+                        </div>
+                        <div className="text-2xl font-bold text-green-800 mb-1">
+                          {formatCurrency(selectedClub.analytics.weeklyRevenue)}
+                        </div>
+                        <div className="text-xs text-green-600">
+                          Средний чек: {formatCurrency(selectedClub.analytics.averageTicket)}
+                        </div>
+                      </div>
 
-                  <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Activity className="text-purple-600" size={16} />
-                      <span className="text-sm font-medium text-purple-700">
-                        Тренировки
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-purple-800">
-                      {selectedClub.analytics.totalWorkouts}
-                    </div>
-                    <div className="text-xs text-purple-600">Этот месяц</div>
-                  </div>
+                      <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Activity className="text-purple-600" size={18} />
+                          <span className="text-sm font-medium text-purple-700">
+                            Тренировки
+                          </span>
+                        </div>
+                        <div className="text-3xl font-bold text-purple-800 mb-1">
+                          {selectedClub.analytics.totalWorkouts}
+                        </div>
+                        <div className="text-xs text-purple-600">Этот месяц</div>
+                      </div>
 
-                  <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Clock className="text-orange-600" size={16} />
-                      <span className="text-sm font-medium text-orange-700">
-                        Пиковые Часы
-                      </span>
+                      <div className="bg-orange-50 rounded-xl p-4 border border-orange-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Clock className="text-orange-600" size={18} />
+                          <span className="text-sm font-medium text-orange-700">
+                            Пик
+                          </span>
+                        </div>
+                        <div className="text-2xl font-bold text-orange-800 mb-1">
+                          {selectedClub.analytics.peakHours}
+                        </div>
+                        <div className="text-xs text-orange-600">Загруженные часы</div>
+                      </div>
                     </div>
-                    <div className="text-xl font-bold text-orange-800">
-                      {selectedClub.analytics.peakHours}
-                    </div>
-                    <div className="text-xs text-orange-600">
-                      Загруженные дни
-                    </div>
-                  </div>
-                </div>
 
-                {/* Revenue Trend */}
-                <div className="bg-white border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <BarChart3 className="text-gray-600" size={18} />
-                    <h3 className="font-semibold text-gray-900">
-                      Доход по месяцам
-                    </h3>
-                  </div>
-                  <div className="flex items-end justify-between h-32 gap-2">
-                    {selectedClub.analytics.revenueHistory.map(
-                      (item, index) => {
-                        const maxRevenue = Math.max(
-                          ...selectedClub.analytics.revenueHistory.map(
-                            (r) => r.amount
-                          )
-                        );
-                        const height = (item.amount / maxRevenue) * 100;
-                        return (
-                          <div
-                            key={index}
-                            className="flex-1 flex flex-col items-center"
-                          >
-                            <div className="text-xs text-gray-600 mb-1">
-                              {formatCurrency(item.amount / 1000)}k
-                            </div>
-                            <div
-                              className="w-full bg-blue-500 rounded-t"
-                              style={{ height: `${height}%` }}
-                            />
-                            <div className="text-xs text-gray-500 mt-1">
-                              {item.month}
-                            </div>
-                          </div>
-                        );
-                      }
-                    )}
-                  </div>
-                </div>
-
-                {/* Student Growth */}
-                <div className="bg-white border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <TrendingUp className="text-gray-600" size={18} />
-                    <h3 className="font-semibold text-gray-900">
-                      Прирост Студентов
-                    </h3>
-                  </div>
-                  <div className="flex items-end justify-between h-24 gap-2">
-                    {selectedClub.analytics.studentHistory.map(
-                      (item, index) => {
-                        const maxStudents = Math.max(
-                          ...selectedClub.analytics.studentHistory.map(
-                            (s) => s.count
-                          )
-                        );
-                        const height = (item.count / maxStudents) * 100;
-                        return (
-                          <div
-                            key={index}
-                            className="flex-1 flex flex-col items-center"
-                          >
-                            <div className="text-xs text-gray-600 mb-1">
-                              {item.count}
-                            </div>
-                            <div
-                              className="w-full bg-green-500 rounded-t"
-                              style={{ height: `${height}%` }}
-                            />
-                            <div className="text-xs text-gray-500 mt-1">
-                              {item.month}
-                            </div>
-                          </div>
-                        );
-                      }
-                    )}
-                  </div>
-                </div>
-
-                {/* Section Distribution */}
-                <div className="bg-white border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <PieChart className="text-gray-600" size={18} />
-                    <h3 className="font-semibold text-gray-900">
-                      Распределение по Секциям
-                    </h3>
-                  </div>
-                  <div className="space-y-3">
-                    {selectedClub.analytics.sectionDistribution.map(
-                      (section, index) => {
-                        const percentage =
-                          (section.count /
-                            selectedClub.analytics.totalStudents) *
-                          100;
-                        return (
-                          <div key={index} className="flex items-center gap-3">
-                            <div
-                              className={`w-4 h-4 rounded ${section.color}`}
-                            />
-                            <div className="flex-1">
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm font-medium text-gray-900">
-                                  {section.name}
-                                </span>
-                                <span className="text-sm text-gray-600">
-                                  {section.count} ({percentage.toFixed(0)}%)
-                                </span>
+                    {/* Revenue Trend */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-center gap-2 mb-4">
+                        <BarChart3 className="text-gray-700" size={20} />
+                        <h3 className="font-semibold text-gray-900">
+                          Доход по месяцам
+                        </h3>
+                      </div>
+                      <div className="flex items-end justify-between h-32 gap-2">
+                        {selectedClub.analytics.revenueHistory.map((item, index) => {
+                          const maxRevenue = Math.max(
+                            ...selectedClub.analytics.revenueHistory.map((r) => r.amount)
+                          );
+                          const height = (item.amount / maxRevenue) * 100;
+                          return (
+                            <div key={index} className="flex-1 flex flex-col items-center">
+                              <div className="text-xs text-gray-600 mb-1">
+                                {formatCurrency(item.amount / 1000)}k
                               </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div
-                                  className={`h-2 rounded-full ${section.color}`}
-                                  style={{ width: `${percentage}%` }}
-                                />
+                              <div
+                                className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg"
+                                style={{ height: `${height}%` }}
+                              />
+                              <div className="text-xs text-gray-500 mt-1">
+                                {item.month}
                               </div>
                             </div>
-                          </div>
-                        );
-                      }
-                    )}
-                  </div>
-                </div>
-                </>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Student Growth */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-center gap-2 mb-4">
+                        <TrendingUp className="text-gray-700" size={20} />
+                        <h3 className="font-semibold text-gray-900">
+                          Прирост студентов
+                        </h3>
+                      </div>
+                      <div className="flex items-end justify-between h-24 gap-2">
+                        {selectedClub.analytics.studentHistory.map((item, index) => {
+                          const maxStudents = Math.max(
+                            ...selectedClub.analytics.studentHistory.map((s) => s.count)
+                          );
+                          const height = (item.count / maxStudents) * 100;
+                          return (
+                            <div key={index} className="flex-1 flex flex-col items-center">
+                              <div className="text-xs text-gray-600 mb-1">
+                                {item.count}
+                              </div>
+                              <div
+                                className="w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t-lg"
+                                style={{ height: `${height}%` }}
+                              />
+                              <div className="text-xs text-gray-500 mt-1">
+                                {item.month}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Section Distribution */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-center gap-2 mb-4">
+                        <PieChart className="text-gray-700" size={20} />
+                        <h3 className="font-semibold text-gray-900">
+                          Распределение по секциям
+                        </h3>
+                      </div>
+                      <div className="space-y-3">
+                        {selectedClub.analytics.sectionDistribution.map((section, index) => {
+                          const percentage =
+                            (section.count / selectedClub.analytics.totalStudents) * 100;
+                          return (
+                            <div key={index} className="flex items-center gap-3">
+                              <div className={`w-4 h-4 rounded ${section.color}`} />
+                              <div className="flex-1">
+                                <div className="flex justify-between items-center mb-1">
+                                  <span className="text-sm font-medium text-gray-900">
+                                    {section.name}
+                                  </span>
+                                  <span className="text-sm text-gray-600 font-medium">
+                                    {section.count} ({percentage.toFixed(0)}%)
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div
+                                    className={`h-2 rounded-full ${section.color}`}
+                                    style={{ width: `${percentage}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
                 )}
 
                 {selectedClubTab === "membership" && (
                   <div className="space-y-4">
                     {membershipLoading ? (
-                      <div className="text-sm text-gray-600">Загрузка секций и групп...</div>
+                      <div className="text-center py-8">
+                        <Spinner size="lg" />
+                        <div className="text-sm text-gray-600 mt-3">
+                          Загрузка секций и групп...
+                        </div>
+                      </div>
                     ) : (
                       <MembershipConfigurator
                         clubId={selectedClub.id}
@@ -955,16 +999,16 @@ const CoachProfile: React.FC = () => {
 
         {/* Payment History Modal */}
         {showPaymentHistory && (
-          <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-end">
-            <div className="bg-white w-full max-h-[70vh] rounded-t-2xl overflow-hidden">
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+            <div className="bg-white w-full max-h-[70vh] rounded-t-2xl overflow-hidden shadow-2xl">
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    История Платежей
+                    История платежей
                   </h2>
                   <button
                     onClick={() => setShowPaymentHistory(null)}
-                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <X size={20} />
                   </button>
@@ -976,18 +1020,18 @@ const CoachProfile: React.FC = () => {
                   {clubs
                     .find((c) => c.id === showPaymentHistory)
                     ?.paymentHistory.map((payment, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-4">
+                      <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-gray-900">
+                            <div className="font-semibold text-gray-900 text-lg">
                               {formatCurrency(payment.amount)}
                             </div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-600 mt-1">
                               {formatDate(payment.date)} • {payment.method}
                             </div>
                           </div>
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
                               payment.status === "Paid"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-yellow-100 text-yellow-800"
@@ -1003,69 +1047,43 @@ const CoachProfile: React.FC = () => {
             </div>
           </div>
         )}
-        <div className="bg-white rounded-2xl shadow-md relative mt-2 overflow-visible">
-          {[
-            {
-              label: t('language.change'),
-              icon: Globe,
-              onClick: () => setShowLangSheet(true),
-            },
-            {
-              label: "Политика конфиденциальности",
-              icon: FileText,
-              onClick: () => { window.location.href = '/privacy'; },
-            },
-            {
-              label: "Напишите нам",
-              icon: Mail,
-              onClick: () => {
-                const tg = window.Telegram?.WebApp;
-                const mailto = 'mailto:support@tensu.kz';
-                if (tg && typeof tg.openLink === 'function') {
-                  tg.openLink(mailto);
-                } else {
-                  window.location.href = mailto;
-                }
-              },
-            },
-          ].map(({ label, icon: Icon, onClick }, i, arr) => (
-            <button
-              key={label}
-              onClick={onClick}
-              className={`
-            w-full flex items-center justify-between p-4 
-            hover:bg-gray-50 transition-colors border-gray-300 border-b-1 last:border-b-0
-            ${i === 0 ? "rounded-t-2xl" : ""}
-            ${i === arr.length - 1 ? "rounded-b-2xl" : ""}
-          `}
-            >
-              <div className="flex items-center gap-3">
-                <Icon className="text-blue-500" size={20} />
-                <span className="text-base font-medium text-gray-800">
-                  {label}
-                </span>
-              </div>
-              <ChevronRight className="text-gray-400" size={20} />
-            </button>
-          ))}
-        </div>
 
-        {/* Language Action Sheet */}
+        {/* Language Sheet */}
         {showLangSheet && (
           <div className="fixed inset-0 z-50 flex items-end">
-            <div className="absolute inset-0" onClick={() => setShowLangSheet(false)} />
-            <div className="bg-white w-full rounded-t-2xl p-4" onClick={(e) => e.stopPropagation()}>
-              <h3 className="text-lg font-semibold mb-3">{t('language.change')}</h3>
-              <div className="space-y-2">
+            <div
+              className="absolute inset-0 bg-black/30"
+              onClick={() => setShowLangSheet(false)}
+            />
+            <div
+              className="bg-white w-full rounded-t-2xl p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-semibold mb-4">{t('language.change')}</h3>
+              <div className="space-y-3">
                 <button
-                  onClick={() => { setLang('ru'); setShowLangSheet(false); }}
-                  className={`w-full text-left px-4 py-3 rounded-lg border ${lang === 'ru' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200'}`}
+                  onClick={() => {
+                    setLang('ru');
+                    setShowLangSheet(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-colors ${
+                    lang === 'ru'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 font-medium'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
                 >
                   {t('language.russian')}
                 </button>
                 <button
-                  onClick={() => { setLang('kk'); setShowLangSheet(false); }}
-                  className={`w-full text-left px-4 py-3 rounded-lg border ${lang === 'kk' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200'}`}
+                  onClick={() => {
+                    setLang('kk');
+                    setShowLangSheet(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-colors ${
+                    lang === 'kk'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 font-medium'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}
                 >
                   {t('language.kazakh')}
                 </button>
