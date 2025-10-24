@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Building2 } from "lucide-react";
 import type { CreateClubRequest } from "@/functions/axios/requests";
 import PhoneInput from "react-phone-number-input";
 import ReactCountryFlag from "react-country-flag";
 import "react-phone-number-input/style.css";
-import { MembershipConfigurator } from "./MembershipConfigurator";
 
 interface CreateClubModalProps {
   show: boolean;
@@ -63,33 +62,41 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
   const handleSubmit = () => onSubmit(form);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white w-full h-full max-w-md shadow-2xl overflow-hidden pt-20">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <div className="bg-white w-full h-full max-w-md shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-2">
-          <h2 className="text-lg font-semibold text-gray-800">Создать Клуб</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-800 focus:outline-none"
-          >
-            <X size={20} />
-          </button>
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Building2 className="text-blue-600" size={20} />
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">Создать клуб</h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-6 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300">
+        <div className="px-6 py-6 space-y-5 overflow-y-auto" style={{ height: 'calc(100vh - 140px)' }}>
           {[
             {
-              label: "Название",
+              label: "Название клуба",
               name: "name",
               type: "text",
-              placeholder: "Ваш клуб",
+              placeholder: "Bars Checkmat",
+              required: true,
             },
             {
               label: "Описание",
               name: "description",
               type: "textarea",
-              placeholder: "Краткое описание",
+              placeholder: "Brazilian Jiu-Jitsu академия...",
             },
             {
               label: "Город",
@@ -101,7 +108,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
               label: "Адрес",
               name: "address",
               type: "text",
-              placeholder: "Ул. Пушкина, 1",
+              placeholder: "ул. Абая, 150",
             },
             {
               label: "Телефон",
@@ -122,21 +129,21 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
               placeholder: "https://...",
             },
             {
-              label: "Telegram URL",
+              label: "Telegram",
               name: "telegram_url",
               type: "url",
               placeholder: "https://t.me/...",
             },
             {
-              label: "Instagram URL",
+              label: "Instagram",
               name: "instagram_url",
               type: "url",
               placeholder: "https://instagram.com/...",
             },
-          ].map(({ label, name, type, placeholder }) => (
-            <div key={name} className="space-y-1">
+          ].map(({ label, name, type, placeholder, required }) => (
+            <div key={name} className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                {label}
+                {label} {required && <span className="text-red-500">*</span>}
               </label>
               {type === "textarea" ? (
                 <textarea
@@ -145,7 +152,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   onChange={handleChange}
                   placeholder={placeholder}
                   rows={3}
-                  className="w-full resize-none rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+                  className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
                 />
               ) : type === "phone" ? (
                 <div
@@ -163,7 +170,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
                     value={form.phone}
                     onChange={handlePhoneChange}
                     placeholder={placeholder}
-                    className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm ring-0 focus:ring-0 focus:border-none focus:outline-none transition"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
                     flagComponent={({ country }) =>
                       country ? (
                         <ReactCountryFlag
@@ -182,27 +189,26 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
                   value={form[name as keyof CreateClubRequest] as string}
                   onChange={handleChange}
                   placeholder={placeholder}
-                  className="w-full rounded-lg border border-gray-200 px-4 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
                 />
               )}
             </div>
           ))}
-
-          {/* Membership */}
-          <div className="pt-2 pb-10">
-            <div className="mb-2 text-sm text-gray-600">
-              Настройте membership сейчас. Эти параметры можно изменить позже в деталях клуба.
-            </div>
-            <MembershipConfigurator />
-          </div>
         </div>
 
-        {/* Actions */}
-        <div className="absolute flex justify-end w-full py-4 bottom-0 px-6 bg-gray-100">
+        {/* Footer */}
+        <div className="sticky bottom-0 flex justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-200">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+          >
+            Отмена
+          </button>
           <button
             onClick={handleSubmit}
             disabled={loading || !form.name}
-            className="inline-flex items-center px-5 py-2 h-max bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition disabled:opacity-50"
+            className="inline-flex items-center px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 shadow-sm"
           >
             {loading && (
               <svg
@@ -226,7 +232,7 @@ export const CreateClubModal: React.FC<CreateClubModalProps> = ({
                 ></path>
               </svg>
             )}
-            {loading ? "Создание..." : "Создать"}
+            {loading ? "Создание..." : "Создать клуб"}
           </button>
         </div>
       </div>
