@@ -1,6 +1,6 @@
+// src/pages/coach-pages/management/components/TabNavigation.tsx
 import React from 'react';
-import { Users, Settings } from 'lucide-react';
-
+import { Users, Settings, DollarSign } from 'lucide-react';
 
 interface TabNavigationProps {
   activeTab: string;
@@ -23,7 +23,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onChange }) =>
     </button>
     <button
       onClick={() => onChange('sections')}
-      className={`flex-1 py-2 px-4 text-sm font-medium rounded-r-lg transition-colors ${
+      className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
         activeTab === 'sections'
           ? 'bg-blue-500 text-white'
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -31,6 +31,18 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onChange }) =>
     >
       <div className="flex items-center justify-center gap-2">
         <Settings size={16} /> Секции
+      </div>
+    </button>
+    <button
+      onClick={() => onChange('pricing')}
+      className={`flex-1 py-2 px-4 text-sm font-medium rounded-r-lg transition-colors ${
+        activeTab === 'pricing'
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+      }`}
+    >
+      <div className="flex items-center justify-center gap-2">
+        <DollarSign size={16} /> Прайсинг
       </div>
     </button>
   </div>
