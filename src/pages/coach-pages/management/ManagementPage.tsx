@@ -1,10 +1,15 @@
-// ManagementPage.tsx
+// src/pages/coach-pages/management/ManagementPage.tsx
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import TabNavigation from "./components/TabNavigation";
 import StaffFilter from "./components/StaffFilter";
 import AddStaffModal from "./components/AddStaffModal";
 import AddSectionModal from "./components/AddSectionModal";
+import AddPricingModal from "./components/AddPricingModal";
+import { PricingPanel } from "./components/PricingPanel";
+import { SectionsPanel } from "./components/SectionPanel";
+import { StaffPanel } from "./components/StaffPanel";
 import type { Filters, NewStaff, NewSection, Staff } from "@/types/types";
+import type { PricingPackage } from "@/types/pricing.types";
 import { BottomNav } from "@/components/Layout";
 import { X } from "lucide-react";
 import {
@@ -19,9 +24,8 @@ import type {
   CreateClubResponse,
   Invitation,
 } from "@/functions/axios/responses";
-import { SectionsPanel } from "./components/SectionPanel";
 import { useI18n } from "@/i18n/i18n";
-import { StaffPanel } from "./components/StaffPanel";
+import { mockPricingPackages } from "@/data/mockPricingData";
 
 const ManagementPage: React.FC = () => {
   const { t } = useI18n();
@@ -30,6 +34,8 @@ const ManagementPage: React.FC = () => {
   );
   const userFullName = localStorage.getItem("telegramFullName") || "";
   const userId = Number(localStorage.getItem("userId"));
+
+  // Filters
   const [filters, setFilters] = useState<Filters>({
     search: "",
     roles: [],
@@ -37,18 +43,10 @@ const ManagementPage: React.FC = () => {
     sections: [],
   });
 
+  // Section state
   const [sectionEditing, setSectionEditing] = useState(false);
-
-  const [showAddStaff, setShowAddStaff] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
-
-  const [newStaff, setNewStaff] = useState<NewStaff>({
-    role: "",
-    phone: "",
-    clubId: "",
-  });
-
-  const [newSection, setNewSection] = useState<
+  const [newSection, setNewSection] = useState
     NewSection & { valid_from?: string; valid_until?: string }
   >({
     club_id: undefined,
@@ -59,28 +57,44 @@ const ManagementPage: React.FC = () => {
     valid_from: "",
     valid_until: "",
   });
+  const [sections, setSections] = useState<CreateSectionResponse[]>([]);
+  const [activeSection, setActiveSection] = useState
+    CreateSectionResponse | undefined
+  >(undefined);
+  const [sectionCreateAllowed, setSectionCreateAllowed] = useState(false);
 
+  // Staff state
+  const [showAddStaff, setShowAddStaff] = useState(false);
+  const [newStaff, setNewStaff] = useState<NewStaff>({
+    role: "",
+    phone: "",
+    clubId: "",
+  });
+  const [staff, setStaff] = useState<Staff[]>([]);
+  const [staffCreateAllowed, setStaffCreateAllowed] = useState(false);
+
+  // Pricing state
+  const [packages, setPackages] = useState<PricingPackage[]>(mockPricingPackages);
+  const [showAddPricing, setShowAddPricing] = useState(false);
+  const [editingPackage, setEditingPackage] = useState<PricingPackage | null>(null);
+
+  // Club state
+  const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
+  const [ownedClubs, setOwnedClubs] = useState<CreateClubResponse[]>([]);
+
+  // Alert modals
+  const [showSecNotAllowed, setShowSecNotAllowed] = useState(false);
+  const [showStaffNotAllowed, setShowStaffNotAllowed] = useState(false);
+
+  const allRoles = ["owner", "coach", "admin"];
+
+  // Section handlers
   const handleSectionChange = useCallback(
     (field: keyof NewSection, value: unknown) => {
       setNewSection((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
-
-  const [clubsRaw, setClubsRaw] = useState<CreateClubResponse[]>([]);
-  const [ownedClubs, setOwnedClubs] = useState<CreateClubResponse[]>([]);
-
-  const [staff, setStaff] = useState<Staff[]>([]);
-  const [sections, setSections] = useState<CreateSectionResponse[]>([]);
-  const [activeSection, setActiveSection] = useState<
-    CreateSectionResponse | undefined
-  >(undefined);
-
-  const [sectionCreateAllowed, setSectionCreateAllowed] = useState(false);
-  const [staffCreateAllowed, setStaffCreateAllowed] = useState(false);
-
-  const [showSecNotAllowed, setShowSecNotAllowed] = useState(false);
-  const [showStaffNotAllowed, setShowStaffNotAllowed] = useState(false);
 
   const addSection = () => {
     setActiveSection(undefined);
@@ -116,6 +130,8 @@ const ManagementPage: React.FC = () => {
     setShowAddSection(false);
     setSectionEditing(false);
   };
+
+  // Staff handlers
   const addStaff = () => {
     if (!staffCreateAllowed) {
       setShowStaffNotAllowed(true);
@@ -123,91 +139,6 @@ const ManagementPage: React.FC = () => {
     }
     setShowAddStaff(true);
   };
-
-  const allRoles = ["owner", "coach", "admin"];
-
-  useEffect(() => {
-    const token = localStorage.getItem("telegramToken") || "";
-    if (!token) return;
-
-    (async () => {
-      try {
-        const [secRes, clubRes, teamRes, invRes] = await Promise.all([
-          sectionsApi.getMy(token),
-          clubsApi.getMy(token),
-          teamApi.get(token),
-          invitationsApi.getMy(token),
-        ]);
-
-        console.log(secRes.data);
-
-        setClubsRaw(clubRes.data.clubs.map((w) => w.club));
-        setOwnedClubs(
-          clubRes.data.clubs
-            .filter((w) => w.role === "owner" || w.role === "admin")
-            .map((w) => w.club)
-        );
-
-        setSections(secRes.data);
-
-        if (clubRes.data.clubs.length > 0) {
-          setSectionCreateAllowed(true);
-          setStaffCreateAllowed(true);
-        }
-
-        // 1) Маппим реальных членов команды
-        const teamMembers: Staff[] = (
-          teamRes.data.staff_members as unknown[]
-        ).map((m) => {
-          const member = m as {
-            id: number | string;
-            first_name: string;
-            last_name: string;
-            username?: string;
-            clubs_and_roles: Array<{ role: string; club_name: string }>;
-            phone_number?: string;
-          };
-          return {
-            id: member.id.toString(),
-            name: member.first_name,
-            surname: member.last_name,
-            telegramUsername: member.username,
-            role: (member.clubs_and_roles[0]?.role as Staff["role"]) || "coach",
-            sports: [] as string[],
-            clubs: member.clubs_and_roles.map((cr) => cr.club_name),
-            phone: member.phone_number,
-            status: "active", // литерал 'active'
-          };
-        });
-
-        // 2) Маппим только pending-приглашения
-        const pendingInvs: Staff[] = invRes.data.invitations
-          .filter((inv) => inv.status === "pending")
-          .map((inv) => {
-            // находим название клуба
-            const wrapper = clubRes.data.clubs.find(
-              (w) => w.club.id === inv.club_id
-            );
-            return {
-              id: inv.id.toString(),
-              name: "",
-              surname: "",
-              telegramUsername: undefined,
-              role: inv.role as Staff["role"],
-              sports: [] as string[],
-              clubs: wrapper ? [wrapper.club.name] : [],
-              phone: inv.phone_number,
-              status: "pending", // литерал 'pending'
-            };
-          });
-
-        // 3) Объединяем: сначала реальные члены, потом приглашённые
-        setStaff([...teamMembers, ...pendingInvs]);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
-  }, []);
 
   const handleAddInvitation = async () => {
     const token = localStorage.getItem("telegramToken") || "";
@@ -246,6 +177,32 @@ const ManagementPage: React.FC = () => {
     }
   };
 
+  // Pricing handlers
+  const addPricing = () => {
+    setEditingPackage(null);
+    setShowAddPricing(true);
+  };
+
+  const editPricing = (pkg: PricingPackage) => {
+    setEditingPackage(pkg);
+    setShowAddPricing(true);
+  };
+
+  const handleSavePricing = (pkg: PricingPackage) => {
+    if (editingPackage) {
+      setPackages(packages.map((p) => (p.id === pkg.id ? pkg : p)));
+    } else {
+      setPackages([...packages, pkg]);
+    }
+    setShowAddPricing(false);
+    setEditingPackage(null);
+  };
+
+  const handleDeletePricing = (id: string) => {
+    setPackages(packages.filter((p) => p.id !== id));
+  };
+
+  // Filtered staff
   const filteredStaff = useMemo(() => {
     const s = filters.search.toLowerCase();
     return staff.filter(
@@ -259,13 +216,104 @@ const ManagementPage: React.FC = () => {
     );
   }, [staff, filters]);
 
+  // Load data on mount
+  useEffect(() => {
+    const token = localStorage.getItem("telegramToken") || "";
+    if (!token) return;
+
+    (async () => {
+      try {
+        const [secRes, clubRes, teamRes, invRes] = await Promise.all([
+          sectionsApi.getMy(token),
+          clubsApi.getMy(token),
+          teamApi.get(token),
+          invitationsApi.getMy(token),
+        ]);
+
+        console.log(secRes.data);
+
+        setClubsRaw(clubRes.data.clubs.map((w) => w.club));
+        setOwnedClubs(
+          clubRes.data.clubs
+            .filter((w) => w.role === "owner" || w.role === "admin")
+            .map((w) => w.club)
+        );
+
+        setSections(secRes.data);
+
+        if (clubRes.data.clubs.length > 0) {
+          setSectionCreateAllowed(true);
+          setStaffCreateAllowed(true);
+        }
+
+        // Map team members
+        const teamMembers: Staff[] = (
+          teamRes.data.staff_members as unknown[]
+        ).map((m) => {
+          const member = m as {
+            id: number | string;
+            first_name: string;
+            last_name: string;
+            username?: string;
+            clubs_and_roles: Array<{ role: string; club_name: string }>;
+            phone_number?: string;
+          };
+          return {
+            id: member.id.toString(),
+            name: member.first_name,
+            surname: member.last_name,
+            telegramUsername: member.username,
+            role: (member.clubs_and_roles[0]?.role as Staff["role"]) || "coach",
+            sports: [] as string[],
+            clubs: member.clubs_and_roles.map((cr) => cr.club_name),
+            phone: member.phone_number,
+            status: "active",
+          };
+        });
+
+        // Map pending invitations
+        const pendingInvs: Staff[] = invRes.data.invitations
+          .filter((inv) => inv.status === "pending")
+          .map((inv) => {
+            const wrapper = clubRes.data.clubs.find(
+              (w) => w.club.id === inv.club_id
+            );
+            return {
+              id: inv.id.toString(),
+              name: "",
+              surname: "",
+              telegramUsername: undefined,
+              role: inv.role as Staff["role"],
+              sports: [] as string[],
+              clubs: wrapper ? [wrapper.club.name] : [],
+              phone: inv.phone_number,
+              status: "pending",
+            };
+          });
+
+        setStaff([...teamMembers, ...pendingInvs]);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
+
+  // Handle tab change with localStorage
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    localStorage.setItem("activeManagementTab", tab);
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gray-50 pb-50">
+        {/* Header */}
         <div className="bg-white sticky top-0 z-10 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
           <div className="px-4 py-3">
-            <h1 className="text-xl font-semibold text-gray-900 mb-4">{t('management.title')}</h1>
-            <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
+            <h1 className="text-xl font-semibold text-gray-900 mb-4">
+              {t("management.title")}
+            </h1>
+            <TabNavigation activeTab={activeTab} onChange={handleTabChange} />
             {activeTab === "staff" && (
               <StaffFilter
                 filters={filters}
@@ -275,6 +323,8 @@ const ManagementPage: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Content */}
         <div className="px-4 py-2">
           {activeTab === "staff" && (
             <StaffPanel staff={filteredStaff} onAdd={addStaff} />
@@ -286,10 +336,21 @@ const ManagementPage: React.FC = () => {
               onAdd={addSection}
             />
           )}
+          {activeTab === "pricing" && (
+            <PricingPanel
+              packages={packages}
+              onAdd={addPricing}
+              onEdit={editPricing}
+              onDelete={handleDeletePricing}
+            />
+          )}
         </div>
 
+        {/* Bottom Navigation */}
         <BottomNav page="management" />
       </div>
+
+      {/* Modals */}
       <AddStaffModal
         show={showAddStaff}
         allRoles={allRoles}
@@ -301,6 +362,7 @@ const ManagementPage: React.FC = () => {
         onAdd={handleAddInvitation}
         onClose={() => setShowAddStaff(false)}
       />
+
       <AddSectionModal
         show={showAddSection}
         editing={sectionEditing}
@@ -314,6 +376,20 @@ const ManagementPage: React.FC = () => {
         onChange={handleSectionChange}
         onClose={onAddSectionModalClose}
       />
+
+      <AddPricingModal
+        show={showAddPricing}
+        package={editingPackage}
+        clubs={clubsRaw}
+        sections={sections}
+        onClose={() => {
+          setShowAddPricing(false);
+          setEditingPackage(null);
+        }}
+        onSave={handleSavePricing}
+      />
+
+      {/* Alert Modals */}
       {showSecNotAllowed && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="relative bg-white w-[95%] max-w-md shadow-xl ring-1 ring-gray-200 rounded-2xl px-6 py-5">
@@ -362,4 +438,5 @@ const ManagementPage: React.FC = () => {
     </>
   );
 };
+
 export default ManagementPage;
