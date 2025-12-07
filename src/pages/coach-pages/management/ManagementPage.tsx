@@ -46,7 +46,7 @@ const ManagementPage: React.FC = () => {
   // Section state
   const [sectionEditing, setSectionEditing] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
-  const [newSection, setNewSection] = useState
+  const [newSection, setNewSection] = useState<
     NewSection & { valid_from?: string; valid_until?: string }
   >({
     club_id: undefined,

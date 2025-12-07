@@ -1,13 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import {
-  Search,
-  Phone,
-  MessageCircle,
-  Filter,
   X,
   Calendar,
-  Users,
-  Award,
   CreditCard,
   Pause,
   Play,
@@ -16,6 +10,8 @@ import {
 import { BottomNav } from "@/components/Layout";
 import { SkeletonLine, SkeletonAvatar } from "@/components/ui";
 import { useI18n } from "@/i18n/i18n";
+import StudentCard from "./components/StudentCard";
+import StudentFilter from "./components/StudentFilter";
 
 import { studentsApi } from "@/functions/axios/axiosFunctions";
 // import types if needed for stricter typing
@@ -86,7 +82,6 @@ const StudentsPage: React.FC = () => {
   });
 
   const [selectedStudent, setSelectedStudent] = useState<StudentUI | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
 
   // Extract unique values for filter options
   const allCoaches = [...new Set(allStudents.flatMap((s) => s.coaches))];
@@ -174,147 +169,22 @@ const StudentsPage: React.FC = () => {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="px-4 py-3">
-            <div className="flex items-center justify-between mb-3">
-              <h1 className="text-xl font-semibold text-gray-900">Студенты</h1>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <Filter size={20} />
-              </button>
-            </div>
+            <h1 className="text-xl font-semibold text-gray-900 mb-3">Студенты</h1>
 
-            {/* Search */}
-            <div className="relative mb-3">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={16}
-              />
-              <input
-                type="text"
-                placeholder={t('students.search')}
-                value={filters.search}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, search: e.target.value }))
-                }
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Status Filter */}
-            <div className="flex gap-2 mb-3">
-              {["all", "active", "frozen", "inactive"].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilters((prev) => ({ ...prev, status }))}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    filters.status === status
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            {/* Expanded Filters */}
-            {showFilters && (
-              <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
-                {/* Coaches Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Тренеры
-                  </label>
-                  <div className="flex flex-wrap gap-1">
-                    {allCoaches.map((coach) => (
-                      <button
-                        key={coach}
-                        onClick={() => {
-                          setFilters((prev) => ({
-                            ...prev,
-                            coaches: prev.coaches.includes(coach)
-                              ? prev.coaches.filter((c) => c !== coach)
-                              : [...prev.coaches, coach],
-                          }));
-                        }}
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          filters.coaches.includes(coach)
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-white text-gray-600 border border-gray-300"
-                        }`}
-                      >
-                        {coach}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Groups Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Groups
-                  </label>
-                  <div className="flex flex-wrap gap-1">
-                    {allGroups.map((group) => (
-                      <button
-                        key={group}
-                        onClick={() => {
-                          setFilters((prev) => ({
-                            ...prev,
-                            groups: prev.groups.includes(group)
-                              ? prev.groups.filter((g) => g !== group)
-                              : [...prev.groups, group],
-                          }));
-                        }}
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          filters.groups.includes(group)
-                            ? "bg-green-100 text-green-800"
-                            : "bg-white text-gray-600 border border-gray-300"
-                        }`}
-                      >
-                        {group}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Types Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Тип Тренировки
-                  </label>
-                  <div className="flex flex-wrap gap-1">
-                    {allTypes.map((type) => (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          setFilters((prev) => ({
-                            ...prev,
-                            types: prev.types.includes(type)
-                              ? prev.types.filter((t) => t !== type)
-                              : [...prev.types, type],
-                          }));
-                        }}
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          filters.types.includes(type)
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-white text-gray-600 border border-gray-300"
-                        }`}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Filters */}
+            <StudentFilter
+              filters={filters}
+              allCoaches={allCoaches}
+              allGroups={allGroups}
+              allTypes={allTypes}
+              onChange={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
+            />
           </div>
         </div>
 
         {/* Students List */}
         <div className="px-4 py-2">
-          <div className="text-sm text-gray-600 mb-3">
+          <div className="mb-3 text-sm text-gray-600">
             {isLoading ? "Загрузка…" : error ? error : `${filteredStudents.length} студентов`}
           </div>
 
@@ -336,74 +206,11 @@ const StudentsPage: React.FC = () => {
               </>
             )}
             {!isLoading && filteredStudents.map((student) => (
-              <div
+              <StudentCard
                 key={student.id}
-                onClick={() => setSelectedStudent(student)}
-                className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all cursor-pointer"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-gray-900">
-                        {student.name} {student.surname}
-                      </span>
-                      {student.telegramUsername && (
-                        <span className="text-xs text-gray-500">
-                          {student.telegramUsername}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
-                      <div className="flex items-center gap-1">
-                        <Users size={14} />
-                        <span>{student.coaches.join(", ")}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Award size={14} />
-                        <span>{student.type}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span>Группы: {student.groups.join(", ")}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        student.status
-                      )}`}
-                    >
-                      {student.status}
-                    </span>
-
-                    <div
-                      className={`text-xs ${
-                        isExpiringSoon(student.membershipUntil)
-                          ? "text-red-600 font-medium"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      Until {formatDate(student.membershipUntil)}
-                    </div>
-
-                    <div className="flex gap-2">
-                      {student.phone && (
-                        <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                          <Phone size={16} />
-                        </button>
-                      )}
-                      {student.telegramUsername && (
-                        <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                          <MessageCircle size={16} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                student={student}
+                onStudentClick={setSelectedStudent}
+              />
             ))}
           </div>
         </div>
